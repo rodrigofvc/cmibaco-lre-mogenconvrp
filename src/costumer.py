@@ -13,6 +13,12 @@ class Costumer(object):
         # [(day, arrival_time),...] at wich hour arrived the vehicle ---- TODO
         self.arrival_times = []
 
+    def get_distance(self, other):
+        return -1
+
+    def __eq__(self, other):
+        return self.id == other.id
+
     def __str__(self):
         to_string = 'id: ' + str(self.id) + ',\n'
         to_string += 'x: ' + str(self.x) +  ',\n'
