@@ -8,9 +8,9 @@ class Costumer(object):
         self.timetable = int(id) % 2
         # [(day, demand), ...] how much costumer want
         self.demands = demands
-        # [(day, service_time),....] how long takes the service
+        # [(day, service_time),....] how long takes the service per day
         self.service_times = service_times
-        # [(day, arrival_time),...] at wich hour arrived the vehicle ---- TODO
+        # [(day, arrival_time),...] at wich hour arrived the vehicle at costumer ---- TODO
         self.arrival_times = []
 
     def get_distance(self, other):
