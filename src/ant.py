@@ -6,11 +6,9 @@ class Ant:
         self.nest = nest
 
     def get_remaining_costumers(self, costumers_dh, costumers_attended, day):
-        remainig = []
-        for costumer in costumers_dh:
-            if not costumer in costumers_attended:
-                remainig.append(costumer)
-        return remainig
+        remaining = []
+        remaining = [c for c in costumers_dh if not c in costumers_attended]
+        return remaining
 
     def get_psi_ij(self, costumer_i, costumer_j, day):
         estimated_ij = costumer_i.arrival_times[day] + costumer_i.service_times[day] + costumer_i.distance_to(costumer_j)
@@ -59,9 +57,7 @@ class Ant:
 
     def get_costumers_day(self, costumers_dh, day):
         costumers = []
-        for costumer in costumers_dh:
-            if costumer.demands[day] > 0 and costumer.id != 0:
-                costumers.append(costumer)
+        costumers = [c for c in costumers_dh if c.demands[day] > 0 and c.id != 0]
         return costumers
 
     # Create a solution for a planning in a specific day, timetable
@@ -81,6 +77,7 @@ class Ant:
                 costumers_attended.append(next_costumer)
                 current_costumer = next_costumer
             else:
+                current_vehicle.return_depot(day)
                 tour = [self.nest]
                 current_costumer = tour[0]
                 i += 1

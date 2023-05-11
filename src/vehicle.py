@@ -5,6 +5,7 @@ class Vehicle():
         self.capacity = capacity
         self.loads = [0] * days
         self.tour = {}
+        self.times_tour = [-1] * days
 
     def set_tour_day(self, day, tour):
         self.tour[day] = tour
@@ -21,8 +22,15 @@ class Vehicle():
         costumer_j.arrival_times[day] = arrival_j
         self.tour[day].append(costumer_j)
         self.loads[day] += costumer_j.demands[day]
+        self.times_tour[day] += costumer_i.distance_to(costumer_j)
         costumer_j.vehicles_visit[day] = self.id
         self.check_load(day)
+
+    def return_depot(self, day):
+        costumer_j = self.tour[day][-1]
+        depot = self.tour[day][0]
+        time = costumer_j.distance_to(depot)
+        self.times_tour[day] += time
 
     def check_load(self, day):
         if self.loads[day] > self.capacity:
