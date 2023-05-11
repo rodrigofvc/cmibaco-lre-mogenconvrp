@@ -47,16 +47,34 @@ def non_dominated(A, P):
 
     return A
 
-def update_pheromone(pheromone_matrix, P):
-    pass 
+def ants_arc_ij(timetable, day, i, j, P, Q):
+    delta_ijdh = 0
+    for p in P:
+        for vehicle in p.assigments_vehicles[timetable]:
+            if vehicle.visited_costumer_ijdh(day, i, j):
+                delta_ijdh += Q / vehicle.get_time(day)
+    return delta_ijdh
 
+def update_arc_ij(timetable, day, matrix_dh, i, j, rho, Q, P):
+    matrix_dh = (1-rho) * matrix_dh[i][j] + ants_arc_ij(timetable, day, i, j, P, Q)
+
+def update_pheromone(pheromone_matrix, P, rho, Q):
+    timetables = pheromone_matrix.keys()
+    for h in timetables:
+        matrix_h = pheromone_matrix[h]
+        for d, matrix_dh in enumerate(matrix_h):
+            n = matrix_dh.shape[0]
+            for i in range(n):
+                for j in range(n):
+                    if i != j:
+                        update_arc_ij(h, d, matrix_dh, i, j, rho, Q, P)
 
 def maco(n_ants, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles):
     n_costumers = len(costumers)
     pheromone_matrix = initialize_multiple_matrix(days, n_costumers)
     A = []
-    P = []
     for i in range(max_iterations):
+        P = []
         for k in range(n_ants):
             s = Solution(timetables, days)
             for h in timetables:
@@ -69,7 +87,7 @@ def maco(n_ants, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costum
                     ant.build_solution(pheromone_matrix, d, h, alpha, beta, gamma, delta, Q, costumers_timetable, vehicles_timetable)
                 s.add_assigment_vehicles(vehicles_timetable, costumers_timetable, h)
             P.append(s)
-    update_pheromone(pheromone_matrix, P)
-    A = non_dominated(A, P)
-    for a in A:
-        print (a.get_fitness())
+        for a in A:
+            print (a.get_fitness())
+        #update_pheromone(pheromone_matrix, P, rho, Q)
+        A = non_dominated(A, P)

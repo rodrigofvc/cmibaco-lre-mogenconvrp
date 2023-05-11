@@ -19,14 +19,14 @@ if __name__ == '__main__':
         vehicle = Vehicle(i, capacity, days)
         vehicles.append(vehicle)
 
-    n_ants = 10
+    n_ants = 50
     rho = 0.4
     alpha = 0.4
     beta = 0.2
     gamma = 0.7
     delta = 0.3
     Q = 0.50
-    max_iterations = 4
+    max_iterations = 10
     timetables = ['AM', 'PM']
 
     maco(n_ants, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles)

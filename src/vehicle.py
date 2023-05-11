@@ -51,6 +51,20 @@ class Vehicle():
                 return True
         return False
 
+    def visited_costumer_ijdh(self, day, costumer_i, costumer_j):
+        if not day in self.tour.keys():
+            return False
+        tour_day = self.tour[day]
+        for i in range(len(tour_day)):
+            j = i+1
+            if j >= len(tour_day):
+                break
+            if costumer_i == tour_day[i].id and costumer_j == tour_day[j].id:
+                return True,
+        if costumer_i == tour_day[-1].id and costumer_j == tour_day[0].id:
+            return True
+        return False
+
     """
     def set_arrive_time_costumers(self):
         days = self.tour.keys()
