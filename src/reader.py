@@ -53,7 +53,7 @@ def set_time_section(lines, costumers, SVC_TIME_SECTION, DEPOT_SECTION):
     for line in lines[SVC_TIME_SECTION+1:DEPOT_SECTION]:
         chunks = line.split()
         id = int(chunks[0])
-        times = list(map(lambda x : int(x), chunks[1:]))
+        times = list(map(lambda x : float(x), chunks[1:]))
         costumers[id-1].service_times = times
         costumers[id-1].arrival_times = [-1] * len(times)
         costumers[id-1].vehicles_visit = [-1] * len(times)
