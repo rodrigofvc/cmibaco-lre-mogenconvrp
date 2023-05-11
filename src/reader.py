@@ -13,13 +13,11 @@ def read_dataset(dataset_dir):
 
     days = lines[NUM_DAYS]
     days = days.split()
-    days = days[-1]
-    print (f'days: {days} {NUM_DAYS}')
+    days = int(days[-1])
 
     capacity = lines[CAPACITY]
     capacity = capacity.split()
-    capacity = capacity[-1]
-    print (f'capacity: {capacity} {CAPACITY}')
+    capacity = int(capacity[-1])
 
     DEMAND_SECTION = [k for k, line in enumerate(lines) if 'DEMAND_SECTION' in line]
     DEMAND_SECTION = DEMAND_SECTION[0]
@@ -40,7 +38,7 @@ def get_nodes(lines, NODE_COORD_SECTION, DEMAND_SECTION):
     costumers = []
     for line in lines[NODE_COORD_SECTION+1:DEMAND_SECTION]:
         chunks = line.split()
-        new_costumer = Costumer(chunks[0], chunks[1], chunks[2])
+        new_costumer = Costumer(int(chunks[0]), float(chunks[1]), float(chunks[2]))
         costumers.append(new_costumer)
     return costumers
 
@@ -57,3 +55,5 @@ def set_time_section(lines, costumers, SVC_TIME_SECTION, DEPOT_SECTION):
         id = int(chunks[0])
         times = list(map(lambda x : int(x), chunks[1:]))
         costumers[id-1].service_times = times
+        costumers[id-1].arrival_times = [-1] * len(times)
+        costumers[id-1].vehicles_visit = [-1] * len(times)
