@@ -1,11 +1,12 @@
 class Vehicle():
 
-    def __init__(self, id, capacity, days):
+    def __init__(self, id, capacity, days, limit_time):
         self.id = id
         self.capacity = capacity
         self.loads = [0] * days
         self.tour = {}
-        self.times_tour = [-1] * days
+        self.times_tour = [0] * days
+        self.limit_time = limit_time
 
     def set_tour_day(self, day, tour):
         self.tour[day] = tour
@@ -25,6 +26,8 @@ class Vehicle():
         self.times_tour[day] += costumer_i.distance_to(costumer_j)
         costumer_j.vehicles_visit[day] = self.id
         self.check_load(day)
+        current_time = arrival_j + costumer_j.service_times[day]
+        return current_time
 
     def return_depot(self, day):
         costumer_j = self.tour[day][-1]
@@ -51,48 +54,41 @@ class Vehicle():
         time += tour_day[0].distance_to(tour_day[-1])
         return time
 
-    def visited_costumer(self, costumer_j):
-        days = self.tour.keys()
-        for d in days:
-            tour_day = self.tour[d]
-            if costumer_j in tour_day:
-                return True
-        return False
-
-    def visited_costumer_ijdh(self, day, costumer_i, costumer_j):
-        if not day in self.tour.keys():
-            return False
-        tour_day = self.tour[day]
-        for i in range(len(tour_day)):
-            j = i+1
-            if j >= len(tour_day):
-                break
-            if costumer_i == tour_day[i].id and costumer_j == tour_day[j].id:
-                return True,
-        if costumer_i == tour_day[-1].id and costumer_j == tour_day[0].id:
+    def is_feasible(self):
+        if list(self.tour.keys()) == []:
+            # Vehicle not used
             return True
-        return False
+        for l in self.loads:
+            if l > self.capacity:
+                raise()
 
-    """
-    def set_arrive_time_costumers(self):
         days = self.tour.keys()
         for d in days:
-            self.set_arrive_time_costumers(d)
-
-    def set_arrive_time_costumers(self, day):
-        tour_day = self.tour[day]
-        depot = tour_day[0]
-        costumer_1 = tour_day[1]
-        time = depot.distance_to(costumer_1)
-        costumer_1.set_arrive_time(time)
-        for i in range(1,len(tour_day)):
-            costumer_1 = tour_day[i]
-            j = i+1
-            if j >= len(tour_day):
-                break
-            costumer_2 = tour_day[j]
-            arrive_time_2 = costumer_1.arrival_times[day]
-            arrive_time_2 += costumer_1.service_times[day]
-            arrive_time_2 += costumer_1.distance_to(costumer_2)
-            costumer_2.set_arrive_time(arrive_time_2)
-    """
+            if self.tour[d][0].id != 0:
+                raise()
+            sum = 0
+            load = 0
+            for i in range(len(self.tour[d])):
+                costumer_i = self.tour[d][i]
+                if costumer_i in self.tour[d][:i]:
+                    print (costumer_i, [c.id for c in self.tour[d]])
+                    raise()
+                if costumer_i.id != 0 and costumer_i.vehicles_visit[d] != self.id:
+                    raise()
+                if costumer_i.service_times[d] <= 0 and costumer_i.id != 0:
+                    raise()
+                j = i + 1
+                if j < len(self.tour[d]):
+                    costumer_j = self.tour[d][j]
+                    sum += costumer_i.distance_to(costumer_j)
+                    if costumer_j.arrival_times[d] != costumer_i.arrival_times[d] + costumer_i.service_times[d] + costumer_i.distance_to(costumer_j):
+                        raise()
+                    load += costumer_j.demands[d]
+                else:
+                    sum += self.tour[d][i].distance_to(self.tour[d][0])
+                    if self.tour[d][i].id == 0:
+                        raise()
+            if sum != self.times_tour[d]:
+                raise(sum, self.times_tour[d])
+            if load != self.loads[d]:
+                raise()
