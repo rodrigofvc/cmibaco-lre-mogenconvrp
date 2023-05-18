@@ -9,6 +9,7 @@ def read_dataset(dataset_dir):
 
     NUM_DAYS = 4
     CAPACITY = 5
+    DISTANCE = 6
     NODE_COORD_SECTION = 10
 
     days = lines[NUM_DAYS]
@@ -18,6 +19,10 @@ def read_dataset(dataset_dir):
     capacity = lines[CAPACITY]
     capacity = capacity.split()
     capacity = int(capacity[-1])
+
+    limit_time = lines[DISTANCE]
+    limit_time = limit_time.split()
+    limit_time = int(limit_time[-1])
 
     DEMAND_SECTION = [k for k, line in enumerate(lines) if 'DEMAND_SECTION' in line]
     DEMAND_SECTION = DEMAND_SECTION[0]
@@ -31,7 +36,7 @@ def read_dataset(dataset_dir):
     costumers = get_nodes(lines, NODE_COORD_SECTION, DEMAND_SECTION)
     set_demand(lines, costumers, DEMAND_SECTION, SVC_TIME_SECTION)
     set_time_section(lines, costumers, SVC_TIME_SECTION, DEPOT_SECTION)
-    return costumers, capacity, days
+    return costumers, capacity, days, limit_time
 
 
 def get_nodes(lines, NODE_COORD_SECTION, DEMAND_SECTION):
