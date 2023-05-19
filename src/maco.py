@@ -3,14 +3,16 @@ from solution import Solution
 import numpy as np
 import copy
 
-def initialize_multiple_matrix(days, n_costumers):
+def initialize_multiple_matrix(days, n_costumers, ones):
     matrices = {'AM': [], 'PM': []}
     for d in range(days):
-
-        m = np.ones((n_costumers,n_costumers))
+        if ones:
+            m = np.ones((n_costumers,n_costumers))
+            m_ = np.ones((n_costumers,n_costumers))
+        else:
+            m = np.zeros((n_costumers,n_costumers))
+            m_ = np.zeros((n_costumers,n_costumers))
         matrices['AM'].append(m)
-
-        m_ = np.ones((n_costumers,n_costumers))
         matrices['PM'].append(m_)
     return matrices
 
@@ -33,47 +35,28 @@ def get_costumers_day_timetable(costumers, timetable_day):
 def non_dominated(A, P):
     added = []
     for p in P:
-        dominated = False
-        for a in A:
-            if a.dominates(p):
-                dominated = True
-        if not dominated:
+        a_dominated_p = [a for a in A if a.dominates(p)]
+        if len(a_dominated_p) == 0:
             A.append(p)
             added.append(p)
 
-    for a in A:
-        for p in added:
-            if p.dominates(a):
-                A.remove(a)
-                break
+    for a in A[:]:
+        p_dominated_a = [p for p in added if p.dominates(a)]
+        if len(p_dominated_a) != 0:
+            A.remove(a)
     return A
 
-def ants_arc_ij(timetable, day, i, j, P, Q):
-    delta_ijdh = 0
-    for p in P:
-        for vehicle in p.assigments_vehicles[timetable]:
-            if vehicle.visited_costumer_ijdh(day, i, j):
-                delta_ijdh += Q / vehicle.times_tour[day]
-    return delta_ijdh
+def update_pheromone(pheromone_matrix, delta_ant_matrix, P, rho, Q, timetables, days):
+    for timetable in timetables:
+        for d in range(days):
+            pheromone_matrix[timetable][d] *= (1-rho)
+            pheromone_matrix[timetable][d] += delta_ant_matrix[timetable][d]
 
-def update_arc_ij(timetable, day, matrix_dh, i, j, rho, Q, P):
-    matrix_dh[i][j] = (1-rho) * matrix_dh[i][j] + ants_arc_ij(timetable, day, i, j, P, Q)
-    matrix_dh[j][i] = matrix_dh[i][j]
 
-def update_pheromone(pheromone_matrix, P, rho, Q):
-    timetables = pheromone_matrix.keys()
-    for h in timetables:
-        matrix_h = pheromone_matrix[h]
-        for d, matrix_dh in enumerate(matrix_h):
-            n = matrix_dh.shape[0]
-            for i in range(n):
-                for j in range(i+1,n):
-                    update_arc_ij(h, d, matrix_dh, i, j, rho, Q, P)
-                    #print (f'{h}/day:{d} {i} {j}')
-
-def maco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles):
+def maco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone):
     n_costumers = len(costumers)
-    pheromone_matrix = initialize_multiple_matrix(days, n_costumers)
+    pheromone_matrix = initialize_multiple_matrix(days, n_costumers, True)
+    delta_ant_matrix = initialize_multiple_matrix(days, n_costumers, False)
     A = []
     for i in range(max_iterations):
         P = []
@@ -85,12 +68,17 @@ def maco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, cost
                 costumers_timetable = copy.deepcopy(costumers_h)
                 for d in range(days):
                     depot = costumers[0]
-                    ant = Ant(depot)
-                    ant.build_solution(pheromone_matrix, d, h, alpha, beta, gamma, delta, Q, costumers_timetable, vehicles_timetable)
+                    n = len(costumers)
+                    ant = Ant(depot, n, min_pheromone)
+                    ant.build_solution(delta_ant_matrix, pheromone_matrix, d, h, alpha, beta, gamma, delta, Q, costumers_timetable, vehicles_timetable, q0)
                 s.add_assigment_vehicles(vehicles_timetable, costumers_timetable, h)
+            s.get_fitness()
+            #s.is_feasible()
             P.append(s)
-        update_pheromone(pheromone_matrix, P, rho, Q)
+        update_pheromone(pheromone_matrix, delta_ant_matrix, P, rho, Q, timetables, days)
+        delta_ant_matrix = initialize_multiple_matrix(days, n_costumers, False)
         A = non_dominated(A, P)
         print (f'>> non dominated {i}')
         for a in A:
-            print (a.get_fitness())
+            print ((a.f_1, a.f_2, a.f_3))
+    return A
