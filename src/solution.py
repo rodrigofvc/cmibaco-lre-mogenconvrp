@@ -9,7 +9,6 @@ class Solution:
         self.f_1 = None
         self.f_2 = None
         self.f_3 = None
-        self.f_4 = None
 
     def add_assigment_vehicles(self, vehicles, costumers, timetable):
         self.assigments_vehicles[timetable] = vehicles
@@ -61,15 +60,16 @@ class Solution:
         self.f_1 = self.get_total_time()
         self.f_2 = self.get_max_difference_arrive()
         self.f_3 = self.get_max_difference_drivers()
-        self.f_4 = self.get_mean_arrive_difference()
         return (self.f_1, self.f_2, self.f_3)
 
     def dominates(self, y):
         # F(X) == F(Y)
         if abs(self.f_1 - y.f_1) <= 10e-8 and abs(self.f_2 - y.f_2) <= 10e-8 and self.f_3 == y.f_3:
             return False
+        if self.f_1 == y.f_1 and self.f_2 == y.f_2 and self.f_3 == y.f_3:
+            return False
         # F(X) <= F(Y)
-        if abs(self.f_1 - y.f_1) <= 10e-8 and abs(self.f_2 - y.f_2) <= 10e-8 and self.f_3 <= y.f_3:
+        if self.f_1 <= y.f_1 and self.f_2 <= y.f_2 and self.f_3 <= y.f_3:
             return True
         return False
 
