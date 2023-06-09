@@ -2,10 +2,11 @@ import numpy as np
 import math
 
 class Ant:
-    def __init__(self, nest, n, min_pheromone):
+    def __init__(self, nest, n, min_pheromone, max_pheromone):
         self.nest = nest
         self.arcs_visited = np.zeros((n,n))
         self.min_pheromone = min_pheromone
+        self.max_pheromone = max_pheromone
 
     def get_remaining_costumers(self, costumers_dh, costumers_attended):
         remaining = []
@@ -28,6 +29,10 @@ class Ant:
         return phi_j
 
     def get_eta_ij(self, costumer_i, costumer_j):
+        if costumer_i == costumer_j:
+            raise()
+        if costumer_i.distance_to(costumer_j) == 0:
+            return 1
         eta_ij = 1 / costumer_i.distance_to(costumer_j)
         return eta_ij
 
@@ -40,10 +45,11 @@ class Ant:
             if i == j:
                 raise()
             pheromone_dh_ij = pheromone_matrix_day_h[i][j]
+            pheromone_dh_ij = max(self.min_pheromone, min(pheromone_dh_ij, self.max_pheromone))
             eta_ij = self.get_eta_ij(current_costumer, remaining_costumer)
             psi_ij = self.get_psi_ij(current_costumer, remaining_costumer, day)
             phi_j = self.get_phi_j(remaining_costumer, current_vehicle, vehicles)
-            prob_ij = max(math.pow(pheromone_dh_ij, alpha), self.min_pheromone) * math.pow(eta_ij, beta) * math.pow(psi_ij,gamma) * math.pow(phi_j, delta)
+            prob_ij = math.pow(pheromone_dh_ij, alpha) * math.pow(eta_ij, beta) * math.pow(psi_ij, gamma) * math.pow(phi_j, delta)
             probabilities.append(prob_ij)
         if explotation:
             argmax = np.argmax(probabilities)
@@ -57,17 +63,17 @@ class Ant:
 
     def get_next_costumer(self, remaining_costumers, current_costumer, alpha, beta, gamma, delta, Q, current_vehicle, pheromone_matrix, day, timetable, vehicles, q0, current_time):
         # check if current_vehicle its on time to arrive at each costumer (including to return depot)
-        remaining_costumers = [c for c in remaining_costumers if current_time + current_costumer.distance_to(c) + c.service_times[day] + c.distance_to(self.nest) <= current_vehicle.limit_time]
-        if len(remaining_costumers) == 0:
+        remaining_costumers_ = [c for c in remaining_costumers if current_time + current_costumer.distance_to(c) + c.service_times[day] + c.distance_to(self.nest) <= current_vehicle.limit_time]
+        if len(remaining_costumers_) == 0:
             return None
-        if len(remaining_costumers) == 1:
-            return remaining_costumers[0]
+        if len(remaining_costumers_) == 1:
+            return remaining_costumers_[0]
         q = np.random.rand()
         explotation = False
         if q <= q0:
             explotation = True
-        probabilities = self.get_probabilities_from_costumer(current_costumer, remaining_costumers, pheromone_matrix, day, timetable, alpha, beta, gamma, delta, Q, current_vehicle, vehicles, explotation)
-        next_costumer = np.random.choice(remaining_costumers, 1, p=probabilities)[0]
+        probabilities = self.get_probabilities_from_costumer(current_costumer, remaining_costumers_, pheromone_matrix, day, timetable, alpha, beta, gamma, delta, Q, current_vehicle, vehicles, explotation)
+        next_costumer = np.random.choice(remaining_costumers_, 1, p=probabilities)[0]
         return next_costumer
 
     def get_costumers_day(self, costumers_dh, day):
@@ -77,11 +83,12 @@ class Ant:
 
     def update_delta_matrix(self, delta_ant_matrix, current_vehicle, day, timetable, Q):
         time_tour = current_vehicle.times_tour[day]
-        dif_ve = [max(1, c.get_max_vehicle_difference()) for c in current_vehicle.tour[day] if c.id != 0 and not current_vehicle.id in c.vehicles_visit] + [1]
-        sat = [max(1, c.get_max_arrival_diference()) for c in current_vehicle.tour[day] if c.id != 0 and day in c.get_worts_days()] + [1]
+        dif_ve = [c.get_max_vehicle_difference() for c in current_vehicle.tour[day] if c.id != 0 and not current_vehicle.id in c.vehicles_visit[:day]] + [1]
+        sat = [c.get_max_arrival_diference() for c in current_vehicle.tour[day] if c.id != 0 and day in c.get_worts_days()] + [1]
         dif_ve = max(dif_ve)
         sat = max(sat)
         pheromone = Q / (sat * time_tour * dif_ve)
+        pheromone = max(self.min_pheromone, min(pheromone, self.max_pheromone))
         self.arcs_visited *= pheromone
         delta_ant_matrix[timetable][day] += self.arcs_visited
         self.arcs_visited = np.zeros(self.arcs_visited.shape)
@@ -111,6 +118,9 @@ class Ant:
                 current_vehicle = vehicles[i]
                 current_vehicle.set_tour_day(day, tour)
                 next_costumer = self.get_next_costumer(remaining_costumers, current_costumer, alpha, beta, gamma, delta, Q, current_vehicle, pheromone_matrix, day, timetable, vehicles, q0, current_time)
+                if next_costumer == None and len(costumers_attended) != len(costumers_day) and current_vehicle.times_tour[day] == 0:
+                    # es el ultimo que queda y el vehiculo no le alcanza por llegar
+                    next_costumer = remaining_costumers[0]
 
             if current_vehicle.loads[day] + next_costumer.demands[day] <= current_vehicle.capacity:
                 current_time = current_vehicle.add_costumer_tour_day(day, next_costumer)

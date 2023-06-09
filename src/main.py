@@ -2,14 +2,28 @@ from costumer import Costumer
 from vehicle import Vehicle
 from ant import Ant
 from reader import read_dataset
-from maco import *
-
+from maco import maco
+import os
 import matplotlib.pyplot as plt
+import random
+import json
+import sys
 
-DATASET_DIR = 'dataset/Christofides_8_5_0.5.txt'
-#DATASET_DIR = 'dataset/convrp_12_test_1.vrp'
+def save_result(dataset, A, path):
+    if '.txt' in dataset:
+        new_path = 'results/' + dataset.replace('.txt', '') + '/'
+        if not os.path.exists(new_path):
+            os.mkdir(new_path)
+        plt.savefig(new_path + dataset.replace('.txt', '') + '-' + path)
+    elif '.vrp' in dataset:
+        new_path = 'results/' + dataset.replace('.vrp', '') + '/'
+        if not os.path.exists(new_path):
+            os.mkdir(new_path)
+        plt.savefig(new_path + dataset.replace('.vrp', '') + '-' + path)
+    else:
+        raise()
 
-def plot_archive_3d(A):
+def plot_archive_3d(A, dataset):
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
     xs = []
@@ -23,12 +37,11 @@ def plot_archive_3d(A):
     ax.set_xlabel('Tiempo')
     ax.set_ylabel('Diferencia máxima')
     ax.set_zlabel('Vehículos distintos')
-    plt.title('Soluciones en espacio objetivo')
-    #plt.show()
-    plt.savefig('3d-archive.png')
+    plt.title('Solutions in objective space for ' + dataset)
+    save_result(dataset, A, '3d-archive.png')
     plt.close()
 
-def plot_archive_2d(A):
+def plot_archive_2d(A, dataset):
     different_vehicles = [a.f_3 for a in A]
     different_vehicles = list(set(different_vehicles))
     different_vehicles.sort()
@@ -41,12 +54,27 @@ def plot_archive_2d(A):
         ax.scatter(xs, ys, marker='o')
         ax.set_xlabel('Differencia máxima de llegada')
         ax.set_ylabel('Tiempo')
-        plt.title('Soluciones no dominadas con ' + str(n_vehicle) + ' vehiculos distintos')
-        plt.savefig('archive-' + str(n_vehicle) + '.png')
+        plt.title('Soluciones e no dominadas con ' + str(n_vehicle) + ' vehiculos distintos ' + dataset)
+        save_result(dataset, A, 'archive-' + str(n_vehicle) + '.png')
         plt.close()
 
-if __name__ == '__main__':
-    costumers, capacity, days, limit_time = read_dataset(DATASET_DIR)
+def plot_log_hypervolume(log, dataset, params):
+    plt.title('Indicador de hypervolumen ' + dataset)
+    plt.xlabel('Iteración')
+    plt.ylabel('Hypervolumen')
+    plt.plot(log)
+    if '.txt' in dataset:
+        dataset = dataset.replace('.txt', '')
+        plt.savefig('results/' + dataset + '/'+ dataset+ '-log-hyper.png')
+    elif '.vrp' in dataset:
+        dataset = dataset.replace('.vrp', '')
+        plt.savefig('results/' + dataset + '/'+ dataset+ '-log-hyper.png')
+    plt.close()
+
+def exec_maco(params):
+    dataset = params['file']
+    dir = 'dataset/'
+    costumers, capacity, days, limit_time = read_dataset(dir + dataset)
     depot = Costumer(0,0,0)
     depot.demands = [0] * days
     depot.arrival_times = [0] * days
@@ -59,18 +87,36 @@ if __name__ == '__main__':
         vehicle = Vehicle(i, capacity, days, limit_time/2)
         vehicles.append(vehicle)
 
-    n_groups = 300
-    rho = 0.6
-    alpha = 4
-    beta = 5
-    gamma = 3
-    delta = 3
-    Q = 3
-    q0 = 0.30
-    max_iterations = 200
-    min_pheromone = 10e-7
+    seed = params['seed']
+    n_groups = params['n_ants']
+    rho = params['rho']
+    alpha = params['alpha']
+    beta = params['beta']
+    gamma = params['gamma']
+    delta = params['delta']
+    Q = params['Q']
+    q0 = params['q0']
+    max_iterations = params['max_iterations']
+    min_pheromone = 10e-3
+    max_pheromone = 10e5
     timetables = ['AM', 'PM']
+    epsilon = params['epsilon']
+    dy = params['dy']
+    random.seed(seed)
+    print (f'>>>>>>>>>>>>>>>> Results for {dataset} in results/{dataset}')
+    A, log_hypervolume, duration = maco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, epsilon, dy)
+    plot_archive_3d(A, dataset)
+    plot_archive_2d(A, dataset)
+    plot_log_hypervolume(log_hypervolume, dataset, params)
+    dataset = dataset.replace('.txt', '')
+    print (f'>> Non Epsilon dominated for {dataset}')
+    for a in A:
+        print ((a.f_1, a.f_2, a.f_3))
+    print (f'Elapsed time {duration} seconds')
 
-    A = maco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone)
-    plot_archive_3d(A)
-    plot_archive_2d(A)
+
+if __name__ == '__main__':
+    params_file = sys.argv[1]
+    f = open(params_file)
+    params = json.load(f)
+    exec_maco(params)

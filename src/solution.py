@@ -57,6 +57,8 @@ class Solution:
         return max_driver_diff
 
     def get_fitness(self):
+        if self.f_1 != None:
+            return (self.f_1, self.f_2, self.f_3)
         self.f_1 = self.get_total_time()
         self.f_2 = self.get_max_difference_arrive()
         self.f_3 = self.get_max_difference_drivers()
@@ -70,6 +72,17 @@ class Solution:
             return False
         # F(X) <= F(Y)
         if self.f_1 <= y.f_1 and self.f_2 <= y.f_2 and self.f_3 <= y.f_3:
+            return True
+        return False
+
+    def epsilon_dominates(self, y, epsilon):
+        # F(X) + e == F(Y)
+        if abs((self.f_1 + epsilon[0]) - y.f_1) <= 10e-8 and abs((self.f_2 + epsilon[1]) - y.f_2) <= 10e-8 and (self.f_3 + epsilon[2]) == y.f_3:
+            return False
+        if (self.f_1 + epsilon[0]) == y.f_1 and (self.f_2 + epsilon[1]) == y.f_2 and (self.f_3 + epsilon[2]) == y.f_3:
+            return False
+        # F(X) + e <= F(Y)
+        if self.f_1 + epsilon[0] <= y.f_1 and self.f_2 + epsilon[1] <= y.f_2 and self.f_3 + epsilon[3] <= y.f_3:
             return True
         return False
 

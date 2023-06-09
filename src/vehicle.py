@@ -13,7 +13,7 @@ class Vehicle():
 
     def add_costumer_tour_day(self, day, costumer_j):
         costumer_i = self.tour[day][-1]
-        if costumer_j.service_times[day] <= 0:
+        if costumer_j.service_times[day] <= -1:
             raise()
         if costumer_i.arrival_times[day] <= 0 and costumer_i.id != 0:
             raise()
