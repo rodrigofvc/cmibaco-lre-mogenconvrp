@@ -24,7 +24,7 @@ class Costumer(object):
             if self.vehicles_visit.count(-1) != len(self.vehicles_visit):
                 raise()
         for i in range(len(self.service_times)):
-            if self.demands[i] != -1 and self.service_times[i] != 0 and self.arrival_times[i] != -1 and self.vehicles_visit[i] != -1:
+            if self.demands[i] != -1 and self.service_times[i] >= 0 and self.arrival_times[i] != -1 and self.vehicles_visit[i] != -1:
                 continue
             if self.demands[i] == -1 and self.service_times[i] == 0 and self.arrival_times[i] == -1 and self.vehicles_visit[i] == -1:
                 continue

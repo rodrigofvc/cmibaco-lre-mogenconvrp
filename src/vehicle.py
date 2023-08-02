@@ -54,6 +54,11 @@ class Vehicle():
         time += tour_day[0].distance_to(tour_day[-1])
         return time
 
+    def __eq__(self, other):
+        if isinstance(other, Vehicle):
+            return self.id == other.id
+        return False
+
     def is_feasible(self):
         if list(self.tour.keys()) == []:
             # Vehicle not used
@@ -75,13 +80,14 @@ class Vehicle():
                     raise()
                 if costumer_i.id != 0 and costumer_i.vehicles_visit[d] != self.id:
                     raise()
-                if costumer_i.service_times[d] <= 0 and costumer_i.id != 0:
+                if costumer_i.service_times[d] < 0 and costumer_i.id != 0:
                     raise()
                 j = i + 1
                 if j < len(self.tour[d]):
                     costumer_j = self.tour[d][j]
                     sum += costumer_i.distance_to(costumer_j)
                     if costumer_j.arrival_times[d] != costumer_i.arrival_times[d] + costumer_i.service_times[d] + costumer_i.distance_to(costumer_j):
+                        print (f'i-> j arrival_time j : {costumer_j.arrival_times[d]}, arrival_time i: {costumer_i.arrival_times[d]}, service_time i: {costumer_i.service_times[d]}  d_ij : {costumer_i.distance_to(costumer_j)}')
                         raise()
                     load += costumer_j.demands[d]
                 else:
