@@ -1,4 +1,6 @@
 import numpy as np
+from ant import Ant
+import copy
 
 class Solution:
     def __init__(self, timetables, days):
@@ -6,6 +8,7 @@ class Solution:
         self.timetables = timetables
         self.assigments_vehicles = {'AM': [], 'PM': []}
         self.assigments_costumers = {'AM': [], 'PM': []}
+        self.ants = {'AM': [], 'PM': []}
         self.f_1 = None
         self.f_2 = None
         self.f_3 = None
@@ -13,6 +16,201 @@ class Solution:
     def add_assigment_vehicles(self, vehicles, costumers, timetable):
         self.assigments_vehicles[timetable] = vehicles
         self.assigments_costumers[timetable] = costumers
+
+    def get_vector_representation_dt(self, timetable, day):
+        tmp = []
+        for vehicle in self.assigments_vehicles[timetable]:
+            if not day in vehicle.tour.keys():
+                continue
+            tour_vehicle = vehicle.tour[day]
+            tmp += tour_vehicle
+        return tmp
+
+    def print_vector(self, vec):
+        s = '['
+        for c in vec:
+            s += str(c.id) + ', '
+        s += ']'
+        print (s)
+
+    def shift(self, vector, point_1, point_2):
+        current = vector[point_1]
+        for i in range(point_1, point_2):
+            if i + 1 != len(vector):
+                next = vector[i+1]
+                vector[i+1] = current
+                current = next
+        vector[point_1] = next
+
+    def add_ant_timetable_day(self, ant, timetable):
+        self.ants[timetable].append(ant)
+
+    def get_assigments_crossover(self, timetable, even, min_pheromone, max_pheromone, other):
+        vehicles_timetable = copy.deepcopy(self.assigments_vehicles[timetable])
+        costumers_timetable = copy.deepcopy(self.assigments_costumers[timetable])
+        ants = []
+        n = 1 + len(self.assigments_costumers['AM']) + len(self.assigments_costumers['PM'])
+        for c in costumers_timetable:
+            c.arrival_times = [-1] * self.days
+            c.vehicles_visit = [-1] * self.days
+        for v in vehicles_timetable:
+            v.tour = {}
+            v.loads = [0] * self.days
+            v.times_tour = [0] * self.days
+        depot = self.assigments_vehicles[timetable][0].tour[0][0]
+        if depot.id != 0:
+            raise()
+        for day in range(self.days):
+            if even:
+                if day % 2 == 0:
+                    vehicles_day = [v for v in self.assigments_vehicles[timetable] if day in v.tour.keys()]
+                else:
+                    vehicles_day = [v for v in other.assigments_vehicles[timetable] if day in v.tour.keys()]
+            else:
+                if day % 2 == 0:
+                    vehicles_day = [v for v in other.assigments_vehicles[timetable] if day in v.tour.keys()]
+                else:
+                    vehicles_day = [v for v in self.assigments_vehicles[timetable] if day in v.tour.keys()]
+
+            ant = Ant(depot, n, min_pheromone, max_pheromone)
+            for v in vehicles_day:
+                v_new_i = vehicles_timetable.index(v)
+                v_new = vehicles_timetable[v_new_i]
+                depot = v.tour[day][0]
+                v_new.set_tour_day(day, [depot])
+                i = 0
+                j = 0
+                for c in v.tour[day]:
+                    if c.id == 0:
+                        continue
+                    c_new_i = costumers_timetable.index(c)
+                    c_new = costumers_timetable[c_new_i]
+                    j = c_new.id
+                    ant.global_update[i][j] = 1
+                    ant.global_update[j][i] = 1
+                    i = c_new.id
+                    v_new.add_costumer_tour_day(day, c_new)
+                ant.global_update[i][0] = 1
+                ant.global_update[0][i] = 1
+                v_new.return_depot(day)
+            ants.append(ant)
+        return vehicles_timetable, costumers_timetable, ants
+
+    def crossover(self, other, min_pheromone=10e-3, max_pheromone=10e5, prob_cross=.80):
+        if self.days != other.days:
+            print (f'one solution days {self.days}')
+            print (f'other solution days {other.days}')
+            raise('solutions not share days')
+        childs = []
+        prob = np.random.rand()
+        if prob > prob_cross:
+            return childs
+
+        vehicles_child_1_am, costumers_child_1_am, ants_child_1_am = self.get_assigments_crossover('AM', True, min_pheromone, max_pheromone, other)
+        vehicles_child_1_pm, costumers_child_1_pm, ants_child_1_pm = self.get_assigments_crossover('PM', True, min_pheromone, max_pheromone, other)
+
+        vehicles_child_2_am, costumers_child_2_am, ants_child_2_am = self.get_assigments_crossover('AM', False, min_pheromone, max_pheromone, other)
+        vehicles_child_2_pm, costumers_child_2_pm, ants_child_2_pm = self.get_assigments_crossover('PM', False, min_pheromone, max_pheromone, other)
+
+        solution_1 = Solution(self.timetables, self.days)
+        solution_1.add_assigment_vehicles(vehicles_child_1_am, costumers_child_1_am, 'AM')
+        solution_1.add_assigment_vehicles(vehicles_child_1_pm, costumers_child_1_pm, 'PM')
+        solution_1.ants['AM'] = ants_child_1_am
+        solution_1.ants['PM'] = ants_child_1_pm
+
+        solution_2 = Solution(self.timetables, self.days)
+        solution_2.add_assigment_vehicles(vehicles_child_2_am, costumers_child_2_am, 'AM')
+        solution_2.add_assigment_vehicles(vehicles_child_2_pm, costumers_child_2_pm, 'PM')
+        solution_2.ants['AM'] = ants_child_2_am
+        solution_2.ants['PM'] = ants_child_2_pm
+
+        solution_1.get_fitness()
+        solution_2.get_fitness()
+
+        childs = [solution_1, solution_2]
+        return childs
+
+    def mutation(self, prob_mut):
+        other = copy.deepcopy(self)
+        other.mutation_shift(prob_mut)
+        other.f_1 = None
+        other.f_2 = None
+        other.f_3 = None
+        other.get_fitness()
+        return other
+
+    def mutation_shift(self, prob_m):
+        for timetable in self.timetables:
+            for day in range(self.days):
+                prob = np.random.rand()
+                if prob <= prob_m:
+                    vector_rep = self.get_vector_representation_dt(timetable, day)
+                    point_1 = 0
+                    point_2 = 0
+                    while point_1 == point_2:
+                        point_1 = np.random.choice([i for i in range(1,len(vector_rep)//2) if vector_rep[i].id != 0])
+                        point_2 = np.random.choice([i for i in range(point_1+1,len(vector_rep)) if vector_rep[i].id != 0])
+                        #print (f'!!!! MUTATE {timetable} - {day} {point_1} {point_2} {[c.id for c in vector_rep]}')
+                    self.shift(vector_rep, point_1, point_2)
+                    #print (f'shift {[c.id for c in vector_rep]}')
+                    for c in self.assigments_costumers[timetable]:
+                        c.arrival_times[day]  = -1
+                        c.vehicles_visit[day] = -1
+
+                    self.ants[timetable][day].global_update = np.zeros(self.ants[timetable][day].global_update.shape)
+
+                    depot = vector_rep[0]
+                    i = 0
+                    vector_rep = [c for c in vector_rep if c.id != 0]
+                    for i_vehicle, vehicle in enumerate(self.assigments_vehicles[timetable]):
+                        vehicle.times_tour[day] = 0
+                        vehicle.loads[day] = 0
+                        vehicle.times_tour[day] = 0
+                        last_vehicle = i_vehicle
+                        tour = [depot]
+                        vehicle.set_tour_day(day, tour)
+                        current_cos = vector_rep[i]
+                        current_time = vehicle.add_costumer_tour_day(day, current_cos)
+                        self.ants[timetable][day].global_update[0][vehicle.tour[day][-1].id] = 1
+                        self.ants[timetable][day].global_update[vehicle.tour[day][-1].id][0] = 1
+                        i += 1
+                        if i == len(vector_rep):
+                            vehicle.return_depot(day)
+                            break
+                        current_cos = vector_rep[i]
+                        while current_time + vehicle.tour[day][-1].distance_to(current_cos) + current_cos.service_times[day] + current_cos.distance_to(vehicle.tour[day][0]) <= vehicle.limit_time and vehicle.loads[day] + current_cos.demands[day] <= vehicle.capacity:
+                            #print (f'adding {current_cos.id} / {vehicle.loads[day]} {vehicle.capacity} - {current_cos.demands[day]}')
+                            before_costumer = vehicle.tour[day][-1]
+                            self.ants[timetable][day].global_update[before_costumer.id][current_cos.id] = 1
+                            self.ants[timetable][day].global_update[current_cos.id][before_costumer.id] = 1
+                            current_time = vehicle.add_costumer_tour_day(day, current_cos)
+                            i += 1
+                            if i == len(vector_rep):
+                                break
+                            current_cos = vector_rep[i]
+                        self.ants[timetable][day].global_update[0][vehicle.tour[day][-1].id] = 1
+                        self.ants[timetable][day].global_update[vehicle.tour[day][-1].id][0] = 1
+                        vehicle.return_depot(day)
+                        if len(vehicle.tour[day]) == 1:
+                            print (f'{[c.id for c in vehicle.tour[day]]}')
+                            raise('vehicle with only 1 costumer not allowed')
+                        if i >= len(vector_rep):
+                            break
+
+                    # borra la planeacion de los vehiculos que ya no se usaron
+                    vehicles_excluded = [v for i, v in enumerate(self.assigments_vehicles[timetable]) if i >= last_vehicle + 1 and day in v.tour.keys()]
+                    for v in vehicles_excluded:
+                        v.times_tour[day] = 0
+                        v.loads[day] = 0
+                        v.tour.pop(day)
+                    for c in self.assigments_costumers[timetable]:
+                        if c.vehicles_visit[day] == -1 and c.demands[day] > 0:
+                            print (f'UNVISITED')
+                            print (c)
+                            raise()
+
+
+
 
     def get_total_time(self):
         total_time = 0
@@ -94,4 +292,50 @@ class Solution:
             customers = self.assigments_costumers[timetable]
             for customer in customers:
                 customer.is_feasible()
+            for c in customers:
+                if c.id == 0:
+                    continue
+                days_service = [i for i, s in enumerate(c.demands) if s >= 0]
+                for day in days_service:
+                    vehicles_visit_day = [v for v in vehicles if day in v.tour.keys() and c in v.tour[day]]
+                    if len(vehicles_visit_day) == 0 or len(vehicles_visit_day) > 1:
+                        print (len(vehicles_visit_day))
+                        raise('COSTUMER not visited or visited twice')
+
+
+
         return True
+
+    def __eq__(self, other):
+        if isinstance(other, Solution):
+            for timetable in self.timetables:
+                for day in range(self.days):
+                    vector = self.get_vector_representation_dt(timetable, day)
+                    other_vector = other.get_vector_representation_dt(timetable, day)
+
+                    vector = [str(c.id) for c in vector]
+                    other_vector = [str(c.id) for c in other_vector]
+                    """
+                    if vector != other_vector:
+                        return False
+                    """
+                    vector_str = ''.join(vector)
+                    other_vector_str = ''.join(other_vector)
+
+                    chunks_vector = vector_str.split('0')
+                    chunks_other_vector = other_vector_str.split('0')
+
+                    if len(chunks_vector) != len(chunks_other_vector):
+                        return False
+
+                    chunks_vector = chunks_vector[1:]
+                    chunks_other_vector = chunks_other_vector[1:]
+
+                    for chunk in chunks_vector:
+                        if len(chunk) == 0:
+                            continue
+                        if not chunk in other_vector_str:
+                            return False
+
+            return True
+        return False
