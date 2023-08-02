@@ -1,10 +1,13 @@
 import numpy as np
 import math
+from random import shuffle
 
 class Ant:
     def __init__(self, nest, n, min_pheromone, max_pheromone):
         self.nest = nest
         self.arcs_visited = np.zeros((n,n))
+        # Matriz for visited arcs in solution VRP   
+        self.global_update = np.zeros((n,n))
         self.min_pheromone = min_pheromone
         self.max_pheromone = max_pheromone
 
@@ -81,6 +84,17 @@ class Ant:
         costumers = [c for c in costumers_dh if c.demands[day] > 0 and c.id != 0]
         return costumers
 
+        #TODO
+    def update_delta_matrix_global(self, current_vehicle, day, timetable, Q):
+        time_tour = current_vehicle.times_tour[day]
+        dif_ve = [c.get_max_vehicle_difference() for c in current_vehicle.tour[day] if c.id != 0 and not current_vehicle.id in c.vehicles_visit[:day]] + [1]
+        sat = [c.get_max_arrival_diference() for c in current_vehicle.tour[day] if c.id != 0 and day in c.get_worts_days()] + [1]
+        dif_ve = max(dif_ve)
+        sat = max(sat)
+        pheromone = Q / (sat * time_tour * dif_ve)
+        pheromone = max(self.min_pheromone, min(pheromone, self.max_pheromone))
+        return self.global_update * pheromone
+
     def update_delta_matrix(self, delta_ant_matrix, current_vehicle, day, timetable, Q):
         time_tour = current_vehicle.times_tour[day]
         dif_ve = [c.get_max_vehicle_difference() for c in current_vehicle.tour[day] if c.id != 0 and not current_vehicle.id in c.vehicles_visit[:day]] + [1]
@@ -102,6 +116,7 @@ class Ant:
         current_vehicle.set_tour_day(day, tour)
         costumers_attended = []
         costumers_day = self.get_costumers_day(costumers_dh, day)
+        shuffle(costumers_day)
         current_time = 0
         while len(costumers_attended) != len(costumers_day):
             remaining_costumers = self.get_remaining_costumers(costumers_day, costumers_attended)
@@ -112,6 +127,8 @@ class Ant:
                 current_vehicle.return_depot(day)
                 self.arcs_visited[current_costumer.id][0] = 1
                 self.arcs_visited[0][current_costumer.id] = 1
+                self.global_update[current_costumer.id][0] = 1
+                self.global_update[0][current_costumer.id] = 1
                 tour = [self.nest]
                 current_costumer = tour[0]
                 i += 1
@@ -129,11 +146,15 @@ class Ant:
                     raise()
                 self.arcs_visited[current_costumer.id][next_costumer.id] = 1
                 self.arcs_visited[next_costumer.id][current_costumer.id] = 1
+                self.global_update[current_costumer.id][next_costumer.id] = 1
+                self.global_update[next_costumer.id][current_costumer.id] = 1
                 current_costumer = next_costumer
             else:
                 current_vehicle.return_depot(day)
                 self.arcs_visited[next_costumer.id][0] = 1
                 self.arcs_visited[0][next_costumer.id] = 1
+                self.global_update[next_costumer.id][0] = 1
+                self.global_update[0][next_costumer.id] = 1
                 self.update_delta_matrix(delta_ant_matrix, current_vehicle, day, timetable, Q)
                 tour = [self.nest]
                 current_costumer = tour[0]
@@ -145,5 +166,7 @@ class Ant:
                 current_vehicle.return_depot(day)
                 self.arcs_visited[next_costumer.id][0] = 1
                 self.arcs_visited[0][next_costumer.id] = 1
+                self.global_update[next_costumer.id][0] = 1
+                self.global_update[0][next_costumer.id] = 1
                 self.update_delta_matrix(delta_ant_matrix, current_vehicle, day, timetable, Q)
             #print (f'{len(costumers_attended)} / {len(costumers_dh)}')

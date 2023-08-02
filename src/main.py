@@ -2,7 +2,9 @@ from costumer import Costumer
 from vehicle import Vehicle
 from ant import Ant
 from reader import read_dataset
-from maco import maco
+from maco import maco, maco_genetic_algorithm, maco_nsgaiii
+from ibaco import ibaco
+from lon import local_optimal_net
 import os
 import matplotlib.pyplot as plt
 import random
@@ -84,7 +86,8 @@ def exec_maco(params):
     costumers.insert(0, depot)
     vehicles = []
     for i in range(len(costumers)):
-        vehicle = Vehicle(i, capacity, days, limit_time/2)
+        # Paper says 1000 
+        vehicle = Vehicle(i, capacity, days, 500)
         vehicles.append(vehicle)
 
     seed = params['seed']
@@ -99,12 +102,15 @@ def exec_maco(params):
     max_iterations = params['max_iterations']
     min_pheromone = 10e-3
     max_pheromone = 10e5
+    p_mut = params['p_mut']
     timetables = ['AM', 'PM']
     epsilon = params['epsilon']
     dy = params['dy']
     random.seed(seed)
     print (f'>>>>>>>>>>>>>>>> Results for {dataset} in results/{dataset}')
-    A, log_hypervolume, duration = maco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, epsilon, dy)
+    #local_optimal_net(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy)
+    #A, log_hypervolume, duration = maco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy)
+    A, log_hypervolume, duration = ibaco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy)
     plot_archive_3d(A, dataset)
     plot_archive_2d(A, dataset)
     plot_log_hypervolume(log_hypervolume, dataset, params)
