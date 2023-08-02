@@ -1,0 +1,16 @@
+{
+  "file": "Christofides_12_5_0.7.vrp",
+  "n_ants": 150,
+  "rho": 0.5,
+  "alpha": 3,
+  "beta": 4,
+  "gamma": 2,
+  "delta": 2,
+  "Q": 1,
+  "q0": 0.20,
+  "max_iterations": 100,
+  "p_mut": 0.30,
+  "seed": 34,
+  "epsilon" : [6000, 400, 3],
+  "dy" : [500, 100, 1]
+}

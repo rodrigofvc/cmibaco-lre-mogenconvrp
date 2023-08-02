@@ -1,0 +1,16 @@
+{
+  "file": "Christofides_6_5_0.5.txt",
+  "n_ants": 50,
+  "rho": 0.2,
+  "alpha": 4,
+  "beta": 2,
+  "gamma": 2,
+  "delta": 3,
+  "Q": 1,
+  "q0": 0.20,
+  "max_iterations": 500,
+  "p_mut": 0.10,
+  "seed": 31,
+  "epsilon" : [9000, 550, 4],
+  "dy" : [200, 40, 1]
+}
