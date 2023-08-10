@@ -105,7 +105,8 @@ def ibaco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, cos
             minimum.sort(key=lambda x:x[0])
             minimum = minimum[0]
             current_population.remove(minimum[1])
-            print (f'iteration {i} - {len(current_population)} / {n}')
+            if len(current_population) % 50 == 0:
+                print (f'iteration {i} - {len(current_population)} / {n}')
         for s in current_population:
             print (s.f_i)
 
@@ -150,7 +151,6 @@ def fitness_asigment(population, k, i):
     for j, p in enumerate(population):
         p_exc = [q for q in population if q.id != p.id]
         one_all_indicator = [-1*math.exp(-1*indicator_eps(q,p)/k) for q in p_exc]
-        print(f'iteration {i} fitness {j}/ {len(population)}')
         p.fitness += sum(one_all_indicator)
 
 

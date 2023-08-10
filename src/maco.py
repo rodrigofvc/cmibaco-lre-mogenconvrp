@@ -129,22 +129,21 @@ def mutation_stage(population, prob_mut=0.10):
         new_population.append(mutation)
     return new_population
 
-#TODO 
+#TODO
 def build_solutions(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy, pheromone_matrix, delta_ant_matrix):
     P = []
     n_costumers = len(costumers)
     for k in range(n_groups):
         s = Solution(timetables, days)
+        vehicles_timetable = copy.deepcopy(vehicles)
+        costumers_timetable = copy.deepcopy(costumers[1:])
         for h in timetables:
-            vehicles_timetable = copy.deepcopy(vehicles)
-            costumers_h = get_costumers_day_timetable(costumers, h)
-            costumers_timetable = copy.deepcopy(costumers_h)
             for d in range(days):
                 depot = costumers[0]
                 ant = Ant(depot, n_costumers, min_pheromone, max_pheromone)
                 ant.build_solution(delta_ant_matrix, pheromone_matrix, d, h, alpha, beta, gamma, delta, Q, costumers_timetable, vehicles_timetable, q0)
                 s.add_ant_timetable_day(ant, h)
-            s.add_assigment_vehicles(vehicles_timetable, costumers_timetable, h)
+        s.add_assigment_vehicles(vehicles_timetable, costumers_timetable)
         s.get_fitness()
         s.is_feasible()
         P.append(s)

@@ -6,13 +6,12 @@ class Ant:
     def __init__(self, nest, n, min_pheromone, max_pheromone):
         self.nest = nest
         self.arcs_visited = np.zeros((n,n))
-        # Matriz for visited arcs in solution VRP   
+        # Matriz for visited arcs in solution VRP
         self.global_update = np.zeros((n,n))
         self.min_pheromone = min_pheromone
         self.max_pheromone = max_pheromone
 
     def get_remaining_costumers(self, costumers_dh, costumers_attended):
-        remaining = []
         remaining = [c for c in costumers_dh if not c in costumers_attended]
         return remaining
 
@@ -65,6 +64,8 @@ class Ant:
 
 
     def get_next_costumer(self, remaining_costumers, current_costumer, alpha, beta, gamma, delta, Q, current_vehicle, pheromone_matrix, day, timetable, vehicles, q0, current_time):
+        if len(remaining_costumers) == 0:
+            raise('no remaining costumers to check')
         # check if current_vehicle its on time to arrive at each costumer (including to return depot)
         remaining_costumers_ = [c for c in remaining_costumers if current_time + current_costumer.distance_to(c) + c.service_times[day] + c.distance_to(self.nest) <= current_vehicle.limit_time]
         if len(remaining_costumers_) == 0:
@@ -79,9 +80,14 @@ class Ant:
         next_costumer = np.random.choice(remaining_costumers_, 1, p=probabilities)[0]
         return next_costumer
 
-    def get_costumers_day(self, costumers_dh, day):
-        costumers = []
-        costumers = [c for c in costumers_dh if c.demands[day] > 0 and c.id != 0]
+    def get_costumers_day_timetable(self, costumers_dh, timetable, day):
+        if timetable == 'AM':
+            t = 0
+        elif timetable == 'PM':
+            t = 1
+        else:
+            raise('timetable no valid')
+        costumers = [c for c in costumers_dh if c.demands[day] > 0 and c.id != 0 and c.timetable == t]
         return costumers
 
         #TODO
@@ -96,12 +102,13 @@ class Ant:
         return self.global_update * pheromone
 
     def update_delta_matrix(self, delta_ant_matrix, current_vehicle, day, timetable, Q):
-        time_tour = current_vehicle.times_tour[day]
-        dif_ve = [c.get_max_vehicle_difference() for c in current_vehicle.tour[day] if c.id != 0 and not current_vehicle.id in c.vehicles_visit[:day]] + [1]
-        sat = [c.get_max_arrival_diference() for c in current_vehicle.tour[day] if c.id != 0 and day in c.get_worts_days()] + [1]
+        time_tour = current_vehicle.times_tour[timetable][day]
+        dif_ve = [c.get_max_vehicle_difference() for c in current_vehicle.tour[timetable][day] if c.id != 0 and not current_vehicle.id in c.vehicles_visit[:day]] + [1]
+        sat = [c.get_max_arrival_diference() for c in current_vehicle.tour[timetable][day] if c.id != 0 and day in c.get_worts_days()] + [1]
         dif_ve = max(dif_ve)
         sat = max(sat)
-        pheromone = Q / (sat * time_tour * dif_ve)
+        #print (f'>>> {sat} {time_tour} {dif_ve} {[c.id for c in current_vehicle.tour[timetable][day]]}')
+        pheromone = Q / max(1,(sat * time_tour * dif_ve))
         pheromone = max(self.min_pheromone, min(pheromone, self.max_pheromone))
         self.arcs_visited *= pheromone
         delta_ant_matrix[timetable][day] += self.arcs_visited
@@ -113,60 +120,67 @@ class Ant:
         current_costumer = tour[0]
         i = 0
         current_vehicle = vehicles[i]
-        current_vehicle.set_tour_day(day, tour)
+        current_vehicle.set_tour_day(timetable, day, tour)
         costumers_attended = []
-        costumers_day = self.get_costumers_day(costumers_dh, day)
+        costumers_day = self.get_costumers_day_timetable(costumers_dh, timetable, day)
         shuffle(costumers_day)
-        current_time = 0
+        if timetable == 'AM':
+            default_time = 0
+        else:
+            # T
+            default_time = current_vehicle.limit_time//2
+        current_time = default_time
         while len(costumers_attended) != len(costumers_day):
             remaining_costumers = self.get_remaining_costumers(costumers_day, costumers_attended)
             next_costumer = self.get_next_costumer(remaining_costumers, current_costumer, alpha, beta, gamma, delta, Q, current_vehicle, pheromone_matrix, day, timetable, vehicles, q0, current_time)
-            # current_vehicle must return to depot (limit time reached)
+            # current_vehicle must return to depot (limit time reached) and there are costumers pending to visit
             if next_costumer == None:
-                current_time = 0
-                current_vehicle.return_depot(day)
+                if len(current_vehicle.tour[timetable][day]) <= 1:
+                    raise('cannot add a new costumer over new vehicle')
+                current_vehicle.return_depot(timetable, day)
                 self.arcs_visited[current_costumer.id][0] = 1
                 self.arcs_visited[0][current_costumer.id] = 1
                 self.global_update[current_costumer.id][0] = 1
                 self.global_update[0][current_costumer.id] = 1
+                current_time = default_time
                 tour = [self.nest]
                 current_costumer = tour[0]
                 i += 1
                 current_vehicle = vehicles[i]
-                current_vehicle.set_tour_day(day, tour)
+                current_vehicle.set_tour_day(timetable, day, tour)
                 next_costumer = self.get_next_costumer(remaining_costumers, current_costumer, alpha, beta, gamma, delta, Q, current_vehicle, pheromone_matrix, day, timetable, vehicles, q0, current_time)
-                if next_costumer == None and len(costumers_attended) != len(costumers_day) and current_vehicle.times_tour[day] == 0:
-                    # es el ultimo que queda y el vehiculo no le alcanza por llegar
-                    next_costumer = remaining_costumers[0]
 
-            if current_vehicle.loads[day] + next_costumer.demands[day] <= current_vehicle.capacity:
-                current_time = current_vehicle.add_costumer_tour_day(day, next_costumer)
+            if current_costumer == next_costumer:
+                raise('cannot repite costumers')
+
+            if current_vehicle.loads[timetable][day] + next_costumer.demands[day] <= current_vehicle.capacity:
+                current_time = current_vehicle.add_costumer_tour_day(timetable, day, next_costumer)
                 costumers_attended.append(next_costumer)
-                if current_costumer == next_costumer:
-                    raise()
                 self.arcs_visited[current_costumer.id][next_costumer.id] = 1
                 self.arcs_visited[next_costumer.id][current_costumer.id] = 1
                 self.global_update[current_costumer.id][next_costumer.id] = 1
                 self.global_update[next_costumer.id][current_costumer.id] = 1
                 current_costumer = next_costumer
             else:
-                current_vehicle.return_depot(day)
+                if len(current_vehicle.tour[timetable][day]) <= 1:
+                    raise('cannot add a new costumer')
+                current_vehicle.return_depot(timetable, day)
                 self.arcs_visited[next_costumer.id][0] = 1
                 self.arcs_visited[0][next_costumer.id] = 1
                 self.global_update[next_costumer.id][0] = 1
                 self.global_update[0][next_costumer.id] = 1
                 self.update_delta_matrix(delta_ant_matrix, current_vehicle, day, timetable, Q)
+                current_time = default_time
                 tour = [self.nest]
                 current_costumer = tour[0]
                 i += 1
                 current_vehicle = vehicles[i]
-                current_vehicle.set_tour_day(day, tour)
-            # No remaining costumers, return to depot
-            if len(costumers_attended) == len(costumers_day):
-                current_vehicle.return_depot(day)
-                self.arcs_visited[next_costumer.id][0] = 1
-                self.arcs_visited[0][next_costumer.id] = 1
-                self.global_update[next_costumer.id][0] = 1
-                self.global_update[0][next_costumer.id] = 1
-                self.update_delta_matrix(delta_ant_matrix, current_vehicle, day, timetable, Q)
+                current_vehicle.set_tour_day(timetable, day, tour)
             #print (f'{len(costumers_attended)} / {len(costumers_dh)}')
+        # last vehicle used return to depot
+        current_vehicle.return_depot(timetable, day)
+        self.arcs_visited[next_costumer.id][0] = 1
+        self.arcs_visited[0][next_costumer.id] = 1
+        self.global_update[next_costumer.id][0] = 1
+        self.global_update[0][next_costumer.id] = 1
+        self.update_delta_matrix(delta_ant_matrix, current_vehicle, day, timetable, Q)

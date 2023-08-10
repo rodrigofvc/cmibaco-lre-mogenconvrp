@@ -47,8 +47,6 @@ def plot_archive_3d(A, dataset):
 
 def plot_sub_vrp(solution, timetable, day, axs, vehicle_colors):
     tours = solution.get_vector_representation_dt(timetable, day)
-    print (f'>>>> tour for {timetable} / {day}')
-    print([(c.id, c.x, c.y) for c in tours])
     tour = []
     subtours = []
     for c in tours[1:]:
@@ -93,9 +91,6 @@ def plot_best_objective(A, dataset, objective):
     if objective == 2:
         best = min(best)
         best = [a for a in A if a.f_1 == best][0]
-        for c in best.assigments_costumers:
-            if c.get_max_vehicle_difference() == 3:
-                print (c)
     else:
         ibest = np.argmin(best)
         best = A[ibest]
@@ -109,7 +104,6 @@ def plot_best_objective(A, dataset, objective):
     for i, t in enumerate(best.timetables):
         for d in range(best.days):
             vehicles_used += plot_sub_vrp(best, t, d, axs[i, d], vehicle_colors)
-    print(f'VEHICLES USED {vehicles_used}')
     vehicles_used = list(set(vehicles_used))
     colors_patch = [mpatches.Patch(color=v[1], label='Vehicle ' + str(v[0])) for v in [vehicle_colors[i] for i in vehicles_used]]
     fig.legend(handles=colors_patch)
