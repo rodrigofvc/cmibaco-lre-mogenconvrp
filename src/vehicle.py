@@ -75,6 +75,50 @@ class Vehicle():
             total_load += self.loads[timetable][day]
         return total_load
 
+    # For LNS
+    def contains_costumer(self, costumer):
+        timetable = costumer.timetable
+        for day in self.tour[timetable]:
+            if costumer in self.tour[timetable][day]:
+                return True
+        return False
+
+    # For LNS
+    def remove_costumer(self, costumer):
+        timetable = costumer.timetable
+        for day in self.tour[timetable]:
+            if costumer in self.tour[timetable][day]:
+                i = self.tour[timetable][day].index(costumer)
+                self.tour[timetable][day] = self.tour[timetable][day][:i] + self.tour[timetable][day][i+1:]
+                self.adjust_times(timetable, day)
+                costumer.arrival_times[day] = -1
+                costumer.vehicles_visit[day] = -1
+
+    # For LNS
+    def adjust_times(self, timetable, day):
+        self.loads[timetable][day] = 0
+        self.time_tour[timetable][day] = 0
+        for i in range(len(self.tour[timetable][day])):
+            costumer_i = self.tour[timetable][day][i]
+            j = i + 1
+            if j != len(self.tour[timetable][day]):
+                costumer_j = self.tour[timetable][day][j]
+                if costumer_j.service_times[day] <= -1:
+                    raise()
+                if costumer_i.arrival_times[day] <= 0 and costumer_i.id != 0:
+                    raise()
+                if costumer_i.id == 0 and timetable == 'PM':
+                    # T/2 for PM costumers
+                    arrival_j = self.limit_time//2
+                else:
+                    arrival_j = costumer_i.arrival_times[day]
+                arrival_j += costumer_i.service_times[day]
+                arrival_j += costumer_i.distance_to(costumer_j)
+                costumer_j.arrival_times[day] = arrival_j
+                self.loads[timetable][day] += costumer_j.demands[day]
+                self.times_tour[timetable][day] += costumer_i.distance_to(costumer_j)
+
+
     def __eq__(self, other):
         if isinstance(other, Vehicle):
             return self.id == other.id

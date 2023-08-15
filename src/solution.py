@@ -342,3 +342,10 @@ class Solution:
 
             return True
         return False
+
+    # For LNS
+    def remove_costumer(self, costumer_rmv):
+        timetable = costumer_rmv.timetable
+        vehicles = [v for v in self.assigments_vehicles if v.contains_costumer(costumer_rmv)]
+        for v in vehicles:
+            v.remove_costumer(costumer_rmv)
