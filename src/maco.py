@@ -137,13 +137,14 @@ def build_solutions(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_itera
         s = Solution(timetables, days)
         vehicles_timetable = copy.deepcopy(vehicles)
         costumers_timetable = copy.deepcopy(costumers[1:])
+        depot = costumers[0]
         for h in timetables:
             for d in range(days):
-                depot = costumers[0]
                 ant = Ant(depot, n_costumers, min_pheromone, max_pheromone)
                 ant.build_solution(delta_ant_matrix, pheromone_matrix, d, h, alpha, beta, gamma, delta, Q, costumers_timetable, vehicles_timetable, q0)
                 s.add_ant_timetable_day(ant, h)
         s.add_assigment_vehicles(vehicles_timetable, costumers_timetable)
+        s.depot = depot
         s.get_fitness()
         s.is_feasible()
         P.append(s)
