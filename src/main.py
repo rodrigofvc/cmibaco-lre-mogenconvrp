@@ -12,6 +12,7 @@ import matplotlib.patches as mpatches
 import random
 import json
 import sys
+from ibaco import ibaco_lns
 
 def save_result(dataset, path):
     if '.txt' in dataset:
@@ -179,7 +180,8 @@ def exec_maco(params):
     print (f'>>>>>>>>>>>>>>>> Results for {dataset} in results/{dataset}')
     #local_optimal_net(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy)
     #A, log_hypervolume, duration = maco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy)
-    A, log_hypervolume, duration = ibaco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy)
+    #A, log_hypervolume, duration = ibaco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy)
+    A, log_hypervolume, duration = ibaco_lns(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy)
     plot_best_objective(A, dataset, 0)
     plot_best_objective(A, dataset, 1)
     plot_best_objective(A, dataset, 2)

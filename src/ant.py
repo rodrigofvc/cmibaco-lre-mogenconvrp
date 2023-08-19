@@ -64,10 +64,14 @@ class Ant:
 
 
     def get_next_costumer(self, remaining_costumers, current_costumer, alpha, beta, gamma, delta, Q, current_vehicle, pheromone_matrix, day, timetable, vehicles, q0, current_time):
+        if remaining_costumers[0].timetable == 0:
+            limit = current_vehicle.limit_time/2
+        else:
+            limit = current_vehicle.limit_time
         if len(remaining_costumers) == 0:
             raise('no remaining costumers to check')
         # check if current_vehicle its on time to arrive at each costumer (including to return depot)
-        remaining_costumers_ = [c for c in remaining_costumers if current_time + current_costumer.distance_to(c) + c.service_times[day] + c.distance_to(self.nest) <= current_vehicle.limit_time]
+        remaining_costumers_ = [c for c in remaining_costumers if current_time + current_costumer.distance_to(c) + c.service_times[day] + c.distance_to(self.nest) <= limit]
         if len(remaining_costumers_) == 0:
             return None
         if len(remaining_costumers_) == 1:
@@ -128,7 +132,7 @@ class Ant:
             default_time = 0
         else:
             # T
-            default_time = current_vehicle.limit_time//2
+            default_time = current_vehicle.limit_time/2
         current_time = default_time
         while len(costumers_attended) != len(costumers_day):
             remaining_costumers = self.get_remaining_costumers(costumers_day, costumers_attended)

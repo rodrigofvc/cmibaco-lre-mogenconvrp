@@ -3,6 +3,7 @@ from maco import build_solutions
 from maco import initialize_multiple_matrix
 from maco import archive_update_pqedy
 from pymoo.indicators.hv import HV
+from lns import lns_search
 
 import time
 import copy
@@ -182,3 +183,65 @@ def repeated(iter, population):
             if ind.id != pop.id and (ind.f_i == pop.f_i).all():
                 return True
     return False
+
+
+def ibaco_lns(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy):
+    A = []
+    k = 10e6
+    log_hypervolume = []
+    ref_point = np.array([8000, 1000, len(vehicles)])
+    ind = HV(ref_point=ref_point)
+    n_costumers = len(costumers)
+    pheromone_matrix = initialize_multiple_matrix(days, n_costumers, True)
+    delta_ant_matrix = initialize_multiple_matrix(days, n_costumers, False)
+    start = time.time()
+    for i in range(max_iterations):
+        current_population = build_solutions(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy, pheromone_matrix, delta_ant_matrix)
+        current_population = lns_search(current_population)
+
+
+        n = len(current_population)
+        current_population = wrap_ibaco(current_population)
+
+        crossover_mutation = crossover_stage(current_population)
+        mutation_stage(crossover_mutation, p_mut)
+
+        current_population += crossover_mutation
+
+        solutions_accepted = [c.solution for c in current_population]
+        A, solutions_added = archive_update_pqedy(A, solutions_accepted, epsilon, dy)
+
+        while len(current_population) > n:
+            fitness_asigment(current_population, k, i)
+            minimum = [(c.fitness, c) for c in current_population]
+            minimum.sort(key=lambda x:x[0])
+            minimum = minimum[0]
+            current_population.remove(minimum[1])
+            if len(current_population) % 50 == 0:
+                print (f'iteration {i} - {len(current_population)} / {n}')
+        for s in current_population:
+            print (s.f_i)
+
+        update_pheromone_indicator(pheromone_matrix, current_population, rho, Q, timetables, days)
+        #global_update_pheromone(pheromone_matrix, solutions_accepted, rho, Q, timetables, days)
+        print (f'>> Non dominated {i} | Added: {len(solutions_added)}')
+        for a in A:
+            print ((a.f_1, a.f_2, a.f_3))
+        hyp = [(s.f_1, s.f_2, s.f_3) for s in A]
+        hyp = np.array(hyp)
+        hyp = ind(hyp)
+        log_hypervolume.append(hyp)
+        print (f'Hypervolume: {hyp}')
+    duration = time.time() - start
+    l = [a.f_1 for a in A]
+    min_time_tour = min(l)
+    max_time_tour = max(l)
+    l1 = [a.f_2 for a in A]
+    min_arrival_time = min(l1)
+    max_arrival_time = max(l1)
+    l2 = [a.f_3 for a in A]
+    min_vehicle = min(l2)
+    max_vehicle = max(l2)
+    print (f'>>>> min time_tour {min_time_tour}, min arrival {min_arrival_time}, min vehicle {min_vehicle} - max time_tour {max_time_tour}, max arrival {max_arrival_time}, max vehicle {max_vehicle}')
+
+    return A, log_hypervolume, duration
