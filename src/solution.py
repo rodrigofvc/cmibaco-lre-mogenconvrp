@@ -8,6 +8,7 @@ class Solution:
         self.timetables = timetables
         self.assigments_vehicles = None
         self.assigments_costumers = None
+        self.depot = None
         self.ants = {'AM': [], 'PM': []}
         self.f_1 = None
         self.f_2 = None
@@ -114,10 +115,12 @@ class Solution:
         solution_1 = Solution(self.timetables, self.days)
         solution_1.add_assigment_vehicles(vehicles_child_1, costumers_child_1)
         solution_1.ants = ants_child_1
+        solution_1.depot = self.depot
 
         solution_2 = Solution(self.timetables, self.days)
         solution_2.add_assigment_vehicles(vehicles_child_2, costumers_child_2)
         solution_2.ants = ants_child_2
+        solution_2.depot = self.depot
 
         solution_1.get_fitness()
         solution_2.get_fitness()
@@ -163,6 +166,10 @@ class Solution:
                     depot = vector_rep[0]
                     i = 0
                     vector_rep = [c for c in vector_rep if c.id != 0]
+                    if vector_rep[0].timetable == 0:
+                        limit_time = self.assigments_vehicles[0].limit_time/2
+                    else:
+                        limit_time = self.assigments_vehicles[0].limit_time
                     for i_vehicle, vehicle in enumerate(self.assigments_vehicles):
                         vehicle.times_tour[timetable][day] = 0
                         vehicle.loads[timetable][day] = 0
@@ -178,7 +185,7 @@ class Solution:
                             vehicle.return_depot(timetable, day)
                             break
                         current_cos = vector_rep[i]
-                        while current_time + vehicle.tour[timetable][day][-1].distance_to(current_cos) + current_cos.service_times[day] + current_cos.distance_to(vehicle.tour[timetable][day][0]) <= vehicle.limit_time and vehicle.get_total_load_day(day) + current_cos.demands[day] <= vehicle.capacity:
+                        while current_time + vehicle.tour[timetable][day][-1].distance_to(current_cos) + current_cos.service_times[day] + current_cos.distance_to(vehicle.tour[timetable][day][0]) <= limit_time and vehicle.get_total_load_day(day) + current_cos.demands[day] <= vehicle.capacity:
                             #print (f'adding {current_cos.id} / {vehicle.loads[day]} {vehicle.capacity} - {current_cos.demands[day]}')
                             before_costumer = vehicle.tour[timetable][day][-1]
                             self.ants[timetable][day].global_update[before_costumer.id][current_cos.id] = 1
@@ -349,3 +356,66 @@ class Solution:
         vehicles = [v for v in self.assigments_vehicles if v.contains_costumer(costumer_rmv)]
         for v in vehicles:
             v.remove_costumer(costumer_rmv)
+
+    # For LNS
+    def get_cheapest_time_day_add(self, day, costumer):
+        timetable = costumer.timetable
+        if timetable == 0:
+            timetable = 'AM'
+        else:
+            timetable = 'PM'
+        cheapest_time = float('inf')
+        cheapest_vehicle = None
+        cheapest_position = -1
+        for v in self.assigments_vehicles:
+            if day in v.tour[timetable].keys() and costumer.demands[day] + v.loads[timetable][day] <= v.capacity:
+                position, time_visit_costumer = v.can_visit_costumer_greedy(timetable, day, costumer)
+                if position != -1 and time_visit_costumer < cheapest_time:
+                    cheapest_time = time_visit_costumer
+                    cheapest_vehicle = v
+                    cheapest_position = position
+        return cheapest_time, cheapest_vehicle, cheapest_position
+    # For LNS
+    def add_costumer_new_vehicle(self, day, costumer):
+        timetable = costumer.timetable
+        if timetable == 0:
+            timetable = 'AM'
+        else:
+            timetable = 'PM'
+        for v in self.assigments_vehicles:
+            if v.loads[timetable][day] == 0:
+                v.set_tour_day(timetable, day, [self.depot])
+                v.add_costumer_tour_day(timetable, day, costumer)
+                v.return_depot(timetable, day)
+                break
+
+    # For LNS
+    def get_tour_costumer_day(self, j, day):
+        if j.timetable == 0:
+            timetable = 'AM'
+        else:
+            timetable = 'PM'
+        vehicles_day = [v for v in self.assigments_vehicles if day in v.tour[timetable].keys()]
+        for v in vehicles_day:
+            if j in v.tour[timetable][day]:
+                return v.tour[timetable][day]
+
+    # For LNS
+    def apply_pf(self, day, costumer, max_pf):
+        if costumer.timetable == 0:
+            timetable = 'AM'
+        else:
+            timetable = 'PM'
+        vehicle = [v for v in self.assigments_vehicles if day in v.tour[timetable].keys() and costumer in v.tour[timetable][day]]
+        vehicle = vehicle[0]
+        vehicle.push_tour(timetable, day, max_pf)
+
+    # For LNS
+    def apply_pb(self, day, max_costumer, max_pb):
+        if costumer.timetable == 0:
+            timetable = 'AM'
+        else:
+            timetable = 'PM'
+        vehicle = [v for v in self.assigments_vehicles if day in v.tour[timetable].keys() and costumer in v.tour[timetable][day]]
+        vehicle = vehicle[0]
+        vehicle.push_tour(timetable, day, max_pb)
