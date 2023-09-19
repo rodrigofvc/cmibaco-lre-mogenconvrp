@@ -1,3 +1,5 @@
+from shapely.geometry import LineString
+
 class Vehicle():
 
     def __init__(self, id, capacity, days, limit_time):
@@ -74,6 +76,18 @@ class Vehicle():
         for timetable in self.loads:
             total_load += self.loads[timetable][day]
         return total_load
+
+    def contains_costumer_day(self, costumer, day):
+        timetable = costumer.timetable
+        if timetable == 0:
+            timetable = 'AM'
+        else:
+            timetable = 'PM'
+        if day not in self.tour[timetable].keys():
+            return False
+        if costumer in self.tour[timetable][day]:
+            return True
+        return False
 
     # For LNS
     def contains_costumer(self, costumer):
@@ -207,6 +221,94 @@ class Vehicle():
                 continue
             c.arrival_times[day] += max_pf
 
+    def can_push_front(self, timetable, day, max_pf):
+        depot = self.tour[timetable][day][0]
+        first = self.tour[timetable][day][1]
+        last = self.tour[timetable][day][-1]
+        if timetable == 'AM':
+            limit = self.limit_time/2
+        else:
+            limit = self.limit_time
+        if max_pf < 0:
+            return False
+        if last.arrival_times[day] + last.service_times[day] + last.distance_to(depot) + max_pf > limit:
+            return False
+        return True
+
+    def can_push_back(self, timetable, day, max_pb):
+        depot = self.tour[timetable][day][0]
+        first = self.tour[timetable][day][1]
+        last = self.tour[timetable][day][-1]
+        if timetable == 'AM':
+            limit = self.limit_time / 2
+        else:
+            limit = self.limit_time
+        if max_pb > 0:
+            # push back is negative
+            return False
+        if first.arrival_times[day] + max_pb < depot.distance_to(first):
+            return False
+        return True
+
+    # For LNS
+    def apply_2_opt(self, costumer, day):
+        if costumer.timetable == 0:
+            timetable = 'AM'
+        else:
+            timetable = 'PM'
+        tour = self.tour[timetable][day]
+        n = len(tour)
+        lines = []
+        for i in range(1, n):
+            j = i + 1
+            if j != n:
+                c1 = tour[i]
+                c2 = tour[j]
+                lines.append((c1, c2))
+        tuples = [(t1, t2) for t1 in lines for t2 in lines if t1[0] not in t2 and t1[1] not in t2 and self.intersects_route(t1, t2)]
+        if len(tuples) > 0:
+            paths = tuples[0]
+            self.swap_tour(timetable, day, paths)
+            self.adjust_times(timetable, day)
+        ids = [c.id for c in self.tour[timetable][day]]
+        return ids
+
+    def swap_tour(self, timetable, day, paths):
+        costumer_1 = paths[0][0]
+        costumer_2 = paths[0][1]
+        costumer_3 = paths[1][0]
+        costumer_4 = paths[1][1]
+        n = len(self.tour[timetable][day])
+        i_1 = self.tour[timetable][day].index(costumer_1)
+        i_2 = self.tour[timetable][day].index(costumer_2)
+        i_3 = self.tour[timetable][day].index(costumer_3)
+        i_4 = self.tour[timetable][day].index(costumer_4)
+        indexes_c = [i_1, i_2, i_3, i_4]
+        indexes_c = sorted(indexes_c)
+        i_1 = indexes_c[0]
+        i_2 = indexes_c[1]
+        i_3 = indexes_c[2]
+        i_4 = indexes_c[3]
+
+        subtour_1 = self.tour[timetable][day][:i_2]
+        subtour_2 = self.tour[timetable][day][i_2:i_3+1]
+        subtour_2.reverse()
+        subtour_4 = self.tour[timetable][day][i_4:]
+        self.tour[timetable][day] = subtour_1 + subtour_2 + subtour_4
+        m = len(self.tour[timetable][day])
+        if n != m:
+            print(n, m)
+            raise('size mismatch after swap')
+
+
+    def intersects_route(self, route_1, route_2):
+        costumer_1 = route_1[0]
+        costumer_2 = route_1[1]
+        costumer_3 = route_2[0]
+        costumer_4 = route_2[1]
+        line_1 = LineString([(costumer_1.x, costumer_1.y), (costumer_2.x, costumer_2.y)])
+        line_2 = LineString([(costumer_3.x, costumer_3.y), (costumer_4.x, costumer_4.y)])
+        return line_1.intersects(line_2)
 
     def __eq__(self, other):
         if isinstance(other, Vehicle):

@@ -3,7 +3,11 @@ from ant import Ant
 import copy
 
 class Solution:
+    counter_id = 0
     def __init__(self, timetables, days):
+        Solution.counter_id += 1
+        self.id = Solution.counter_id
+        self.algorithm = None
         self.days = days
         self.timetables = timetables
         self.assigments_vehicles = None
@@ -288,7 +292,7 @@ class Solution:
         if (self.f_1 + epsilon[0]) == y.f_1 and (self.f_2 + epsilon[1]) == y.f_2 and (self.f_3 + epsilon[2]) == y.f_3:
             return False
         # F(X) + e <= F(Y)
-        if self.f_1 + epsilon[0] <= y.f_1 and self.f_2 + epsilon[1] <= y.f_2 and self.f_3 + epsilon[3] <= y.f_3:
+        if self.f_1 + epsilon[0] <= y.f_1 and self.f_2 + epsilon[1] <= y.f_2 and self.f_3 + epsilon[2] <= y.f_3:
             return True
         return False
 
@@ -311,6 +315,7 @@ class Solution:
             for day in days_service:
                 vehicles_visit_day = [v for v in vehicles if day in v.tour[t].keys() and c in v.tour[t][day]]
                 if len(vehicles_visit_day) == 0:
+                    print (c)
                     raise('costumer not visited')
                 if len(vehicles_visit_day) > 1:
                     raise('costumer visited twice')
@@ -400,6 +405,19 @@ class Solution:
             if j in v.tour[timetable][day]:
                 return v.tour[timetable][day]
 
+    def can_push_front(self, day, costumer, pf):
+        timetable = 'AM' if costumer.timetable == 0 else 'PM'
+        vehicle = [v for v in self.assigments_vehicles if day in v.tour[timetable].keys() and costumer in v.tour[timetable][day]]
+        vehicle = vehicle[0]
+        return vehicle.can_push_front(timetable, day, pf)
+
+    def can_push_back(self, day, costumer, pb):
+        timetable = 'AM' if costumer.timetable == 0 else 'PM'
+        vehicle = [v for v in self.assigments_vehicles if day in v.tour[timetable].keys() and costumer in v.tour[timetable][day]]
+        vehicle = vehicle[0]
+        return vehicle.can_push_back(timetable, day, pb)
+
+
     # For LNS
     def apply_pf(self, day, costumer, max_pf):
         if costumer.timetable == 0:
@@ -409,13 +427,33 @@ class Solution:
         vehicle = [v for v in self.assigments_vehicles if day in v.tour[timetable].keys() and costumer in v.tour[timetable][day]]
         vehicle = vehicle[0]
         vehicle.push_tour(timetable, day, max_pf)
+        self.get_fitness()
 
     # For LNS
     def apply_pb(self, day, max_costumer, max_pb):
+        if max_costumer.timetable == 0:
+            timetable = 'AM'
+        else:
+            timetable = 'PM'
+        vehicle = [v for v in self.assigments_vehicles if day in v.tour[timetable].keys() and max_costumer in v.tour[timetable][day]]
+        vehicle = vehicle[0]
+        vehicle.push_tour(timetable, day, max_pb)
+        self.get_fitness()
+
+    # For LNS
+    def apply_2_opt(self, costumer, day):
+        vehicle = [v for v in self.assigments_vehicles if v.contains_costumer_day(costumer, day)]
+        vehicle = vehicle[0]
+        new_tour = vehicle.apply_2_opt(costumer, day)
         if costumer.timetable == 0:
             timetable = 'AM'
         else:
             timetable = 'PM'
-        vehicle = [v for v in self.assigments_vehicles if day in v.tour[timetable].keys() and costumer in v.tour[timetable][day]]
-        vehicle = vehicle[0]
-        vehicle.push_tour(timetable, day, max_pb)
+        new_matriz = np.zeros(self.ants[timetable][day].global_update.shape)
+        for i in new_tour:
+            for j in new_tour:
+                new_matriz[i][j] = 1
+        new_matriz[0][new_tour[-1]] = 1
+        new_matriz[new_tour[-1]][0] = 1
+        self.ants[timetable][day].global_update = new_matriz
+        self.get_fitness()

@@ -70,6 +70,14 @@ class Costumer(object):
         day = self.arrival_times.index(earliest)
         return day
 
+    def get_earliest_at(self):
+        earliest = min([s for s in self.arrival_times if s > -1])
+        return earliest
+
+    def get_latest_at(self):
+        latest = max([s for s in self.arrival_times if s > -1])
+        return latest
+
     def get_day_second_earliest_at(self):
         earliest = [s for s in self.arrival_times if s > -1]
         earliest = sorted(earliest)
@@ -83,6 +91,11 @@ class Costumer(object):
         latest = max([s for s in self.arrival_times if s > -1])
         day = self.arrival_times.index(latest)
         return day
+
+    def get_average_at(self):
+        times = [t for t in self.arrival_times if t > - 1]
+        avg = sum(times) / len(times)
+        return avg
 
     def __eq__(self, other):
         if isinstance(other, Costumer):
