@@ -5,7 +5,6 @@ def read_dataset(dataset_dir):
     f = open(dataset_dir, 'r')
     lines = f.readlines()
     f.close()
-    #print (lines)
 
     NUM_DAYS = 4
     CAPACITY = 5
