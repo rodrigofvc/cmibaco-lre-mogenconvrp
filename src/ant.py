@@ -1,3 +1,4 @@
+
 import numpy as np
 import math
 from random import shuffle
@@ -41,8 +42,8 @@ class Ant:
     def get_probabilities_from_costumer(self, current_costumer, remaining_costumers, pheromone_matrix, day, timetable, alpha, beta, gamma, delta, Q, current_vehicle, vehicles, explotation):
         probabilities = []
         pheromone_matrix_day_h = pheromone_matrix[timetable][day]
+        i = current_costumer.id
         for remaining_costumer in remaining_costumers:
-            i = current_costumer.id
             j = remaining_costumer.id
             if i == j:
                 raise()
@@ -53,13 +54,14 @@ class Ant:
             phi_j = self.get_phi_j(remaining_costumer, current_vehicle, vehicles)
             prob_ij = math.pow(pheromone_dh_ij, alpha) * math.pow(eta_ij, beta) * math.pow(psi_ij, gamma) * math.pow(phi_j, delta)
             probabilities.append(prob_ij)
+        total = sum(probabilities)
+        probabilities = [p/total for p in probabilities]
         if explotation:
             argmax = np.argmax(probabilities)
             probabilities = [0] * len(probabilities)
             probabilities[argmax] = 1
             return probabilities
-        total = sum(probabilities)
-        probabilities = [p/total for p in probabilities]
+        #print (f'>>>>>>>>>>> H: {timetable} D: {day} PROBS: {probabilities} exp: {explotation} logits {logits}')
         return probabilities
 
 
@@ -76,6 +78,13 @@ class Ant:
             return None
         if len(remaining_costumers_) == 1:
             return remaining_costumers_[0]
+        # stop vehicle early with a given probability
+        p = np.random.rand()
+        base = 0 if limit == current_vehicle.limit_time/2 else 500
+        p_l = (current_time - base) / (limit - base)
+        #print(f'prob {p_l} -  time {current_time} base {base} limit {limit}')
+        if p <= p_l and len(current_vehicle.tour[timetable][day]) > 2:
+            return None
         q = np.random.rand()
         explotation = False
         if q <= q0:
@@ -94,7 +103,7 @@ class Ant:
         costumers = [c for c in costumers_dh if c.demands[day] > 0 and c.id != 0 and c.timetable == t]
         return costumers
 
-        #TODO
+
     def update_delta_matrix_global(self, current_vehicle, day, timetable, Q):
         time_tour = current_vehicle.times_tour[day]
         dif_ve = [c.get_max_vehicle_difference() for c in current_vehicle.tour[day] if c.id != 0 and not current_vehicle.id in c.vehicles_visit[:day]] + [1]
@@ -131,7 +140,6 @@ class Ant:
         if timetable == 'AM':
             default_time = 0
         else:
-            # T
             default_time = current_vehicle.limit_time/2
         current_time = default_time
         while len(costumers_attended) != len(costumers_day):
@@ -155,7 +163,7 @@ class Ant:
                 next_costumer = self.get_next_costumer(remaining_costumers, current_costumer, alpha, beta, gamma, delta, Q, current_vehicle, pheromone_matrix, day, timetable, vehicles, q0, current_time)
 
             if current_costumer == next_costumer:
-                raise('cannot repite costumers')
+                raise('cannot repeat costumers')
 
             if current_vehicle.loads[timetable][day] + next_costumer.demands[day] <= current_vehicle.capacity:
                 current_time = current_vehicle.add_costumer_tour_day(timetable, day, next_costumer)
@@ -169,10 +177,10 @@ class Ant:
                 if len(current_vehicle.tour[timetable][day]) <= 1:
                     raise('cannot add a new costumer')
                 current_vehicle.return_depot(timetable, day)
-                self.arcs_visited[next_costumer.id][0] = 1
-                self.arcs_visited[0][next_costumer.id] = 1
-                self.global_update[next_costumer.id][0] = 1
-                self.global_update[0][next_costumer.id] = 1
+                self.arcs_visited[current_costumer.id][0] = 1
+                self.arcs_visited[0][current_costumer.id] = 1
+                self.global_update[current_costumer.id][0] = 1
+                self.global_update[0][current_costumer.id] = 1
                 self.update_delta_matrix(delta_ant_matrix, current_vehicle, day, timetable, Q)
                 current_time = default_time
                 tour = [self.nest]
@@ -180,7 +188,6 @@ class Ant:
                 i += 1
                 current_vehicle = vehicles[i]
                 current_vehicle.set_tour_day(timetable, day, tour)
-            #print (f'{len(costumers_attended)} / {len(costumers_dh)}')
         # last vehicle used return to depot
         current_vehicle.return_depot(timetable, day)
         self.arcs_visited[next_costumer.id][0] = 1

@@ -1,10 +1,19 @@
 from ant import Ant
 from solution import Solution
 import numpy as np
-import random
 import copy
 import time
 from pymoo.indicators.hv import HV
+
+
+def initialize_multiple_matrix_rand(days, n_costumers):
+    matrices = {'AM': [], 'PM': []}
+    for d in range(days):
+        m = np.random.rand(n_costumers, n_costumers)
+        m_ = np.random.rand(n_costumers, n_costumers)
+        matrices['AM'].append(m)
+        matrices['PM'].append(m_)
+    return matrices
 
 def initialize_multiple_matrix(days, n_costumers, ones):
     matrices = {'AM': [], 'PM': []}
@@ -37,7 +46,9 @@ def get_costumers_day_timetable(costumers, timetable_day):
 
 # True if x and y distance is less equal delta
 def distance_hausforff_delta(x, y, delta):
-    diff = [abs(x.get_fitness()[i] - y.get_fitness()[i]) for i in range(len(delta))]
+    x_f_i = [x.f_1, x.f_2, x.f_3]
+    y_f_i = [y.f_1, y.f_2, y.f_3]
+    diff = [abs(x_f_i[i] - y_f_i[i]) for i in range(len(delta))]
     if diff[0] <= delta[0] and diff[1] <= delta[1] and diff[2] <= delta[2]:
         return True
     return False
@@ -45,17 +56,19 @@ def distance_hausforff_delta(x, y, delta):
 def archive_update_pqedy(A, P, epsilon, delta):
     added = []
     for p in P:
-        a_dominated_p = [a for a in A if a.epsilon_dominates(p, epsilon)]
-        a_dominated_p += [a for a in A if distance_hausforff_delta(a, p, delta)]
+        a_dominated_p = [a for a in A if a.solution.epsilon_dominates(p.solution, epsilon)]
+        a_dominated_p += [a for a in A if distance_hausforff_delta(a.solution, p.solution, delta)]
         if len(a_dominated_p) == 0:
             A.append(p)
             added.append(p)
 
-    for a in A[:]:
-        p_dominated_a = [p for p in added if p.epsilon_dominates(a, epsilon)]
-        if len(p_dominated_a) != 0:
+    for q in added:
+        q_dominated_a = [a for a in A if q.solution.epsilon_dominates(a.solution, epsilon)]
+        for a in q_dominated_a:
             A.remove(a)
-            added.remove(a)
+            if a in added:
+                added.remove(a)
+
     return A, added
 
 def non_dominated(A, P):
@@ -87,7 +100,6 @@ def get_pheromone_delta_d_h(n, solutions_accepted, timetable, day, Q):
             delta_d_h += ant.update_delta_matrix_global(vehicle, day, timetable, Q)
     return delta_d_h
 
-#TODO
 def global_update_pheromone(pheromone_matrix, solutions_accepted, rho, Q, timetables, days):
     for timetable in timetables:
         for d in range(days):
@@ -97,7 +109,22 @@ def global_update_pheromone(pheromone_matrix, solutions_accepted, rho, Q, timeta
             pheromone_matrix[timetable][d] += delta_d_h
 
 
-def build_solutions(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy, pheromone_matrix, delta_ant_matrix):
+def build_solutions(params, pheromone_matrix):
+    costumers = params['costumers']
+    days = params['days']
+    vehicles = params['vehicles']
+    min_pheromone = params['min_pheromone']
+    max_pheromone = params['max_pheromone']
+    n_costumers = len(costumers)
+    delta_ant_matrix = initialize_multiple_matrix(days, n_costumers, False)
+    n_groups = params['n_ants']
+    alpha = params['alpha']
+    beta = params['beta']
+    gamma = params['gamma']
+    delta = params['delta']
+    Q = params['Q']
+    q0 = params['q0']
+    timetables = ['AM', 'PM']
     P = []
     n_costumers = len(costumers)
     for k in range(n_groups):
