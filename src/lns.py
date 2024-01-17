@@ -1,8 +1,9 @@
 import copy
 import math
 import random
+import threading
 import time
-
+import queue
 import numpy as np
 from pymoo.indicators.hv import HV
 
@@ -140,16 +141,16 @@ class LNSolution():
     def apply_pb(self, max_costumer, max_pb, bc):
         day = max_costumer.get_day_latest_at()
         max_pb *= -1
-        past_diff = self.solution.get_max_difference_arrive()
+        #past_diff = self.solution.get_max_difference_arrive()
         self.solution.apply_pb(day, max_costumer, max_pb)
-        new_diff = self.solution.get_max_difference_arrive()
+        #new_diff = self.solution.get_max_difference_arrive()
         #print(f'<<<<<< PUSH BACK past_arrive {past_diff} new arrive {new_diff} {self.solution.f_2}')
 
     def apply_pf(self, max_costumer, max_pf, bc):
         day = max_costumer.get_day_earliest_at()
-        past_diff = self.solution.get_max_difference_arrive()
+        #past_diff = self.solution.get_max_difference_arrive()
         self.solution.apply_pf(day, max_costumer, max_pf)
-        new_diff = self.solution.get_max_difference_arrive()
+        #new_diff = self.solution.get_max_difference_arrive()
         #print(f'!!!!!! PUSH FRONT past_arrive {past_diff} new arrive {new_diff} {self.solution.f_2} {max_pf} {max_costumer.id}')
 
 
@@ -205,21 +206,21 @@ class LNSolution():
                 d = i.get_day_latest_at()
             self.solution.apply_2_opt(i, d)
             new_f = self.get_f_i(delta, ub_1, ub_2)
-            self.solution.is_feasible()
+            #self.solution.is_feasible()
             attempts -= 1
 
     def get_f_i(self, delta, ub_1, ub_2):
         alpha_1 = 1 / (1 + delta/ub_2)
-        alpha_2 = 1 / (1 + ub_1/delta)
-        alpha_3 = (alpha_1 + alpha_2)/2
+        alpha_3 = 1 / (1 + ub_1/delta)
+        alpha_2 = (alpha_1 + alpha_3)/2
         if self.if_i == 0:
-            f_avg = alpha_1 * self.solution.f_1 + (1-alpha_1) * self.solution.f_2
+            f_avg = alpha_1 * self.solution.f_1 + (1 - alpha_1) * self.solution.f_3
             return f_avg
         elif self.if_i == 1:
-            f_avg = alpha_2 * self.solution.f_1 + (1 - alpha_2) * self.solution.f_2
+            f_avg = alpha_2 * self.solution.f_1 + (1 - alpha_2) * self.solution.f_3
             return f_avg
         else:
-            f_avg = alpha_3 * self.solution.f_1 + (1 - alpha_3) * self.solution.f_2
+            f_avg = alpha_3 * self.solution.f_1 + (1 - alpha_3) * self.solution.f_3
             return f_avg
 
 def wrap_solutions(population, index_f_i):
@@ -265,24 +266,83 @@ def external_mdls(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterati
     return A, log_hypervolume, duration, statistics
 
 def mdls(current_population, params):
-    new_solutions = current_population
-    for index_f_i in range(3):
-        new_solutions = lns_search(new_solutions, index_f_i, params)
-        #print (f'ITERATION ::::::::: {index_f_i}')
+    new_solutions = []
+    for i, s in enumerate(current_population):
+        #print (f'LNS {i}')
+        current = s
+        for f_i in range(3):
+            wrapper_solution = wrap_solutions([current], f_i)
+            lns_s = lns(wrapper_solution[0], params)
+            current = lns_s.solution
+        new_solutions.append(current)
+    return new_solutions
+
+
+def exec_lns_thread(params, s, new_solutions):
+    current = s
+    for f_i in range(3):
+        wrapper_solution = wrap_solutions([current], f_i)
+        lns_s = lns(wrapper_solution[0], params)
+        current = lns_s.solution
+    new_solutions.put(current)
+
+def parallel_mdls(current_population, params):
+    new_solutions = queue.Queue()
+    threads = []
+    for s in current_population:
+        thread_i = threading.Thread(target=exec_lns_thread, args=(params, s, new_solutions))
+        threads.append(thread_i)
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    new_solutions = list(new_solutions.queue)
     return new_solutions
 
 def lns_search(current_population, index_f_i, params):
     solutions = wrap_solutions(current_population, index_f_i)
     new_solutions = []
     for j, s in enumerate(solutions):
-        #print(f'lns for {s.solution.f_1, s.solution.f_2, s.solution.f_3} f_i {index_f_i}')
-        #print(f'++++++++++++++++++++++++++++++++++++++ LNS {j}/{len(solutions)}')
         lns_s = lns(s, params)
         new_solutions.append(lns_s)
-        #print (f'{s.solution.f_1} {s.solution.f_2} {s.solution.f_3}')
     return unwrap_solutions(new_solutions)
 
 def lns(s, params):
+    current = s
+    best = s
+    max_iterations = params['max_iterations']
+    n_removes = params['n_removes']
+    eta = params['eta']
+    delta = params['delta']
+    ub_1 = params['ub_1']
+    ub_2 = params['ub_2']
+    for t in range(max_iterations):
+        s_lns = copy.deepcopy(current)
+        costumers_to_add = s_lns.destroy_operator(n_removes)
+        s_lns.repair_operator(costumers_to_add, eta)
+        s_lns.solution.get_fitness()
+        s_lns.improve_time_consistency(delta, ub_1, ub_2)
+        s_lns.adjust_departure_times()
+        s_lns.solution.get_fitness()
+        #current_f_i = np.array([current.solution.f_1, current.solution.f_2, current.solution.f_3])
+        #s_lns_f_i = np.array([s_lns.solution.f_1, s_lns.solution.f_2, s_lns.solution.f_3])
+        #best_f_i = np.array([best.solution.f_1, best.solution.f_2, best.solution.f_3])
+        #print (f'LNS {t}/{max_iterations} current {current_f_i}: {current.get_f_i(delta, ub_1, ub_2):.4f} generated {s_lns_f_i}: {s_lns.get_f_i(delta, ub_1, ub_2):.4f} best {best_f_i}: {best.get_f_i(delta, ub_1, ub_2):.4f}')
+        if s_lns.get_f_i(delta, ub_1, ub_2) < current.get_f_i(delta, ub_1, ub_2):
+            s_lns.solution.build_paths_ants()
+            current = s_lns
+        if s_lns.get_f_i(delta, ub_1, ub_2) < best.get_f_i(delta, ub_1, ub_2):
+            best = s_lns
+    #s_f_i = np.array([s.solution.f_1, s.solution.f_2, s.solution.f_3])
+    #hv_s = ind(s_f_i)
+    #hv_best = ind(best_f_i)
+    #print (f'initial {s_f_i} : {s.get_f_i(delta, ub_1, ub_2)} | best {best_f_i} : {best.get_f_i(delta, ub_1, ub_2)}')
+    #print (f'initial {hv_s} ---- best {hv_best}')
+    #print ('-------------------------------- ')
+    return best
+
+
+def lns_sa(s, params):
     initial = s
     current = s
     best = s
@@ -303,7 +363,7 @@ def lns(s, params):
         #print (f'B {t}-{max_iterations}')
         s_lns.repair_operator(costumers_to_add, eta)
         #print (f'C {t}-{max_iterations}')
-        s_lns.solution.is_feasible()
+        #s_lns.solution.is_feasible()
         #print (f'D {t}-{max_iterations}')
         s_lns.solution.get_fitness()
         #print (f'E {t}-{max_iterations}')
