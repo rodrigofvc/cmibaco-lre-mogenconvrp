@@ -1,11 +1,24 @@
+import threading
+
 import numpy as np
 from ant import Ant
 import copy
+from threading import Event
+import queue
 
 class Solution:
     counter_id = 0
+    # multi-threading case
+    evaluations = queue.Queue(maxsize=1)
+    evaluations.put(0)
+    evals = 0
+    lock_evaluations = threading.Lock()
+    write_log = Event()
+
     def __init__(self, timetables, days):
+        Solution.lock_evaluations.acquire()
         Solution.counter_id += 1
+        Solution.lock_evaluations.release()
         self.id = Solution.counter_id
         self.algorithm = None
         self.days = days
@@ -128,20 +141,12 @@ class Solution:
 
         solution_1.get_fitness()
         solution_2.get_fitness()
-        solution_1.is_feasible()
-        solution_2.is_feasible()
         childs = [solution_1, solution_2]
         return childs
 
     def mutation(self, prob_mut):
-        other = copy.deepcopy(self)
-        other.mutation_shift(prob_mut)
-        other.f_1 = None
-        other.f_2 = None
-        other.f_3 = None
-        other.get_fitness()
-        other.is_feasible()
-        return other
+        self.mutation_shift(prob_mut)
+        self.get_fitness()
 
     def mutation_shift(self, prob_m):
         for timetable in self.timetables:
@@ -225,8 +230,6 @@ class Solution:
                             raise()
 
 
-
-    # IMPROVE
     def get_total_time(self):
         total_time = 0
         for vehicle in self.assigments_vehicles:
@@ -267,18 +270,22 @@ class Solution:
         return max_driver_diff
 
     def get_fitness(self):
-        if self.f_1 != None:
-            return (self.f_1, self.f_2, self.f_3)
         self.f_1 = self.get_total_time()
-        self.f_2 = self.get_max_difference_arrive()
-        self.f_3 = self.get_max_difference_drivers()
+        self.f_2 = self.get_max_difference_drivers()
+        self.f_3 = self.get_max_difference_arrive()
+        Solution.increase_counter_evals(1)
         return (self.f_1, self.f_2, self.f_3)
+
+    def increase_counter_evals(evals):
+        c = Solution.evaluations.get()
+        c += evals
+        Solution.evaluations.put(c)
+        Solution.write_log.set()
+        Solution.evals += evals
 
     def dominates(self, y):
         # F(X) == F(Y)
-        if abs(self.f_1 - y.f_1) <= 10e-8 and abs(self.f_2 - y.f_2) <= 10e-8 and self.f_3 == y.f_3:
-            return False
-        if self.f_1 == y.f_1 and self.f_2 == y.f_2 and self.f_3 == y.f_3:
+        if abs(self.f_1 - y.f_1) <= 10e-8 and abs(self.f_3 - y.f_3) <= 10e-8 and self.f_2 == y.f_2:
             return False
         # F(X) <= F(Y)
         if self.f_1 <= y.f_1 and self.f_2 <= y.f_2 and self.f_3 <= y.f_3:
@@ -286,17 +293,18 @@ class Solution:
         return False
 
     def epsilon_dominates(self, y, epsilon):
-        # F(X) + e == F(Y)
-        if abs((self.f_1 + epsilon[0]) - y.f_1) <= 10e-8 and abs((self.f_2 + epsilon[1]) - y.f_2) <= 10e-8 and (self.f_3 + epsilon[2]) == y.f_3:
+        # F(X) == F(y)
+        if abs(self.f_1 - y.f_1) <= 10e-8 and abs(self.f_3 - y.f_3) <= 10e-8 and self.f_2 == y.f_2:
             return False
-        if (self.f_1 + epsilon[0]) == y.f_1 and (self.f_2 + epsilon[1]) == y.f_2 and (self.f_3 + epsilon[2]) == y.f_3:
+        # F(X) + e == F(Y)
+        if abs((self.f_1 + epsilon[0]) - y.f_1) <= 10e-8 and abs((self.f_3 + epsilon[2]) - y.f_3) <= 10e-8 and (self.f_2 + epsilon[1]) == y.f_2:
             return False
         # F(X) + e <= F(Y)
-        if self.f_1 + epsilon[0] <= y.f_1 and self.f_2 + epsilon[1] <= y.f_2 and self.f_3 + epsilon[2] <= y.f_3:
+        if self.f_1 + epsilon[0] <= y.f_1 and self.f_3 + epsilon[2] <= y.f_3 and self.f_2 + epsilon[1] <= y.f_2:
             return True
         return False
 
-    # TODO
+
     def is_feasible(self):
         vehicles = self.assigments_vehicles
         for vehicle in vehicles:
@@ -319,6 +327,35 @@ class Solution:
                     raise('costumer not visited')
                 if len(vehicles_visit_day) > 1:
                     raise('costumer visited twice')
+        for h in self.timetables:
+            for d in range(self.days):
+                ant_d_h = self.ants[h][d].global_update
+                v_tours = [v for v in vehicles if d in v.tour[h].keys()]
+                traces = 0
+                for v in v_tours:
+                    tour = [c.id for c in v.tour[h][d]]
+                    tour_len = len(tour)
+                    for i in range(tour_len):
+                        c1 = tour[i]
+                        j = i+1
+                        if j != tour_len:
+                            c2 = tour[j]
+                            traces += 2
+                            if ant_d_h[c1][c2] != 1 and ant_d_h[c2][c1] != 1:
+                                print ('TOURRR _-------')
+                                print (tour)
+                                print(self)
+                                raise()
+                    if tour_len > 2:
+                        traces += 2
+                    if ant_d_h[0][tour[-1]] != 1 or ant_d_h[tour[-1]][0] != 1:
+                        print (tour, ant_d_h[0][tour[-1]], ant_d_h[0][tour[-1]])
+                        raise()
+                ones = ant_d_h[ant_d_h == 1]
+                if len(ones) != traces:
+                    print (len(ones), traces)
+                    raise()
+
         return True
 
     def __eq__(self, other):
@@ -357,7 +394,6 @@ class Solution:
 
     # For LNS
     def remove_costumer(self, costumer_rmv):
-        timetable = costumer_rmv.timetable
         vehicles = [v for v in self.assigments_vehicles if v.contains_costumer(costumer_rmv)]
         for v in vehicles:
             v.remove_costumer(costumer_rmv)
@@ -450,10 +486,35 @@ class Solution:
         else:
             timetable = 'PM'
         new_matriz = np.zeros(self.ants[timetable][day].global_update.shape)
-        for i in new_tour:
-            for j in new_tour:
-                new_matriz[i][j] = 1
+        n = len(new_tour)
+        for i in range(n):
+            c1 = new_tour[i]
+            j = i+1
+            if j != n:
+                c2 = new_tour[j]
+                new_matriz[c1][c2] = 1
+                new_matriz[c2][c1] = 1
         new_matriz[0][new_tour[-1]] = 1
         new_matriz[new_tour[-1]][0] = 1
         self.ants[timetable][day].global_update = new_matriz
         self.get_fitness()
+
+    # For LNS
+    def build_paths_ants(self):
+        for h in self.timetables:
+            for d in range(self.days):
+                ant_d_h = np.zeros_like(self.ants[h][d].global_update)
+                v_tours = [v for v in self.assigments_vehicles if d in v.tour[h].keys()]
+                for v in v_tours:
+                    tour = [c.id for c in v.tour[h][d]]
+                    tour_len = len(tour)
+                    for i in range(tour_len):
+                        c1 = tour[i]
+                        j = i + 1
+                        if j != tour_len:
+                            c2 = tour[j]
+                            ant_d_h[c1][c2] = 1
+                            ant_d_h[c2][c1] = 1
+                    ant_d_h[0][tour[-1]] = 1
+                    ant_d_h[tour[-1]][0] = 1
+                self.ants[h][d].global_update = ant_d_h
