@@ -1,12 +1,11 @@
-import copy
 import os
 
-from costumer import Costumer
 from cibaco import cooperative_ibaco, ibaco_indicator
+from lns import external_mdls
 from maco import initialize_multiple_matrix_rand
 from utils import get_execution_dir, plot_best_objective, plot_archive_3d, plot_archive_2d, \
-    plot_log_hypervolume, plot_log_solutions_added, save_params, save_archive, save_statistics, save_evaluations
-from vehicle import Vehicle
+    plot_log_hypervolume, plot_log_solutions_added, save_params, save_archive, save_statistics, save_evaluations, \
+    save_all_solutions, save_front, plot_front_epsilon_front
 from reader import read_dataset
 from solution import Solution
 import numpy as np
@@ -17,18 +16,8 @@ import sys
 def exec_maco(params, algorithm, n_execution=0):
     dataset = params['file']
     dir = 'dataset/'
-    costumers, capacity, days, limit_time = read_dataset(dir + dataset)
-    depot = Costumer(0,0,0)
-    depot.demands = [0] * days
-    depot.arrival_times = [0] * days
-    depot.vehicles_visit = [-1] * days
-    depot.service_times = [0] * days
+    costumers, vehicles, capacity, days, limit_time = read_dataset(dir + dataset)
     timetables = ['AM', 'PM']
-    costumers.insert(0, depot)
-    vehicles = []
-    for i in range(len(costumers)):
-        vehicle = Vehicle(i, capacity, days, 1000)
-        vehicles.append(vehicle)
 
     params['vehicles'] = vehicles
     params['costumers'] = costumers
@@ -55,7 +44,7 @@ def get_parameters(algorithm):
                   'params-ibaco-17.json', 'params-ibaco-18.json',
                   'params-ibaco-19.json', 'params-ibaco-20.json']
         return params
-    elif algorithm == 'cmibaco':
+    elif algorithm == 'cmibaco' or algorithm == 'cmibaco-lns':
         params = ['params-cmibaco-1.json', 'params-cmibaco-2.json',
                   'params-cmibaco-3.json', 'params-cmibaco-4.json',
                   'params-cmibaco-5.json', 'params-cmibaco-6.json',
@@ -68,7 +57,7 @@ def get_parameters(algorithm):
                   'params-cmibaco-19.json', 'params-cmibaco-20.json']
         return params
 
-def exec_batch(algorithm, params_dir, dataset, times=20):
+def exec_batch(algorithm, params_dir, dataset):
     if os.path.isfile(params_dir):
         f = open(params_dir)
         Solution.evaluations.get()
@@ -124,29 +113,41 @@ def exec_algorithm(algorithm, params, n_execution):
         costumers = params['costumers']
         n_costumers = len(costumers)
         pheromone_matrix = initialize_multiple_matrix_rand(days, n_costumers)
-        A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations = ibaco_indicator(params, pheromone_matrix, indicator, False, n_execution)
+        A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front = ibaco_indicator(params, pheromone_matrix, indicator, False, n_execution)
         A = [a.solution for a in A]
     elif algorithm == 'cmibaco':
-        A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations = cooperative_ibaco(params, n_execution)
+        A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front = cooperative_ibaco(params, n_execution)
         A = [a.solution for a in A]
-    return A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations
+    elif algorithm == 'cmibaco-lns':
+        A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front = cooperative_ibaco(params, n_execution, apply_lns=True)
+        A = [a.solution for a in A]
+    elif algorithm == 'mdlns':
+        log_solutions_added = []
+        log_evaluations = []
+        all_solutions = []
+        A, log_hypervolume, duration, statistics = external_mdls(params)
+    return A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front
 
 
 def exec_file(algorithm, params, file, execution_n=0):
-    A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations = exec_algorithm(algorithm, params, execution_n)
+    A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front = exec_algorithm(algorithm, params, execution_n)
     execution_dir = get_execution_dir(file, algorithm)
     #plot_pheromone_matrices(matrices, file, execution_dir)
     plot_best_objective(A, file, 0, execution_dir)
     plot_best_objective(A, file, 1, execution_dir)
     plot_best_objective(A, file, 2, execution_dir)
     plot_archive_3d(A, file, execution_dir)
+    plot_front_epsilon_front(front, A, all_solutions, file, execution_dir)
     plot_archive_2d(A, file, execution_dir)
     plot_log_hypervolume(log_hypervolume, file, execution_dir)
-    plot_log_solutions_added(log_solutions_added, file, execution_dir)
+    if algorithm != 'mdls':
+        plot_log_solutions_added(log_solutions_added, file, execution_dir)
     save_params(params, execution_dir)
     save_archive(A, execution_dir)
+    save_front(front, execution_dir)
+    save_all_solutions(all_solutions, execution_dir)
     save_statistics(statistics, execution_dir)
-    print (f'>> Non Epsilon dominated for {file} / {execution_n}')
+    print (f'>> Non Epsilon dominated for {file} / {execution_n} / {algorithm}')
     for a in A:
         print ((a.f_1, a.f_2, a.f_3))
     print (f'Elapsed time {duration} seconds')
@@ -159,10 +160,10 @@ def get_fitness_evals(iterations_cmib, iterations_ibaco, n, indicators=1):
 
 
 if __name__ == '__main__':
-    total = get_fitness_evals(100,1, 30, indicators=3)
-    print (f'total CIBACO fitness  {total}')
-    total = get_fitness_evals(1, 100, 90)
-    print (f'total IBACO-I fitness {total}')
+    #total = get_fitness_evals(100,1, 30, indicators=3)
+    #print (f'total CIBACO fitness  {total}')
+    #total = get_fitness_evals(1, 100, 90)
+    #print (f'total IBACO-I fitness {total}')
 
     algorithm = sys.argv[1]
     params = sys.argv[2]
