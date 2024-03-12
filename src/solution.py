@@ -194,7 +194,7 @@ class Solution:
                             vehicle.return_depot(timetable, day)
                             break
                         current_cos = vector_rep[i]
-                        while current_time + vehicle.tour[timetable][day][-1].distance_to(current_cos) + current_cos.service_times[day] + current_cos.distance_to(vehicle.tour[timetable][day][0]) <= limit_time and vehicle.get_total_load_day(day) + current_cos.demands[day] <= vehicle.capacity:
+                        while current_time + vehicle.tour[timetable][day][-1].distance_to(current_cos) + current_cos.service_times[day] + current_cos.distance_to(vehicle.tour[timetable][day][0]) <= limit_time and vehicle.get_load(timetable, day) + current_cos.demands[day] <= vehicle.capacity:
                             #print (f'adding {current_cos.id} / {vehicle.loads[day]} {vehicle.capacity} - {current_cos.demands[day]}')
                             before_costumer = vehicle.tour[timetable][day][-1]
                             self.ants[timetable][day].global_update[before_costumer.id][current_cos.id] = 1
@@ -269,14 +269,16 @@ class Solution:
             max_driver_diff = max(max_driver_diff, costumer.get_max_vehicle_difference())
         return max_driver_diff
 
-    def get_fitness(self):
+    def get_fitness(self, count=True):
         self.f_1 = self.get_total_time()
         self.f_2 = self.get_max_difference_drivers()
         self.f_3 = self.get_max_difference_arrive()
-        Solution.increase_counter_evals(1)
+        Solution.increase_counter_evals(1, count)
         return (self.f_1, self.f_2, self.f_3)
 
-    def increase_counter_evals(evals):
+    def increase_counter_evals(evals, count=True):
+        if not count:
+            return
         c = Solution.evaluations.get()
         c += evals
         Solution.evaluations.put(c)
@@ -386,9 +388,8 @@ class Solution:
                     for chunk in chunks_vector:
                         if len(chunk) == 0:
                             continue
-                        if not chunk in other_vector_str:
+                        if chunk not in chunks_other_vector:
                             return False
-
             return True
         return False
 
@@ -463,7 +464,7 @@ class Solution:
         vehicle = [v for v in self.assigments_vehicles if day in v.tour[timetable].keys() and costumer in v.tour[timetable][day]]
         vehicle = vehicle[0]
         vehicle.push_tour(timetable, day, max_pf)
-        self.get_fitness()
+        self.get_fitness(count=False)
 
     # For LNS
     def apply_pb(self, day, max_costumer, max_pb):
@@ -474,7 +475,7 @@ class Solution:
         vehicle = [v for v in self.assigments_vehicles if day in v.tour[timetable].keys() and max_costumer in v.tour[timetable][day]]
         vehicle = vehicle[0]
         vehicle.push_tour(timetable, day, max_pb)
-        self.get_fitness()
+        self.get_fitness(count=False)
 
     # For LNS
     def apply_2_opt(self, costumer, day):
@@ -497,7 +498,7 @@ class Solution:
         new_matriz[0][new_tour[-1]] = 1
         new_matriz[new_tour[-1]][0] = 1
         self.ants[timetable][day].global_update = new_matriz
-        self.get_fitness()
+        self.get_fitness(count=False)
 
     # For LNS
     def build_paths_ants(self):

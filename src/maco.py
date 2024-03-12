@@ -78,12 +78,13 @@ def non_dominated(A, P):
         if len(a_dominated_p) == 0:
             A.append(p)
             added.append(p)
-
-    for a in A[:]:
-        p_dominated_a = [p for p in added if p.dominates(a)]
-        if len(p_dominated_a) != 0:
+    for p in added:
+        p_dominated_a = [a for a in A if p.dominates(a)]
+        for a in p_dominated_a:
             A.remove(a)
-    return A
+            if a in added:
+                added.remove(a)
+    return A, added
 
 def update_pheromone(pheromone_matrix, delta_ant_matrix, P, rho, Q, timetables, days):
     for timetable in timetables:

@@ -1,4 +1,5 @@
 from costumer import Costumer
+from vehicle import Vehicle
 
 
 def read_dataset(dataset_dir):
@@ -35,7 +36,20 @@ def read_dataset(dataset_dir):
     costumers = get_nodes(lines, NODE_COORD_SECTION, DEMAND_SECTION)
     set_demand(lines, costumers, DEMAND_SECTION, SVC_TIME_SECTION)
     set_time_section(lines, costumers, SVC_TIME_SECTION, DEPOT_SECTION)
-    return costumers, capacity, days, limit_time
+
+    depot = Costumer(0,0,0)
+    depot.demands = [0] * days
+    depot.arrival_times = [0] * days
+    depot.vehicles_visit = [-1] * days
+    depot.service_times = [0] * days
+    costumers.insert(0, depot)
+
+    vehicles = []
+    for i in range(len(costumers)):
+        vehicle = Vehicle(i, capacity, days, 1000)
+        vehicles.append(vehicle)
+
+    return costumers, vehicles, capacity, days, limit_time
 
 
 def get_nodes(lines, NODE_COORD_SECTION, DEMAND_SECTION):
