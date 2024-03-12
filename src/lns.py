@@ -7,7 +7,8 @@ import queue
 import numpy as np
 from pymoo.indicators.hv import HV
 
-from maco import build_solutions, archive_update_pqedy, initialize_multiple_matrix
+from maco import build_solutions, initialize_multiple_matrix, non_dominated
+from utils import get_statistics
 
 
 class LNSolution():
@@ -158,7 +159,8 @@ class LNSolution():
         epsilon = 10e-4
         max_pf = 1
         max_pb = 1
-        while max_pf > epsilon or max_pb > epsilon:
+        attempts = 10
+        while (max_pf > epsilon or max_pb > epsilon) and attempts != 0:
             i = self.task_max_atd()
             bc = [i]
             max_pf = epsilon
@@ -190,10 +192,11 @@ class LNSolution():
                     #print('bef apply pb')
                     self.apply_pb(max_costumer, max_pb, bc)
                     #print('aft apply pb')
+            attempts -= 1
     def improve_time_consistency(self, delta, ub_1, ub_2):
         new_f = 0.0
         old_f = 0.0
-        attempts = 20
+        attempts = 10
         while old_f <= new_f and attempts != 0:
             i = self.task_max_atd()
             old_f = self.get_f_i(delta, ub_1, ub_2)
@@ -206,7 +209,6 @@ class LNSolution():
                 d = i.get_day_latest_at()
             self.solution.apply_2_opt(i, d)
             new_f = self.get_f_i(delta, ub_1, ub_2)
-            #self.solution.is_feasible()
             attempts -= 1
 
     def get_f_i(self, delta, ub_1, ub_2):
@@ -234,19 +236,24 @@ def unwrap_solutions(population):
     unwrapper = [s.solution for s in population]
     return unwrapper
 
-def external_mdls(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy):
+def external_mdls(params):
+    days = params['days']
+    epsilon = params['epsilon']
+    dy = params['dy']
+    costumers = params['costumers']
+    vehicles = params['vehicles']
     log_hypervolume = []
-    ref_point = np.array([8000, 1000, len(vehicles)])
+    ref_point = np.array([15000, 8, 900])
     ind = HV(ref_point=ref_point)
     n_costumers = len(costumers)
     pheromone_matrix = initialize_multiple_matrix(days, n_costumers, True)
-    delta_ant_matrix = initialize_multiple_matrix(days, n_costumers, False)
-    solutions = build_solutions(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy, pheromone_matrix, delta_ant_matrix)
+    solutions = build_solutions(params, pheromone_matrix)
     start = time.time()
-    improved_solutions = mdls(solutions)
+    improved_solutions = mdls(solutions, params)
     duration = time.time() - start
     A = []
-    A, solutions_accepted = archive_update_pqedy(A, improved_solutions, epsilon, dy)
+    #A, solutions_accepted = archive_update_pqedy(A, improved_solutions, epsilon, dy)
+    A, solutions_accepted = non_dominated(A, improved_solutions)
     l = [a.f_1 for a in A]
     min_time_tour = min(l)
     max_time_tour = max(l)
@@ -261,18 +268,21 @@ def external_mdls(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterati
     avg_vehicle = sum(l2) / len(l2)
     n_solutions = len(A)
     print(f'>>>> min time_tour {min_time_tour}, min arrival {min_arrival_time}, min vehicle {min_vehicle} - max time_tour {max_time_tour}, max arrival {max_arrival_time}, max vehicle {max_vehicle}')
-    statistics = [min_time_tour, max_time_tour, avg_time_tour, min_arrival_time, max_arrival_time, avg_arrival_time,
-                  min_vehicle, max_vehicle, avg_vehicle, n_solutions, duration]
+    archive = np.array([[a.f_1, a.f_2, a.f_3] for a in A])
+    log_hypervolume.append(ind(archive))
+    statistics = get_statistics(A, log_hypervolume, [], duration)
+    print(f'Hypervolume: { ind(archive) }')
     return A, log_hypervolume, duration, statistics
 
 def mdls(current_population, params):
     new_solutions = []
     for i, s in enumerate(current_population):
-        #print (f'LNS {i}')
         current = s
+        start = time.time()
         for f_i in range(3):
             wrapper_solution = wrap_solutions([current], f_i)
             lns_s = lns(wrapper_solution[0], params)
+            #print(f'LNS {i}/{len(current_population)} {f_i} | {lns_s.solution.f_1, lns_s.solution.f_2, lns_s.solution.f_3} {time.time() - start}')
             current = lns_s.solution
         new_solutions.append(current)
     return new_solutions
@@ -320,25 +330,16 @@ def lns(s, params):
         s_lns = copy.deepcopy(current)
         costumers_to_add = s_lns.destroy_operator(n_removes)
         s_lns.repair_operator(costumers_to_add, eta)
-        s_lns.solution.get_fitness()
+        s_lns.solution.get_fitness(count=False)
         s_lns.improve_time_consistency(delta, ub_1, ub_2)
         s_lns.adjust_departure_times()
         s_lns.solution.get_fitness()
-        #current_f_i = np.array([current.solution.f_1, current.solution.f_2, current.solution.f_3])
-        #s_lns_f_i = np.array([s_lns.solution.f_1, s_lns.solution.f_2, s_lns.solution.f_3])
-        #best_f_i = np.array([best.solution.f_1, best.solution.f_2, best.solution.f_3])
         #print (f'LNS {t}/{max_iterations} current {current_f_i}: {current.get_f_i(delta, ub_1, ub_2):.4f} generated {s_lns_f_i}: {s_lns.get_f_i(delta, ub_1, ub_2):.4f} best {best_f_i}: {best.get_f_i(delta, ub_1, ub_2):.4f}')
         if s_lns.get_f_i(delta, ub_1, ub_2) < current.get_f_i(delta, ub_1, ub_2):
             s_lns.solution.build_paths_ants()
             current = s_lns
         if s_lns.get_f_i(delta, ub_1, ub_2) < best.get_f_i(delta, ub_1, ub_2):
             best = s_lns
-    #s_f_i = np.array([s.solution.f_1, s.solution.f_2, s.solution.f_3])
-    #hv_s = ind(s_f_i)
-    #hv_best = ind(best_f_i)
-    #print (f'initial {s_f_i} : {s.get_f_i(delta, ub_1, ub_2)} | best {best_f_i} : {best.get_f_i(delta, ub_1, ub_2)}')
-    #print (f'initial {hv_s} ---- best {hv_best}')
-    #print ('-------------------------------- ')
     return best
 
 
@@ -357,28 +358,19 @@ def lns_sa(s, params):
     ub_2 = params['ub_2']
     temperature = -1 * (w/math.log(0.5)) * s.get_f_i(delta, ub_1, ub_2)
     for t in range(max_iterations):
-        #print (f'---------------------  LNS A {t}-{max_iterations}')
         s_lns = copy.deepcopy(current)
         costumers_to_add = s_lns.destroy_operator(n_removes)
-        #print (f'B {t}-{max_iterations}')
         s_lns.repair_operator(costumers_to_add, eta)
-        #print (f'C {t}-{max_iterations}')
-        #s_lns.solution.is_feasible()
-        #print (f'D {t}-{max_iterations}')
-        s_lns.solution.get_fitness()
-        #print (f'E {t}-{max_iterations}')
-        #print(f'>>>>> ADT {s_lns.solution.f_1, s_lns.solution.f_2, s_lns.solution.f_3} f_i {s_lns.if_i}')
-        s_lns.improve_time_consistency(delta, ub_1, ub_2)
-        #print (f'F {t}-{max_iterations}')
+        s_lns.solution.get_fitness(count=False)
         s_lns.adjust_departure_times()
-        #print (f'G {t}-{max_iterations}')
+        s_lns.improve_time_consistency(delta, ub_1, ub_2)
         s_lns.solution.get_fitness()
-        #print (f'H {t}-{max_iterations}')
-        #print(f'!!!!! ITC {s_lns.solution.f_1, s_lns.solution.f_2, s_lns.solution.f_3} f_i {s_lns.if_i}')
         if accepted_solution(initial, current, s_lns, max_iterations, temperature, w_vehicles, delta, ub_1, ub_2):
+            s_lns.solution.build_paths_ants()
             current = s_lns
-        if s.get_f_i(delta, ub_1, ub_2) < best.get_f_i(delta, ub_1, ub_2):
-            best = s
+        if s_lns.get_f_i(delta, ub_1, ub_2) < best.get_f_i(delta, ub_1, ub_2):
+            s_lns.solution.build_paths_ants()
+            best = s_lns
         temperature *= temperature_decrement
     return best
 
