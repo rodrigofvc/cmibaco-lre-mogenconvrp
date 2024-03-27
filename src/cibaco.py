@@ -4,7 +4,7 @@ from pymoo.util.ref_dirs import get_reference_directions
 
 from maco import build_solutions, initialize_multiple_matrix_rand, non_dominated
 from maco import archive_update_pqedy
-from lns import mdls, parallel_mdls
+from lns import mdls
 from random import sample
 import time
 import numpy as np
@@ -155,9 +155,7 @@ def fitness_asigment(population, k, indicator, w_r2, weights=[]):
         z_r2 = get_reference_point_r2_dynamic(population)
         if w_r2.shape[0] != len(population):
             print(f'{w_r2.shape[0]} - {len(population)}')
-            w_r2 = get_reference_directions("energy", 3, len(population), seed=1)
-            # TODO
-            #raise('no enought weights')
+            raise('no enought weights')
     if indicator == 'hv' or indicator == 'ws':
         ref_hv = get_reference_point_hv_dynamic(population)
         ind_hv = HV(ref_hv)
@@ -267,13 +265,9 @@ def ibaco_indicator(params, pheromone_matrix, indicator, cooperative_mode, execu
     ref_point_hv = utils.get_reference_point_file(params['file'])
     ind = HV(ref_point=ref_point_hv)
     w_r2 = []
-    w_r2_all = []
-    if cooperative_mode and (indicator == 'r2' or indicator == 'ws'):
-        with open('references_30.pkl', 'rb') as f:
-            w_r2_all = pickle.load(f)
-    elif indicator == 'r2' or indicator == 'ws':
-        with open('references_90.pkl', 'rb') as f:
-            w_r2_all = pickle.load(f)
+    n_ants = params['n_ants']
+    with open('references_' + str(n_ants) + '.pkl', 'rb') as f:
+        w_r2_all = pickle.load(f)
     start = time.time()
     log_evaluations = []
 
@@ -287,6 +281,13 @@ def ibaco_indicator(params, pheromone_matrix, indicator, cooperative_mode, execu
         mutation_stage(crossover_mutation, p_mut)
         print(f'after mut  {Solution.evals}')
         current_population += crossover_mutation
+        if i == 0:
+            current_evaluations = 0
+            algorithm = 'ibaco-' + indicator
+            if apply_lns:
+                algorithm += '-lns'
+            log_evaluations = [(current_evaluations, np.array([[s.solution.f_1, s.solution.f_2, s.solution.f_3] for s in current_population]))]
+            utils.save_evaluations(algorithm, params['file'], execution_n, log_evaluations)
         if apply_lns:
             lns(current_population, params['lns'], n_best=len(current_population))
 
@@ -307,7 +308,7 @@ def ibaco_indicator(params, pheromone_matrix, indicator, cooperative_mode, execu
             current_population.remove(minimum[1])
             #if len(current_population) % 50 == 0:
             #    print (f'{indicator} | iteration {i}/{max_iterations} - {len(current_population)} / {n}')
-        print (f'it {i} - fitness {Solution.evals} {time.time() - start1}')
+        print (f'it {i} - fitness {Solution.evals} {time.time() - start1} | execution {execution_n}')
 
         update_pheromone_indicator(pheromone_matrix, current_population, rho, Q, timetables, days)
         #log_pheromone.append((np.copy(pheromone_matrix['AM'][0]), [(s.fitness, s.f_i) for s in current_population]))
@@ -319,9 +320,12 @@ def ibaco_indicator(params, pheromone_matrix, indicator, cooperative_mode, execu
         log_hypervolume.append(hyp)
         log_solutions_added.append(len(A))
         if not cooperative_mode:
+            algorithm = 'ibaco-' + indicator
+            if apply_lns:
+                algorithm += '-lns'
             current_evaluations = Solution.evals
             log_evaluations = [(current_evaluations, np.array([[s.solution.f_1, s.solution.f_2, s.solution.f_3] for s in A]))]
-            utils.save_evaluations('ibaco-' + indicator, params['file'], execution_n, log_evaluations)
+            utils.save_evaluations(algorithm, params['file'], execution_n, log_evaluations)
     #utils.save_pheromone('ibaco-' + indicator, params['file'], execution_n, log_pheromone)
     duration = time.time() - start
     for a in A:
