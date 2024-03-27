@@ -56,6 +56,18 @@ def get_parameters(algorithm):
                   'params-cmibaco-17.json', 'params-cmibaco-18.json',
                   'params-cmibaco-19.json', 'params-cmibaco-20.json']
         return params
+    elif algorithm == 'ibaco-hv-lns' or algorithm == 'ibaco-r2-lns' or algorithm == 'ibaco-eps-lns' or algorithm == 'ibaco-ws-lns':
+        params = ['params-ibaco-1.json', 'params-ibaco-2.json',
+                  'params-ibaco-3.json', 'params-ibaco-4.json',
+                  'params-ibaco-5.json', 'params-ibaco-6.json',
+                  'params-ibaco-7.json', 'params-ibaco-8.json',
+                  'params-ibaco-9.json', 'params-ibaco-10.json',
+                  'params-ibaco-11.json', 'params-ibaco-12.json',
+                  'params-ibaco-13.json', 'params-ibaco-14.json',
+                  'params-ibaco-15.json', 'params-ibaco-16.json',
+                  'params-ibaco-17.json', 'params-ibaco-18.json',
+                  'params-ibaco-19.json', 'params-ibaco-20.json']
+        return params
 
 def exec_batch(algorithm, params_dir, dataset):
     if os.path.isfile(params_dir):
@@ -115,6 +127,21 @@ def exec_algorithm(algorithm, params, n_execution):
         pheromone_matrix = initialize_multiple_matrix_rand(days, n_costumers)
         A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front = ibaco_indicator(params, pheromone_matrix, indicator, False, n_execution)
         A = [a.solution for a in A]
+    elif algorithm == 'ibaco-eps-lns' or algorithm == 'ibaco-hv-lns' or algorithm == 'ibaco-r2-lns' or algorithm == 'ibaco-ws-lns':
+        if algorithm == 'ibaco-eps-lns':
+            indicator = 'eps'
+        elif algorithm == 'ibaco-hv-lns':
+            indicator = 'hv'
+        elif algorithm == 'ibaco-r2-lns':
+            indicator = 'r2'
+        elif algorithm == 'ibaco-ws-lns':
+            indicator = 'ws'
+        days = params['days']
+        costumers = params['costumers']
+        n_costumers = len(costumers)
+        pheromone_matrix = initialize_multiple_matrix_rand(days, n_costumers)
+        A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front = ibaco_indicator(params, pheromone_matrix, indicator, False, n_execution, apply_lns=True)
+        A = [a.solution for a in A]
     elif algorithm == 'cmibaco':
         A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front = cooperative_ibaco(params, n_execution)
         A = [a.solution for a in A]
@@ -152,19 +179,8 @@ def exec_file(algorithm, params, file, execution_n=0):
         print ((a.f_1, a.f_2, a.f_3))
     print (f'Elapsed time {duration} seconds')
 
-def get_fitness_evals(iterations_cmib, iterations_ibaco, n, indicators=1):
-    evaluations_fitness = 3*n*iterations_ibaco
-    evaluations_fitness *= indicators
-    evaluations_fitness *= iterations_cmib
-    return evaluations_fitness
-
 
 if __name__ == '__main__':
-    #total = get_fitness_evals(100,1, 30, indicators=3)
-    #print (f'total CIBACO fitness  {total}')
-    #total = get_fitness_evals(1, 100, 90)
-    #print (f'total IBACO-I fitness {total}')
-
     algorithm = sys.argv[1]
     params = sys.argv[2]
     dataset = sys.argv[3]
