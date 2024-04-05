@@ -76,7 +76,7 @@ def plot_log_hypervolume(log, dataset, execution_dir):
     plt.xlabel('Iteration')
     plt.ylabel('Hypervolume')
     plt.plot(log)
-    fig_name = 'log-hyper.png'
+    fig_name = 'log-hyper.pdf'
     save_result(dataset, fig_name, execution_dir)
     plt.close()
 
@@ -85,9 +85,27 @@ def plot_log_solutions_added(log, dataset, execution_dir):
     plt.xlabel('Iteration')
     plt.ylabel('# Archive size ')
     plt.plot(log)
-    fig_name = 'log-solutions.png'
+    fig_name = 'log-solutions.pdf'
     save_result(dataset, fig_name, execution_dir)
     plt.close()
+
+def plot_solution_vrp(dataset, solution, title, fig_name, execution_dir):
+    fig, axs = plt.subplots(len(solution.timetables), solution.days)
+    fig.set_figheight(11) # 18
+    fig.set_figwidth(20)
+    vehicles_used = []
+    np.random.seed(5)
+    vehicle_colors = [(v.id, tuple(np.random.rand(3,))) for v in solution.assigments_vehicles]
+    for i, t in enumerate(solution.timetables):
+        for d in range(solution.days):
+            vehicles_used += plot_sub_vrp(solution, t, d, axs[i, d], vehicle_colors)
+    vehicles_used = list(set(vehicles_used))
+    colors_patch = [mpatches.Patch(color=v[1], label='Vehicle ' + str(v[0])) for v in [vehicle_colors[i] for i in vehicles_used]]
+    fig.legend(handles=colors_patch, fontsize=16, loc='center right', bbox_to_anchor=(1, 0.5))
+    fig.suptitle(title, fontsize=20)
+    save_result(dataset, fig_name, execution_dir)
+    plt.close()
+
 
 def plot_best_objective(A, dataset, objective, execution_dir):
     if objective == 0:
@@ -95,35 +113,21 @@ def plot_best_objective(A, dataset, objective, execution_dir):
         ibest = np.argmin(best)
         best = A[ibest]
         title = 'Best total tours time '
-        fig_name = 'best-solution-time-tour.png'
+        fig_name = 'best-solution-time-tour.pdf'
     elif objective == 1:
         best = min([a.f_2 for a in A])
         best = min([a.f_1 for a in A if a.f_2 == best])
         best = [a for a in A if a.f_1 == best][0]
         title = 'Best consistency driver '
-        fig_name = 'best-solution-driver-diff.png'
+        fig_name = 'best-solution-driver-diff.pdf'
     elif objective == 2:
         best = [a.f_3 for a in A]
         ibest = np.argmin(best)
         best = A[ibest]
         title = 'Best maximum arrival time difference '
-        fig_name = 'best-solution-arrival-diff.png'
+        fig_name = 'best-solution-arrival-diff.pdf'
     title += '[' + str(best.f_1) + ', ' + str(best.f_2) + ', ' + str(best.f_3) + ']'
-    fig, axs = plt.subplots(len(best.timetables), best.days)
-    fig.set_figheight(18)
-    fig.set_figwidth(20)
-    vehicles_used = []
-    np.random.seed(5)
-    vehicle_colors = [(v.id, tuple(np.random.rand(3,))) for v in best.assigments_vehicles]
-    for i, t in enumerate(best.timetables):
-        for d in range(best.days):
-            vehicles_used += plot_sub_vrp(best, t, d, axs[i, d], vehicle_colors)
-    vehicles_used = list(set(vehicles_used))
-    colors_patch = [mpatches.Patch(color=v[1], label='Vehicle ' + str(v[0])) for v in [vehicle_colors[i] for i in vehicles_used]]
-    fig.legend(handles=colors_patch)
-    fig.suptitle(title)
-    save_result(dataset, fig_name, execution_dir)
-    plt.close()
+    plot_solution_vrp(dataset, best, title, fig_name, execution_dir)
 
 def plot_sub_vrp(solution, timetable, day, axs, vehicle_colors):
     tours = solution.get_vector_representation_dt(timetable, day)
@@ -148,13 +152,50 @@ def plot_sub_vrp(solution, timetable, day, axs, vehicle_colors):
         x_tour = np.array(x_tour)
         y_tour = np.array(y_tour)
         vehicle_color = [v for v in vehicle_colors if v[0] == vehicle_id]
-        axs.plot(x_tour, y_tour, c=vehicle_color[0][1])
-        axs.plot(x_tour[1:-1], y_tour[1:-1], 'o')
+        axs.plot(x_tour, y_tour, c=vehicle_color[0][1], linewidth=2)
+        axs.plot(x_tour[1:-1], y_tour[1:-1], 'o', linewidth=2)
         axs.plot([0],[0], '^', c='red')
-    axs.set_title(timetable + ' ' + str(day))
+    axs.set_title(timetable + ' - day ' + str(day), fontsize=20)
     return vehicles_used
 
+
 def save_pheromone(algorithm, dataset, execution_n, log_pheromone):
+    path_dataset = 'pheromone/' + dataset.replace('.vrp', '') + '/'
+    if not os.path.exists(path_dataset):
+        os.makedirs(path_dataset)
+    n = len(log_pheromone)
+    if algorithm == 'ibaco-eps':
+        algorithm_label = 'IBACO$_{\epsilon^+}$'
+    elif algorithm == 'ibaco-r2':
+        algorithm_label = 'IBACO$_{R2}$'
+    elif algorithm == 'ibaco-hv':
+        algorithm_label = 'IBACO$_{HV}$'
+    elif algorithm == 'cmibaco':
+        algorithm_label = 'CMIBACO'
+    print (f'{algorithm} - {execution_n} saved to {path_dataset + algorithm}-{str(execution_n)}.pdf')
+    for i in range(n):
+        fitness = log_pheromone[i][1]
+        for fit, f_i in fitness:
+            print (f'fitness : {fit} | {f_i}')
+
+        matrices = log_pheromone[i][0]
+        days = len(matrices['AM'])
+        figure, axis = plt.subplots(1, days*2, figsize=(13, 3))
+        for i, t in enumerate(['AM', 'PM']):
+            for d in range(days):
+                m = matrices[t][d]
+                color_mat = axis[2*i+d].matshow(m)
+                axis[2*i+d].set_yticklabels([])
+                axis[2*i+d].set_xticklabels([])
+                axis[2*i+d].set_title(f'{t} - {d}')
+                figure.colorbar(color_mat)
+        figure.suptitle(f'{algorithm_label} - Iteration {execution_n}')
+        plt.savefig(path_dataset + algorithm + '-' + str(execution_n) + '.pdf')
+        plt.close()
+
+
+
+def save_pheromone_(algorithm, dataset, execution_n, log_pheromone):
     n = len(log_pheromone)
     figure, axis = plt.subplots(n, 2, figsize=(13, 3*n))
 
@@ -173,37 +214,73 @@ def save_pheromone(algorithm, dataset, execution_n, log_pheromone):
         figure.axes[2*i+1].set_yticklabels([])
         figure.axes[2*i+1].set_xticklabels([])
         figure.axes[2*i+1].text(x=0, y=0, s=s_)
-        print (f'it {i}: MAXX   {m.max()} {m.sum()}')
     figure.savefig('matrix_pheromone.pdf')
     plt.close()
 
 
-def test_log_lns(dataset, log_solutions_obj, params):
+def test_log_lns(params, dataset, log_solutions_obj, exectution_dir):
     alpha_1 = 1 / (1 + params['lns']['delta'] / params['lns']['ub_2'])
     alpha_3 = 1 / (1 + params['lns']['ub_1'] / params['lns']['delta'])
     alpha_2 = (alpha_1 + alpha_3) / 2
     alpha = [alpha_1, alpha_2, alpha_3]
     for i in range(3):
-        fig, axs = plt.subplots(4, 1)
-        fig.suptitle('LNS (' + str(i) + ') ' + dataset + ' f = ' + str(i) + ' alpha=' + str(alpha[i]))
-        fig.set_figheight(18)
-        fig.set_figwidth(20)
+        fig, axs = plt.subplots(3, 1)
+        fig.suptitle("MDLNS - " + dataset)
+        fig.subplots_adjust(hspace=0.4)
+        fig.set_figheight(9)
+        fig.set_figwidth(19)
         log_solutions = log_solutions_obj[i]
         log_ws = [l[0] for l in log_solutions]
         log_f_1 = [l[1] for l in log_solutions]
         log_f_2 = [l[2] for l in log_solutions]
         log_f_3 = [l[3] for l in log_solutions]
-        test_sub_log_lns(dataset, log_ws, 'weigthed sum function obj ' + str(i), axs[0])
-        test_sub_log_lns(dataset, log_f_1, 'f_1', axs[1])
-        test_sub_log_lns(dataset, log_f_2, 'f_2', axs[2])
-        test_sub_log_lns(dataset, log_f_3, 'f_3', axs[3])
-        save_result(dataset, 'lns-' + str(i) + '.png', 'lns', False)
+        test_sub_log_lns(dataset, log_ws, "$f'_" + str(i+1) + "$ = $f_1$ + " + r"$\alpha_"+str(i+1)+"$" + "(1- " + r"$\alpha_"+str(i+1)+"$)" + "$f_3$ - ", axs[0])
+        test_sub_log_lns(dataset, log_f_1, '$f_1$ - ', axs[1])
+        #test_sub_log_lns(dataset, log_f_2, '$\min f_2$', axs[2])
+        test_sub_log_lns(dataset, log_f_3, '$f_3$ - ', axs[2])
+        save_result(dataset, 'lns-' + str(i) + '.pdf', exectution_dir)
         plt.close()
+
+def test_log_lns_weighted(params, dataset, log_solutions_obj, exectution_dir):
+    alpha_1 = 1 / (1 + params['lns']['delta'] / params['lns']['ub_2'])
+    alpha_3 = 1 / (1 + params['lns']['ub_1'] / params['lns']['delta'])
+    alpha_2 = (alpha_1 + alpha_3) / 2
+    alpha = [alpha_1, alpha_2, alpha_3]
+    for i in range(3):
+        fig= plt.figure(figsize=(10,5))
+        ax = plt.gca()
+        log_solutions = log_solutions_obj[i]
+        log_ws = [l[0] for l in log_solutions]
+        test_sub_log_lns(dataset, log_ws, "$f'_" + str(i+1) + "$ = $f_1$ + " + r"$\alpha_"+str(i+1)+"$" + "(1- " + r"$\alpha_"+str(i+1)+"$)" + "$f_3$ - ", ax)
+        save_result(dataset, 'lns-' + str(i) + '-ws' + '.pdf', exectution_dir)
+        plt.close()
+
+        log_f_1 = [l[1] for l in log_solutions]
+        fig = plt.figure(figsize=(10, 5))
+        ax = plt.gca()
+        test_sub_log_lns(dataset, log_f_1, '$f_1$ - ', ax)
+        save_result(dataset, 'lns-' + str(i) + '-f_1' + '.pdf', exectution_dir)
+        plt.close()
+
+        log_f_2 = [l[2] for l in log_solutions]
+        fig = plt.figure(figsize=(10, 5))
+        ax = plt.gca()
+        test_sub_log_lns(dataset, log_f_2, '$f_2$ - ', ax)
+        save_result(dataset, 'lns-' + str(i) + '-f_2' + '.pdf', exectution_dir)
+        plt.close()
+
+        log_f_3 = [l[3] for l in log_solutions]
+        fig = plt.figure(figsize=(10, 5))
+        ax = plt.gca()
+        test_sub_log_lns(dataset, log_f_3, '$f_3$ - ', ax)
+        save_result(dataset, 'lns-' + str(i) + '-f_3' + '.pdf', exectution_dir)
+        plt.close()
+
 
 def test_sub_log_lns(dataset, log, title, axs):
     axs.set_title(title + ' ' + dataset)
-    axs.set_xlabel('Iteración')
-    axs.set_ylabel('Costo')
+    axs.set_xlabel('Iteration')
+    axs.set_ylabel('Cost')
     for l in log:
         axs.plot(l)
 
@@ -324,7 +401,7 @@ def plot_archive_2d(A, dataset, execution_dir):
         ys = [a.f_1 for a in a_vehicle]
         ax.scatter(xs, ys, marker='o', c=color_vehicles[n_vehicle], label='$f_{2}$='+str(n_vehicle))
     ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-    fig_name = 'archive-2d.png'
+    fig_name = 'archive-2d.pdf'
     save_result(dataset, fig_name, execution_dir)
     plt.close()
 
@@ -561,6 +638,8 @@ def get_reference_point_file(dataset):
         return np.array([17000, 9, 1300])
     elif dataset == 'Christofides_1_5_0.9.txt':
         return np.array([10000, 7, 700])
+    elif dataset == 'convrp_10_test_0.vrp':
+        return np.array([10000, 7, 700])
     else:
         raise('not reference point available for dataset')
 
@@ -569,7 +648,7 @@ def critic_diagram(file):
     data = pd.read_csv(file, index_col=0)
     result = autorank(data, alpha=0.05, verbose=False, force_mode='nonparametric')
     plot_stats(result, allow_insignificant=True)
-    output_file = file.replace('.csv', '.png')
+    output_file = file.replace('.csv', '.pdf')
     plt.savefig(output_file)
 
 def boxplot(file, dataset, output_file, title):
@@ -844,7 +923,7 @@ def plot_general_table(problems, file, output_file):
             data_sub = pd.concat([data_sub, populations['Valor']], axis=1, ignore_index=True)
         data = pd.concat([data, data_sub], ignore_index=True)
     data.rename(columns={0: 'cmibaco', 1: 'ibaco-eps', 2: 'ibaco-hv', 3: 'ibaco-r2', 4: 'ibaco-ws', 5: 'cmibaco-lns'}, inplace=True)
-    data.to_csv(output_file.replace('.png', '.csv'), index=False)
+    data.to_csv(output_file.replace('.pdf', '.csv'), index=False)
     result = autorank(data, alpha=0.05, verbose=False, force_mode='nonparametric')
     fig, ax = plt.subplots(figsize=(15,25))
     ax = plot_stats(result, allow_insignificant=True)
@@ -898,7 +977,7 @@ def get_multiple_logs_hyp(dirs, dataset, algorithm):
     for p in pairs:
         plt.plot(p[0], label=p[1])
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-    plt.savefig('multi-logs-hv.png')
+    plt.savefig('multi-logs-hv.pdf')
 
 
 
@@ -949,9 +1028,9 @@ if __name__ == '__main__':
     get_table_time(problems, 'table-times.tex')
 
     # Diagrama critico de cada indicador
-    plot_general_table(problems, 'evaluations-hv.csv', 'total-evaluations-hv.png')
-    plot_general_table(problems, 'evaluations-r2.csv', 'total-evaluations-r2.png')
-    plot_general_table(problems, 'evaluations-es.csv', 'total-evaluations-es.png')
+    plot_general_table(problems, 'evaluations-hv.csv', 'total-evaluations-hv.pdf')
+    plot_general_table(problems, 'evaluations-r2.csv', 'total-evaluations-r2.pdf')
+    plot_general_table(problems, 'evaluations-es.csv', 'total-evaluations-es.pdf')
     # Diagrama critico general
     plot_general_diagram()
 
@@ -964,6 +1043,6 @@ if __name__ == '__main__':
         base = problem[1]
         for ind in indicators:
             file = 'evaluations-' + ind + '.csv'
-            output_file = base + ind +'.png'
-            output_file_box = base + ind +'-box.png'
+            output_file = base + ind +'.pdf'
+            output_file_box = base + ind +'-box.pdf'
             boxplot(file, dataset, output_file_box, dataset + ' ' + ind)
