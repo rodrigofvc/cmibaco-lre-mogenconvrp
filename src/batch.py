@@ -1,6 +1,7 @@
 import os
 
 from cibaco import cooperative_ibaco, ibaco_indicator
+from cmibaco_components import cooperative_ibaco_components
 from lns import external_mdls
 from maco import initialize_multiple_matrix_rand
 from utils import get_execution_dir, plot_best_objective, plot_archive_3d, plot_archive_2d, \
@@ -44,7 +45,7 @@ def get_parameters(algorithm):
                   'params-ibaco-17.json', 'params-ibaco-18.json',
                   'params-ibaco-19.json', 'params-ibaco-20.json']
         return params
-    elif algorithm == 'cmibaco' or algorithm == 'cmibaco-lns':
+    elif algorithm == 'cmibaco' or algorithm == 'cmibaco-lns' or algorithm == 'cmibaco-cross' or algorithm == 'cmibaco-mut':
         params = ['params-cmibaco-1.json', 'params-cmibaco-2.json',
                   'params-cmibaco-3.json', 'params-cmibaco-4.json',
                   'params-cmibaco-5.json', 'params-cmibaco-6.json',
@@ -147,6 +148,12 @@ def exec_algorithm(algorithm, params, n_execution):
         A = [a.solution for a in A]
     elif algorithm == 'cmibaco-lns':
         A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front = cooperative_ibaco(params, n_execution, apply_lns=True)
+        A = [a.solution for a in A]
+    elif algorithm == 'cmibaco-cross':
+        A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front = cooperative_ibaco_components(params, n_execution, apply_lns=False, apply_crossover=True, apply_mutation=False)
+        A = [a.solution for a in A]
+    elif algorithm == 'cmibaco-mut':
+        A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front = cooperative_ibaco_components(params, n_execution, apply_lns=False, apply_crossover=False, apply_mutation=True)
         A = [a.solution for a in A]
     elif algorithm == 'mdlns':
         log_solutions_added = []
