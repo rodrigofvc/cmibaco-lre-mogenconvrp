@@ -45,7 +45,7 @@ def get_parameters(algorithm):
                   'params-ibaco-17.json', 'params-ibaco-18.json',
                   'params-ibaco-19.json', 'params-ibaco-20.json']
         return params
-    elif algorithm == 'cmibaco' or algorithm == 'cmibaco-lns' or algorithm == 'cmibaco-cross' or algorithm == 'cmibaco-mut':
+    elif algorithm == 'cmibaco' or algorithm == 'cmibaco-lns' or algorithm == 'cmibaco-cross' or algorithm == 'cmibaco-mut' or algorithm == 'cmibaco-classic':
         params = ['params-cmibaco-1.json', 'params-cmibaco-2.json',
                   'params-cmibaco-3.json', 'params-cmibaco-4.json',
                   'params-cmibaco-5.json', 'params-cmibaco-6.json',
@@ -97,22 +97,6 @@ def exec_batch(algorithm, params_dir, dataset):
 
 
 def exec_algorithm(algorithm, params, n_execution):
-    """"
-    if algorithm == 'haco':
-        A, log_hypervolume, log_solutions_added, duration, statistics = haco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy)
-    elif algorithm == 'maco':
-        A, log_hypervolume, log_solutions_added, duration, statistics = maco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy)
-    elif algorithm == 'ibaco-eps':
-        A, log_hypervolume, log_solutions_added, duration, statistics = ibaco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy, 'epsilon')
-    elif algorithm == 'ibaco-hv':
-        A, log_hypervolume, log_solutions_added, duration, statistics = ibaco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy, 'hv')
-    elif algorithm == 'nsgaiii-aco':
-        A, log_hypervolume, log_solutions_added, duration, statistics = nsgaiii_aco(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy)
-    elif algorithm == 'ribaco':
-        A, log_hypervolume, log_solutions_added, duration, statistics = ibaco_lns(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy, 'epsilon')
-    elif algorithm == 'mdls':
-        A, log_hypervolume, log_solutions_added, duration, statistics = external_mdls(n_groups, rho, days, alpha, beta, gamma, delta, Q, max_iterations, costumers, timetables, vehicles, q0, min_pheromone, max_pheromone, p_mut, epsilon, dy)
-    """
     if algorithm == 'ibaco-eps' or algorithm == 'ibaco-hv' or algorithm == 'ibaco-r2' or algorithm == 'ibaco-ws':
         if algorithm == 'ibaco-eps':
             indicator = 'eps'
@@ -154,6 +138,9 @@ def exec_algorithm(algorithm, params, n_execution):
         A = [a.solution for a in A]
     elif algorithm == 'cmibaco-mut':
         A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front = cooperative_ibaco_components(params, n_execution, apply_lns=False, apply_crossover=False, apply_mutation=True)
+        A = [a.solution for a in A]
+    elif algorithm == 'cmibaco-classic':
+        A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front = cooperative_ibaco_components(params, n_execution, apply_lns=False, apply_crossover=False, apply_mutation=False, classic=True)
         A = [a.solution for a in A]
     elif algorithm == 'mdlns':
         log_solutions_added = []
