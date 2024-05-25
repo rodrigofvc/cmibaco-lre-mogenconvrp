@@ -186,22 +186,10 @@ def assign_routes_vehicles(depot, timetable, day, routes_uncertain, vehicles_sce
             if i == len(vector_rep):
                 break
             current_cos = vector_rep[i]
-        #else:
-            #print (current_time + vehicle.tour[timetable][day][-1].distance_to(current_cos) + current_cos.service_times[
-            #    day] + current_cos.distance_to(vehicle.tour[timetable][day][0]))
-            #print (current_cos.distance_to(vehicle.tour[timetable][day][0]))
-            #print(f'limit_time {limit_time}')
-            #print(f'failed to add {current_cos.id} / {vehicle.get_load(timetable, day)} {vehicle.capacity} - {current_cos.demands[day]}')
         vehicle.return_depot(timetable, day)
         if len(vehicle.tour[timetable][day]) == 1:
             raise ('vehicle with only 1 costumer not allowed')
         if len(vehicle.tour[timetable][day]) != len(route):
-            print ([c.id for c in vehicle.tour[timetable][day]])
-            print ([c.id for c in route])
-            print(current_time, vehicle.capacity)
-            print(valid_tour(route, route[3], day))
-            print(f'demands {[c.demands[day] for c in vehicle.tour[timetable][day]]} => {sum([c.demands[day] for c in vehicle.tour[timetable][day]])}')
-            print(f'demands {[c.demands[day] for c in route]} => {sum([c.demands[day] for c in route])}')
             time = 0 if timetable == 0 else 500
             for i in range(len(vehicle.tour[timetable][day])):
                 c_i = vehicle.tour[timetable][day][i]
@@ -211,7 +199,6 @@ def assign_routes_vehicles(depot, timetable, day, routes_uncertain, vehicles_sce
                     c_j = vehicle.tour[timetable][day][j]
                     time += c_i.distance_to(c_j)
             time += vehicle.tour[timetable][day][-1].distance_to(vehicle.tour[timetable][day][0])
-            print (f'CALCULATED vehicle {time}')
             time = 0 if timetable == 0 else 500
             for i in range(len(route)):
                 c_i = route[i]
@@ -221,7 +208,6 @@ def assign_routes_vehicles(depot, timetable, day, routes_uncertain, vehicles_sce
                     c_j = route[j]
                     time += c_i.distance_to(c_j)
             time += route[-1].distance_to(route[0])
-            print(f'CALCULATED tour {time}')
             raise('not planed tour in vehicle')
     for c in costumers_scenario:
         if c.vehicles_visit[day] == -1 and c.demands[day] > 0 and timetable == 'AM' and c.timetable == 0:
@@ -350,7 +336,7 @@ def lightly_robust_solutions(dataset, algorithm, dir):
         scenario_archive = eval_scenario_archive(dataset, archive, scenario)
         scenarios_archive.append(scenario_archive)
 
-    execution_dir = get_execution_dir_uvrp(dataset, algorithm, dir)
+    execution_dir = get_execution_dir_uvrp(dataset, algorithm, dir + '-lre')
 
     id_solutions = {}
     for archive in scenarios_archive:
@@ -591,14 +577,24 @@ def get_scenarios_comparation(problems):
     df_es.set_index('Problema')
     df_es.to_latex('scenarios-comparation-es-56.tex', column_format='cc' + len(scenarios) * 'r', index=False)
 
-
+def get_medians_files_lre(problems, algorithms):
+    medians = {}
+    df = pd.read_csv('lre-executions.csv')
+    for problem in problems:
+        medians[problem] = {'hv': {}}
+        for algorithm in algorithms:
+            data = df.query(f"problem == '{problem}' and algorithm == '{algorithm}' and indicator == 'hv' ")
+            data = data.sort_values(by=['value'])
+            median_dir = data.iloc[data.shape[0] // 2]['dir']
+            medians[problem]['hv'][algorithm] = median_dir
+    return medians
 
 def plot_medians_lre(problems):
     indicators = ['hv']
     algorithm = 'cmibaco-lns'
     scenarios = ['0.5', '0.7', '0.9']
     for indicator in indicators:
-        problems_medians = get_medians_files(problems, [algorithm])
+        problems_medians = get_medians_files_lre(problems, [algorithm])
         for p in problems_medians.keys():
             dir_median = problems_medians[p][indicator][algorithm]
             file_name = 'results/' + p[:-4] + '/' + algorithm + '/' + dir_median + '/archive-object'
@@ -616,7 +612,8 @@ def plot_medians_lre(problems):
                 scenario_archive = eval_scenario_archive(p, archive, scenario)
                 scenarios_archive.append(scenario_archive)
 
-            execution_dir = get_execution_dir(p, algorithm, run=True, uvrp=True)
+            execution_dir = get_execution_dir_uvrp(p, algorithm, dir_median + '-median')
+
             id_solutions = {}
             for archive in scenarios_archive:
                 for i, s in enumerate(archive):
@@ -785,7 +782,6 @@ def get_boxplots(problems, file, indicator, algorithms, labels):
 
 if __name__ == '__main__':
     #compress_files()
-    #plot_medians_lre(problems)
 
     problems = ['Christofides_1_5_0.5.txt',
                 'Christofides_2_5_0.5.txt',
@@ -799,6 +795,16 @@ if __name__ == '__main__':
                 'Christofides_10_5_0.5.txt',
                 'Christofides_11_5_0.5.txt',
                 'Christofides_12_5_0.5.txt']
+    # Mediana de cada algoritmo
+    plot_medians_lre(problems)
+    raise('LRE MEDIANS ')
+    #m = get_medians_files_lre(problems, ['cmibaco-lns'])
+    #print (m)
+
+
+    lightly_robust_solutions('Christofides_1_5_0.5.txt', 'cmibaco-lns', '2024-03-06-21-28-31')
+    lightly_robust_solutions('Christofides_2_5_0.5.txt', 'cmibaco-lns', '2024-03-06-21-40-46')
+    raise('MEDIANS LRE')
     # get_scenarios_comparation(problems)
     main_algorithm = 'cmibaco-lns'
     other_algorithms = ['ibaco-eps', 'ibaco-hv', 'ibaco-r2', 'ibaco-ws']
