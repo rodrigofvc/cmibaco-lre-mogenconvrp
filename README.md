@@ -1,3 +1,2 @@
-# Ant Colony Optimization for Multiobjective Generalized Consistent VRP
-
-Non Epsilon dominated solutions for Multiobjective Generalized Consistent VRP (MOGenConVRP).
+# cMIBACO for lightly Robust Solutions in MOGenConVRP under uncertainty
+The official implementation of the "Cooperative Multi-Indicator Based Ant Colony Optimization Algorithm" (cMIBACO) for the lightly robust optimization in MOGenConVRP.  
