@@ -1088,6 +1088,7 @@ def get_multiple_logs_hyp_dir(dataset, algorithm, output):
 if __name__ == '__main__':
     plt.rcParams['pdf.fonttype'] = 42
     plt.rcParams['ps.fonttype'] = 42
+    """
     problems = ['Christofides_1_5_0.5.txt', 'Christofides_2_5_0.5.txt', 'Christofides_3_5_0.5.txt',
                 'Christofides_4_5_0.5.txt']
     medians = get_medians_files(problems, ['cmibaco'])
@@ -1120,6 +1121,7 @@ if __name__ == '__main__':
 
     #get_multiple_logs_hyp_dir('Christofides_1_5_0.5', 'cmibaco-lns', 'ch1505-2-opt-multi.pdf')
     raise()
+    """
 
     files = ['evaluations-hv.csv', 'evaluations-r2.csv', 'evaluations-es.csv']
 
@@ -1132,30 +1134,13 @@ if __name__ == '__main__':
                     '2024-03-22-23-08-40', '2024-03-22-23-19-24', '2024-03-22-23-30-08', '2024-03-22-23-40-52', '2024-03-22-23-51-38',
                     '2024-03-23-00-02-26', '2024-03-23-00-13-11', '2024-03-23-00-23-55', '2024-03-23-00-34-40', '2024-03-23-00-45-27',
                     '2024-03-23-00-56-14', '2024-03-23-01-06-58', '2024-03-23-01-17-47', '2024-03-23-01-28-35', '2024-03-23-01-39-24']
-    # Plot multiple hypervolume logs
-    #get_multiple_logs_hyp(cmibaco_lns, 'Christofides_1_5_0.5', 'cmibaco-lns')
-    problems = [('Christofides_1_5_0.5.txt', 'ch1505-'),
-                ('Christofides_2_5_0.5.txt', 'ch2505-'),
-                ('Christofides_3_5_0.5.txt', 'ch3505-'),
-                ('Christofides_4_5_0.5.txt', 'ch4505-'),
-                ('Christofides_5_5_0.5.txt', 'ch5505-'),
-                ('Christofides_6_5_0.5.txt', 'ch6505-'),
-                ('Christofides_7_5_0.5.txt', 'ch7505-'),
-                ('Christofides_8_5_0.5.txt', 'ch8505-'),
-                ('Christofides_9_5_0.5.txt', 'ch9505-'),
-                ('Christofides_10_5_0.5.txt', 'ch10505-'),
-                ('Christofides_11_5_0.5.txt', 'ch11505-'),
-                ('Christofides_12_5_0.5.txt', 'ch12505-')]
-    #for p, pre in problems:
-    #    get_multiple_logs_hyp_dir(p.replace('.txt', ''), 'cmibaco-lns', output=pre + 'multi-logs.pdf')
-
 
 
     algorithms_to_compare = ['ibaco-eps', 'ibaco-hv', 'ibaco-r2', 'ibaco-ws']
     main_algorithm = 'cmibaco'
 
-    algorithms_to_compare = ['cmibaco-lns', 'cmibaco', 'cmibaco-cross', 'cmibaco-mut']
-    main_algorithm = 'cmibaco-classic'
+    #algorithms_to_compare = ['cmibaco-lns', 'cmibaco', 'cmibaco-cross', 'cmibaco-mut']
+    #main_algorithm = 'cmibaco-classic'
 
     algorithms = [main_algorithm] + algorithms_to_compare
 
@@ -1164,7 +1149,7 @@ if __name__ == '__main__':
                          'cmibaco-lns': 'cMIBACO$_{lns}$', 'cmibaco-cross': 'cMIBACO$_{crossover}$',
                          'cmibaco-mut': 'cMIBACO$_{mutation}$', 'cmibaco-classic': 'cMIBACO$_{base}$'}
 
-    labels_algorithms['cmibaco'] = 'cMIBACO$_{hybrid}$'
+    #labels_algorithms['cmibaco'] = 'cMIBACO$_{hybrid}$'
 
     problems = [('Christofides_1_5_0.5.txt', 'ch1505-'),
                 ('Christofides_2_5_0.5.txt', 'ch2505-'),

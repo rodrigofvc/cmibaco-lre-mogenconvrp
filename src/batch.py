@@ -180,6 +180,8 @@ def check_dirs():
         os.makedirs('boxplot')
     if not os.path.isdir('boxplot-urvp/'):
         os.makedirs('boxplot-uvrp')
+    if not os.path.isdir('uncertainty/'):
+        os.makedirs('uncertainty')
     if not os.path.isdir('fronts/'):
         os.makedirs('fronts')
     if not os.path.isdir('medians-iterations/'):

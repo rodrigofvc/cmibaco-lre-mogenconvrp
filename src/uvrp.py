@@ -691,9 +691,7 @@ def get_table_mean_uvrp(problems, file, output_file, indicator, main_algorithm, 
     data_total.to_latex(output_file, column_format='cc' + len(algorithms) * 'r', index=False)
     return ranks
 
-def get_comparation_lre_algorithms(problems):
-    algorithms = ['ibaco-eps-lns', 'ibaco-hv-lns', 'ibaco-r2-lns', 'ibaco-ws-lns']
-
+def get_comparation_lre_algorithms(problems, algorithms):
     columns_csv = ['problem','indicator','value','algorithm','execution','dir']
     for j, problem in enumerate(problems):
         for algorithm in algorithms:
@@ -796,21 +794,17 @@ if __name__ == '__main__':
                 'Christofides_11_5_0.5.txt',
                 'Christofides_12_5_0.5.txt']
     # Mediana de cada algoritmo
-    plot_medians_lre(problems)
-    raise('LRE MEDIANS ')
-    #m = get_medians_files_lre(problems, ['cmibaco-lns'])
-    #print (m)
+    #plot_medians_lre(problems)
+    #raise('LRE MEDIANS ')
 
+    #lightly_robust_solutions('Christofides_1_5_0.5.txt', 'cmibaco-lns', '2024-03-06-20-36-57')
 
-    lightly_robust_solutions('Christofides_1_5_0.5.txt', 'cmibaco-lns', '2024-03-06-21-28-31')
-    lightly_robust_solutions('Christofides_2_5_0.5.txt', 'cmibaco-lns', '2024-03-06-21-40-46')
-    raise('MEDIANS LRE')
     # get_scenarios_comparation(problems)
     main_algorithm = 'cmibaco-lns'
     other_algorithms = ['ibaco-eps', 'ibaco-hv', 'ibaco-r2', 'ibaco-ws']
-    # Evaluar cada solucion en sus escenarios
-    get_comparation_lre_algorithms(problems)
     algorithms = [main_algorithm] + other_algorithms
+    # Evaluar cada solucion en sus escenarios
+    #get_comparation_lre_algorithms(problems, algorithms)
     labels_algorithms = {
         'cmibaco-lns': 'cMIBACO',
         'ibaco-eps': 'IBACO$_{\epsilon^+}$',
@@ -842,15 +836,3 @@ if __name__ == '__main__':
     get_boxplots(problems, 'lre-executions.csv', 'hv', algorithms, labels_algorithms)
 
 
-    dataset = 'Christofides_1_5_0.5.txt'
-    algorithm = 'ibaco-r2'
-    dir = 'results/' + dataset.replace('.txt','') + '/' + algorithm + '/'
-    # grafica multiples archivos
-    dirs = os.listdir(dir)
-    dirs = [d for d in dirs if d.startswith('2023') or d.startswith('2024')]
-    dirs = [(d, datetime.strptime(d, '%Y-%m-%d-%H-%M-%S')) for d in dirs]
-    dirs.sort(key=lambda x: x[1])
-    list_dir = os.listdir('results/' + dataset.replace('.txt','') + '/' + algorithm + '/')
-    for (dir, _) in dirs:
-        print (f'lightly robust solutions for {algorithm} - {dir}')
-        lightly_robust_solutions(dataset, algorithm, dir)
