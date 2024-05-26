@@ -267,7 +267,7 @@ def ibaco_indicator(params, pheromone_matrix, indicator, cooperative_mode, execu
     ind = HV(ref_point=ref_point_hv)
     w_r2 = []
     n_ants = params['n_ants']
-    with open('references_' + str(n_ants) + '.pkl', 'rb') as f:
+    with open('references_r2/references_' + str(n_ants) + '.pkl', 'rb') as f:
         w_r2_all = pickle.load(f)
     start = time.time()
     log_evaluations = []

@@ -173,8 +173,22 @@ def exec_file(algorithm, params, file, execution_n=0):
         print ((a.f_1, a.f_2, a.f_3))
     print (f'Elapsed time {duration} seconds')
 
+def check_dirs():
+    if not os.path.isdir('results/'):
+        os.makedirs('results')
+    if not os.path.isdir('boxplot/'):
+        os.makedirs('boxplot')
+    if not os.path.isdir('boxplot-urvp/'):
+        os.makedirs('boxplot-uvrp')
+    if not os.path.isdir('fronts/'):
+        os.makedirs('fronts')
+    if not os.path.isdir('medians-iterations/'):
+        os.makedirs('medians-iterations')
+    if not os.path.isdir('medians-comparation/'):
+        os.makedirs('medians-comparation')
 
 if __name__ == '__main__':
+    check_dirs()
     algorithm = sys.argv[1]
     params = sys.argv[2]
     dataset = sys.argv[3]
