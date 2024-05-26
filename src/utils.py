@@ -664,6 +664,7 @@ def get_index_dataset(dataset, algorithm, execution_dir):
     dirs = [(d, datetime.strptime(d, '%Y-%m-%d-%H-%M-%S')) for d in dirs]
     dirs.sort(key=lambda x: x[1])
     dirs = [d[0] for d in dirs]
+    dirs = dirs[:20]
     if len(dirs) != 20:
         print(f'{len(dirs)} - {dataset} - {algorithm}')
         raise()
@@ -677,6 +678,7 @@ def get_i_dir(dataset, algorithm, i):
     dirs = [(d, datetime.strptime(d, '%Y-%m-%d-%H-%M-%S')) for d in dirs]
     dirs.sort(key=lambda x: x[1])
     dirs = [d[0] for d in dirs]
+    dirs = dirs[:20]
     if len(dirs) != 20:
         print(f'{len(dirs)} - {dataset} - {algorithm}')
         raise()
@@ -1045,7 +1047,7 @@ def check_algorithms_execution_base():
                 elif index_r.size != 20:
                     raise ('error, not enought origin')
 
-def get_multiple_logs_hyp(dirs, dataset, algorithm):
+def get_multiple_logs_hyp(dirs, dataset, algorithm, output_file):
     path = 'results/' + dataset + '/' + algorithm + '/'
     pairs = []
     for d in dirs:
@@ -1057,7 +1059,7 @@ def get_multiple_logs_hyp(dirs, dataset, algorithm):
     for p in pairs:
         plt.plot(p[0], label=p[1])
     plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-    plt.savefig('multi-logs-hv.pdf')
+    plt.savefig(output_file)
 
 
 def get_multiple_logs_hyp_dir(dataset, algorithm, output):
@@ -1086,21 +1088,39 @@ def get_multiple_logs_hyp_dir(dataset, algorithm, output):
 if __name__ == '__main__':
     plt.rcParams['pdf.fonttype'] = 42
     plt.rcParams['ps.fonttype'] = 42
+    problems = ['Christofides_1_5_0.5.txt', 'Christofides_2_5_0.5.txt', 'Christofides_3_5_0.5.txt',
+                'Christofides_4_5_0.5.txt']
+    medians = get_medians_files(problems, ['cmibaco'])
+    for m in medians.keys():
+        print (m, medians[m]['hv'])
+    median_15 = ['2024-03-06-21-28-31', '2024-05-25-12-03-07']
+    median_25 = ['2024-03-06-21-40-46', '2024-05-25-12-13-41']
+    median_35 = ['2024-03-07-03-02-15', '2024-05-25-12-32-37']
+    median_45 = ['2024-03-07-18-24-38', '2024-05-25-13-00-19']
+    #'2024-05-25-13-00-19'
+    get_multiple_logs_hyp(median_15, 'Christofides_1_5_0.5', 'cmibaco-lns', 'logs-hv-15.pdf')
+    get_multiple_logs_hyp(median_25, 'Christofides_2_5_0.5', 'cmibaco-lns', 'logs-hv-25.pdf')
+    get_multiple_logs_hyp(median_35, 'Christofides_3_5_0.5', 'cmibaco-lns', 'logs-hv-35.pdf')
+    get_multiple_logs_hyp(median_45, 'Christofides_4_5_0.5', 'cmibaco-lns', 'logs-hv-45.pdf')
 
-    """
-    dir_1_5 = 'results/Christofides_1_5_0.5/cmibaco-lns/2024-03-06-20-36-57/'
-    dir_3_5 = 'results/Christofides_3_5_0.5/cmibaco-lns/2024-03-06-21-15-06/'
-    dir_6_5 = 'results/Christofides_6_5_0.5/cmibaco-lns/2024-03-09-23-00-58/'
-    dirs = [dir_1_5, dir_3_5, dir_6_5]
-    for d in dirs:
-        if os.path.exists(d + 'archive-object.xz'):
-            file = lzma.open(d + 'archive-object.xz', 'rb')
-            A = pickle.load(file)
-        front = np.load(d + 'front.npy')
-        all_solutions = np.load(d + 'all-solutions.npy')
-        plot_front_epsilon_front(front, A, all_solutions, d[8:28], d + 'upd-')
+    cmedian_15 = ['2023-12-28-00-53-59', '2024-05-25-13-19-46']
+    cmedian_25 = ['2023-12-28-18-41-36', '2024-05-25-13-29-31']
+    get_multiple_logs_hyp(cmedian_15, 'Christofides_1_5_0.5', 'cmibaco', 'cmibaco-logs-hv-15.pdf')
+    get_multiple_logs_hyp(cmedian_25, 'Christofides_2_5_0.5', 'cmibaco', 'cmibaco-logs-hv-25.pdf')
+    get_multiple_logs_hyp_dir('Christofides_1_5_0.5', 'cmibaco', 'cmibaco-15-multy.pdf')
+    get_multiple_logs_hyp_dir('Christofides_2_5_0.5', 'cmibaco', 'cmibaco-25-multy.pdf')
+    #Christofides_1_5_0.5.txt '2023-12-28-00-53-59' '2024-05-25-13-19-46'
+    #Christofides_2_5_0.5.txt '2023-12-28-18-41-36'
+    #Christofides_3_5_0.5.txt '2023-12-29-12-08-40'
+    #Christofides_4_5_0.5.txt '2024-01-01-14-04-59'
+
+    #get_multiple_logs_hyp_dir('Christofides_1_5_0.5', 'cmibaco-lns', 'ch1505-2-opt-multi.pdf')
+    #get_multiple_logs_hyp_dir('Christofides_2_5_0.5', 'cmibaco-lns', 'ch2505-2-opt-multi.pdf')
+    #compare_medians_opt()
+
+    #get_multiple_logs_hyp_dir('Christofides_1_5_0.5', 'cmibaco-lns', 'ch1505-2-opt-multi.pdf')
     raise()
-    """
+
     files = ['evaluations-hv.csv', 'evaluations-r2.csv', 'evaluations-es.csv']
 
     cmibaco_lns = ['2024-03-06-20-36-57', '2024-03-06-21-14-36', '2024-03-06-21-28-31', '2024-03-06-21-42-15', '2024-03-06-21-55-40',

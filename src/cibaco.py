@@ -249,6 +249,7 @@ def ibaco_indicator(params, pheromone_matrix, indicator, cooperative_mode, execu
     Q = params['Q']
     timetables = params['timetables']
     p_mut = params['p_mut']
+    prob_cross = params['p_cross']
     epsilon = params['epsilon']
     dy = params['dy']
     max_iterations = params['ibaco-' + indicator]['max_iterations']
@@ -276,7 +277,7 @@ def ibaco_indicator(params, pheromone_matrix, indicator, cooperative_mode, execu
         current_population = wrap_ibaco(current_population, indicator)
         print (f'after built  {Solution.evals}')
         n = len(current_population)
-        crossover_mutation = crossover_stage(current_population, k, indicator, w_r2_all, tournament_size=5, weights_ws=weights_ws, prob_cross=0.8)
+        crossover_mutation = crossover_stage(current_population, k, indicator, w_r2_all, tournament_size=5, weights_ws=weights_ws, prob_cross=prob_cross)
         print(f'after cross  {Solution.evals}')
         mutation_stage(crossover_mutation, p_mut)
         print(f'after mut  {Solution.evals}')
