@@ -45,7 +45,7 @@ def get_parameters(algorithm):
                   'params-ibaco-17.json', 'params-ibaco-18.json',
                   'params-ibaco-19.json', 'params-ibaco-20.json']
         return params
-    elif algorithm == 'cmibaco' or algorithm == 'cmibaco-lns' or algorithm == 'cmibaco-cross' or algorithm == 'cmibaco-mut' or algorithm == 'cmibaco-classic':
+    elif algorithm == 'cmibaco' or algorithm == 'cmibaco-lns' or algorithm == 'cmibaco-cross' or algorithm == 'cmibaco-mut' or algorithm == 'cmibaco-base':
         params = ['params-cmibaco-1.json', 'params-cmibaco-2.json',
                   'params-cmibaco-3.json', 'params-cmibaco-4.json',
                   'params-cmibaco-5.json', 'params-cmibaco-6.json',
@@ -139,7 +139,7 @@ def exec_algorithm(algorithm, params, n_execution):
     elif algorithm == 'cmibaco-mut':
         A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front = cooperative_ibaco_components(params, n_execution, apply_lns=False, apply_crossover=False, apply_mutation=True)
         A = [a.solution for a in A]
-    elif algorithm == 'cmibaco-classic':
+    elif algorithm == 'cmibaco-base':
         A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front = cooperative_ibaco_components(params, n_execution, apply_lns=False, apply_crossover=False, apply_mutation=False, classic=True)
         A = [a.solution for a in A]
     elif algorithm == 'mdlns':
@@ -178,7 +178,7 @@ def check_dirs():
         os.makedirs('results')
     if not os.path.isdir('boxplot/'):
         os.makedirs('boxplot')
-    if not os.path.isdir('boxplot-urvp/'):
+    if not os.path.isdir('boxplot-uvrp/'):
         os.makedirs('boxplot-uvrp')
     if not os.path.isdir('uncertainty/'):
         os.makedirs('uncertainty')

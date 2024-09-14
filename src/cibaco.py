@@ -219,6 +219,7 @@ def crossover_stage(current_population, k, indicator, w_r2_all, tournament_size=
             continue
         if len(child_population) + len(childs) > n:
             child_population.append(childs[0])
+            Solution.evals -= 1
         else:
             child_population = child_population + childs
     return child_population
@@ -234,13 +235,11 @@ def lns(current_population, params, n_best):
     solutions = mdls(solutions_unwrap, params)
     for i in range(n_best):
         c = current_population[i]
-        #print(f'before LNS {c.f_i}')
         c.solution = solutions[i]
         c.f_i = np.array([solutions[i].f_1, solutions[i].f_2, solutions[i].f_3])
-        #print(f'after LNS {c.f_i} {Solution.evaluations}')
 
 
-def ibaco_indicator(params, pheromone_matrix, indicator, cooperative_mode, execution_n, apply_lns=False):
+def ibaco_indicator(params, pheromone_matrix, indicator, cooperative_mode, execution_n, apply_lns=False, tuning=False):
     seed = params['seed']
     random.seed(seed)
     np.random.seed(seed)
@@ -267,8 +266,12 @@ def ibaco_indicator(params, pheromone_matrix, indicator, cooperative_mode, execu
     ind = HV(ref_point=ref_point_hv)
     w_r2 = []
     n_ants = params['n_ants']
-    with open('references_r2/references_' + str(n_ants) + '.pkl', 'rb') as f:
-        w_r2_all = pickle.load(f)
+    if tuning:
+        with open('../references_r2/references_' + str(n_ants) + '.pkl', 'rb') as f:
+            w_r2_all = pickle.load(f)
+    else:
+        with open('references_r2/references_' + str(n_ants) + '.pkl', 'rb') as f:
+            w_r2_all = pickle.load(f)
     start = time.time()
     log_evaluations = []
 
@@ -282,7 +285,7 @@ def ibaco_indicator(params, pheromone_matrix, indicator, cooperative_mode, execu
         mutation_stage(crossover_mutation, p_mut)
         print(f'after mut  {Solution.evals}')
         current_population += crossover_mutation
-        if i == 0:
+        if i == 0 and not cooperative_mode and not tuning:
             current_evaluations = 0
             algorithm = 'ibaco-' + indicator
             if apply_lns:
@@ -307,9 +310,7 @@ def ibaco_indicator(params, pheromone_matrix, indicator, cooperative_mode, execu
             minimum.sort(key=lambda x: x[0])
             minimum = minimum[0]
             current_population.remove(minimum[1])
-            #if len(current_population) % 50 == 0:
-            #    print (f'{indicator} | iteration {i}/{max_iterations} - {len(current_population)} / {n}')
-        print (f'it {i} - fitness {Solution.evals} {time.time() - start1} | execution {execution_n}')
+        print (f"it {i} - fitness {Solution.evals} | time {time.time() - start1} | execution {execution_n} | {params['file']}")
 
         update_pheromone_indicator(pheromone_matrix, current_population, rho, Q, timetables, days)
         #log_pheromone.append((np.copy(pheromone_matrix['AM'][0]), [(s.fitness, s.f_i) for s in current_population]))
@@ -320,7 +321,7 @@ def ibaco_indicator(params, pheromone_matrix, indicator, cooperative_mode, execu
         print (f'{indicator} | it: {i} hypervolume: {hyp}')
         log_hypervolume.append(hyp)
         log_solutions_added.append(len(A))
-        if not cooperative_mode:
+        if not cooperative_mode and not tuning:
             algorithm = 'ibaco-' + indicator
             if apply_lns:
                 algorithm += '-lns'
@@ -338,7 +339,7 @@ def ibaco_indicator(params, pheromone_matrix, indicator, cooperative_mode, execu
     return A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front
 
 
-def cooperative_ibaco(params, n_execution=0, apply_lns=False):
+def cooperative_ibaco(params, n_execution=0, apply_lns=False, tuning=False):
     seed = params['seed']
     random.seed(seed)
     np.random.seed(seed)
@@ -372,7 +373,7 @@ def cooperative_ibaco(params, n_execution=0, apply_lns=False):
         for j in range(k):
             indicator = indicators[j]
             pheromone_matrix = matrices[j]
-            P,_,_,_,_,_,all_solutions_p,_ = ibaco_indicator(params, pheromone_matrix, indicator, True, n_execution, apply_lns)
+            P,_,_,_,_,_,all_solutions_p,_ = ibaco_indicator(params, pheromone_matrix, indicator, True, n_execution, apply_lns, tuning)
             all_solutions = np.concatenate((all_solutions, all_solutions_p), axis=0)
             for p in P:
                 p.solution.algorithm = indicator
@@ -395,26 +396,24 @@ def cooperative_ibaco(params, n_execution=0, apply_lns=False):
             alg = 'cmibaco-lns'
         else:
             alg = 'cmibaco'
-        utils.save_evaluations(alg, params['file'], n_execution, log_evaluations)
-        print (f'CMIBACO iteration {i} | evals {current_evaluations} hyp: {hyp}')
+        if not tuning:
+            utils.save_evaluations(alg, params['file'], n_execution, log_evaluations)
+        print (f"cMIBACO iteration {i} | evals {current_evaluations} hyp: {hyp} | {params['file']}")
     all_solutions = all_solutions[1:,:]
     front = [[c.f_1, c.f_2, c.f_3] for c in front]
     front = np.array(front)
     duration = time.time() - start
     statistics = get_statistics([a.solution for a in A], log_hypervolume, log_solutions_added, duration)
     print (f'>>>> min time_tour {statistics["min_time_tour"]}, min arrival {statistics["min_arrival_time"]}, min vehicle {statistics["min_vehicle"]} - max time_tour {statistics["max_time_tour"]}, max arrival {statistics["max_arrival_time"]}, max vehicle {statistics["max_vehicle"]}')
-    for a in A:
-        a.solution.is_feasible()
     return A, log_hypervolume, log_solutions_added, duration, statistics, log_evaluations, all_solutions, front
 
 def migration(A, nmig, k, k_indicator, indicators):
     ES = []
     for j in range(k):
-        external_solutions = []
         random_nmig = [a for a in A if a.solution.algorithm != indicators[j]]
-        if len(random_nmig) >= nmig:
-            external_solutions = sample(random_nmig, nmig)
-            w_r2 = get_reference_directions("energy", 3, nmig, seed=1)
-            fitness_asigment(external_solutions, k_indicator[j], indicators[j], w_r2)
+        n_external = min(nmig, len(random_nmig))
+        external_solutions = sample(random_nmig, n_external)
+        w_r2 = get_reference_directions("energy", 3, n_external, seed=1)
+        fitness_asigment(external_solutions, k_indicator[j], indicators[j], w_r2)
         ES.append(external_solutions)
     return ES
