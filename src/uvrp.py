@@ -461,6 +461,8 @@ def plot_difference_diagram_indicator_uvrp(problems, algorithms, file, indicator
         data = pd.concat([data, data_sub], ignore_index=True)
     data.rename(columns=algorithms_columns, inplace=True)
     data.to_csv(output_file.replace('.pdf', '.csv'), index=False)
+    if indicator != 'hv':
+        data *= -1
     result = autorank(data, alpha=0.05, verbose=False, force_mode='nonparametric')
     fig, ax = plt.subplots(figsize=(15,25))
     ax = plot_stats(result, allow_insignificant=True)
@@ -475,15 +477,18 @@ def plot_general_diagram_uvrp(algorithms, labels):
     title = 'Critic difference diagram '
     for algorithm in algorithms:
         algorithms_columns[algorithm] = labels[algorithm]
-        title += '- ' + labels[algorithm] + ' '
+        #title += '- ' + labels[algorithm] + ' '
     file_es = 'lre-critic-diff-es.csv'
     file_hv = 'lre-critic-diff-hv.csv'
     file_r2 = 'lre-critic-diff-r2.csv'
+    file_times = 'total-evaluations-time.csv'
     df_es = pd.read_csv(file_es)
     df_hv = pd.read_csv(file_hv)
     df_r2 = pd.read_csv(file_r2)
+    df_times = pd.read_csv(file_times)
     df_r2 *= -1
     df_es *= -1
+    df_times *= -1
     total_df = pd.concat([df_es, df_hv, df_r2], axis=0)
     total_df.rename(columns=algorithms_columns, inplace=True)
     result = autorank(total_df, alpha=0.05, verbose=False, force_mode='nonparametric')
@@ -695,7 +700,7 @@ def get_comparation_lre_algorithms(problems, algorithms):
     columns_csv = ['problem','indicator','value','algorithm','execution','dir']
     for j, problem in enumerate(problems):
         for algorithm in algorithms:
-            dir = 'results/' + problem.replace('.txt', '') + '/' + algorithm + '/'
+            dir = 'results/' + problem.replace('.txt', '').replace('.vrp', '') + '/' + algorithm + '/'
             dirs = os.listdir(dir)
             dirs = [d for d in dirs if d.startswith('2023') or d.startswith('2024')]
             dirs = [(d, datetime.strptime(d, '%Y-%m-%d-%H-%M-%S')) for d in dirs]
@@ -750,7 +755,7 @@ def compress_files():
                 if os.path.exists(file_name + '.pkl') and not os.path.exists(file_name + '.xz'):
                     file = open(file_name + '.pkl', 'rb')
                 elif os.path.exists(file_name + '.xz'):
-                    #print(f"alredy exist file .xz for {problem}/{algorithm} in {d}")
+                    print(f"alredy exist file .xz for {problem}/{algorithm} in {d}")
                     continue
                 else:
                     print(f'ERROR: NOT EXIST FILE pkl FOR {problem}/{algorithm} in {d}')
@@ -774,6 +779,7 @@ def get_boxplots(problems, file, indicator, algorithms, labels):
         plt.title(f"-Light robustness - {problem.replace('.txt', '')} - {indicator}")
         bplot = data.boxplot(column=list(data.columns))
         fig.axes.append(bplot)
-        output_file = 'boxplot-uvrp/' + problem[13:].replace('0.5.txt', '0_5-boxplot.pdf')
+        output_file = 'boxplot-uvrp/' + problem[13:].replace('0.5.txt', '0_5-boxplot.pdf').replace('0.9.txt',
+                                                                                                   '0_9-boxplot.pdf').replace('0.7.vrp', '0_7-boxplot.pdf')
         plt.savefig(output_file)
         plt.close()

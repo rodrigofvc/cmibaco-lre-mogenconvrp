@@ -15,6 +15,7 @@ from autorank import autorank, plot_stats
 
 from maco import non_dominated
 import lzma
+import seaborn as sns
 
 def save_result(dataset, fig_name, new_path):
     if '.txt' in dataset:
@@ -474,15 +475,45 @@ def plot_worst_escenarios(worst_escenarios, scenarios_id, dataset, execution_dir
     save_result(dataset, fig_name, execution_dir)
     plt.close()
 
+def plot_line_solutions(i, solution_scenario_tuple, color_vehicles):
+    solutions = [s for s in solution_scenario_tuple if not isinstance(s, np.int64)]
+    line_styles = ['-', ':', '--', '-.']
+    line_colours = color_vehicles
+    solutions = [s for s in solutions if
+                 not s in [q for q in solutions if q != s and q.f_1 <= s.f_1 and q.f_3 <= s.f_3]]
+
+    line_style = i % len(line_styles)
+    line_style = line_styles[line_style]
+    line_colour = i % len(line_colours)
+    line_colour = line_colours[line_colour + 1]
+
+    solutions.sort(key=lambda x: x.f_1)
+    line_x1 = [0, solutions[0].f_1]
+    line_y1 = [solutions[0].f_3, solutions[0].f_3]
+    plt.plot(line_x1, line_y1, ls=line_style, color=line_colour)
+    for j in range(1, len(solutions)):
+        s_x1 = [solutions[j - 1].f_1, solutions[j].f_1]
+        s_y1 = [solutions[j].f_3, solutions[j].f_3]
+        plt.plot(s_x1, s_y1, ls=line_style, color=line_colour)
+
+    solutions.sort(key=lambda x: x.f_3)
+    line_x1 = [solutions[0].f_1, solutions[0].f_1]
+    line_y1 = [0, solutions[0].f_3]
+    plt.plot(line_x1, line_y1, ls=line_style, color=line_colour)
+    for j in range(1, len(solutions)):
+        s_x1 = [solutions[j].f_1, solutions[j].f_1]
+        s_y1 = [solutions[j].f_3, solutions[j - 1].f_3]
+        plt.plot(s_x1, s_y1, ls=line_style, color=line_colour)
+
 def plot_lightly_robust_escenarios(lre_solutions, worst_scenarios_no_lre_sub, scenarios_id, dataset,
                                            execution_dir, id_solutions):
     color_vehicles = {1: 'black', 2: 'blue', 3: 'red', 4: 'green', 5: 'cyan', 6: 'magenta', 7: 'yellow'}
 
-    fig = plt.figure(figsize=(15, 5))
+    fig = plt.figure(figsize=(5, 5))
     ax = fig.add_subplot()
-    ax.set_xlabel('$f_{1}$')
-    ax.set_ylabel('$f_{3}$')
-    plt.title('$\min_{x \in P_{Q,\epsilon}} \sup_{\delta \in \mathbb{U}} \ F(x,\delta)$ - ' + dataset.replace('.txt', ''))
+    ax.set_xlabel('$f_{1}$', fontsize=14)
+    ax.set_ylabel('$f_{3}$', fontsize=14)
+    plt.title('$\min_{x \in P_{Q,\epsilon}} \sup_{\\xi \in \mathbb{U}} \ F(x,\\xi)$ - ' + dataset.replace('.txt', ''))
     labels_scenarios = {0: 'o', 1: '^', 2: 's'}
 
     n = len(lre_solutions)
@@ -492,11 +523,12 @@ def plot_lightly_robust_escenarios(lre_solutions, worst_scenarios_no_lre_sub, sc
     for i in range(n):
         solution_scenario_tuple = lre_solutions[i]
         m = len(solution_scenario_tuple)
+        # draw set-based mix-max area
+        plot_line_solutions(i, solution_scenario_tuple, color_vehicles)
         for j in range(m//2):
             solution_scenario = solution_scenario_tuple[j*2]
             id_scenario = solution_scenario_tuple[j*2+1]
             scenarios[id_scenario].append(solution_scenario)
-
     scenarios = [scenarios[k] for k in scenarios.keys()]
     for e, A in enumerate(scenarios):
         if len(A) == 0:
@@ -511,9 +543,10 @@ def plot_lightly_robust_escenarios(lre_solutions, worst_scenarios_no_lre_sub, sc
             ax.scatter(xs, ys, marker=labels_scenarios[e], c=color_vehicles[n_vehicle],
                        label='$f_{2}$=' + str(n_vehicle) + ' (' + scenarios_id[e] + ')')
             for j, a in enumerate(a_vehicle):
-                txt = str(id_solutions[a.id]) + '$_{lre}$'
-                ax.annotate(txt, (a.f_1, a.f_3))
-
+                #txt = str(id_solutions[a.id]) + '$_{lre}$'
+                #txt = str(id_solutions[a.id])
+                #ax.annotate(txt, (a.f_1, a.f_3))
+                pass
 
     n = len(worst_scenarios_no_lre_sub)
     scenarios = {}
@@ -544,7 +577,7 @@ def plot_lightly_robust_escenarios(lre_solutions, worst_scenarios_no_lre_sub, sc
                 txt = str(id_solutions[a.id])
                 ax.annotate(txt, (a.f_1, a.f_3))
 
-    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    ax.legend(loc='lower left')
     fig_name = 'scenarios.pdf'
     save_result(dataset, fig_name, execution_dir)
     plt.close()
@@ -600,34 +633,30 @@ def indicator_s_energy(A, s):
     return sum(distances)
 
 def get_reference_point_file(dataset):
-    if dataset == 'Christofides_8_5_0.5.txt':
-        return np.array([15000, 8, 900])
-    elif dataset == 'Christofides_6_5_0.5.txt':
-        return np.array([16000, 9, 900])
-    elif dataset == 'Christofides_4_5_0.5.txt':
+    if 'Christofides_1_5' in dataset:
+        return np.array([10000, 7, 700])
+    elif 'Christofides_2_5' in dataset:
+        return np.array([10000, 6, 600])
+    elif 'Christofides_3_5' in dataset:
+        return np.array([10000, 6, 600])
+    elif 'Christofides_4_5' in dataset:
         return np.array([12000, 7, 900])
-    elif dataset == 'Christofides_2_5_0.5.txt':
-        return np.array([10000, 6, 600])
-    elif dataset == 'Christofides_1_5_0.5.txt':
-        return np.array([10000, 7, 700])
-    elif dataset == 'Christofides_3_5_0.5.txt':
-        return np.array([10000, 6, 600])
-    elif dataset == 'Christofides_7_5_0.5.txt':
-        return np.array([12000, 8, 900])
-    elif dataset == 'Christofides_5_5_0.5.txt':
+    elif 'Christofides_5_5' in dataset:
         return np.array([16000, 9, 900])
-    elif dataset == 'Christofides_9_5_0.5.txt':
+    elif 'Christofides_6_5' in dataset:
+        return np.array([16000, 9, 900])
+    elif 'Christofides_7_5' in dataset:
+        return np.array([12000, 8, 900])
+    elif 'Christofides_8_5' in dataset:
+        return np.array([15000, 8, 900])
+    elif 'Christofides_9_5' in dataset:
         return np.array([15000, 9, 1000])
-    elif dataset == 'Christofides_10_5_0.5.txt':
+    elif 'Christofides_10_5' in dataset:
         return np.array([17000, 9, 1300])
-    elif dataset == 'Christofides_11_5_0.5.txt':
+    elif 'Christofides_11_5' in dataset:
         return np.array([17000, 9, 1300])
-    elif dataset == 'Christofides_12_5_0.5.txt':
+    elif 'Christofides_12_5' in dataset:
         return np.array([17000, 9, 1300])
-    elif dataset == 'Christofides_1_5_0.9.txt':
-        return np.array([10000, 7, 700])
-    elif dataset == 'convrp_10_test_0.vrp':
-        return np.array([10000, 7, 700])
     else:
         raise('not reference point available for dataset')
 
@@ -658,13 +687,12 @@ def boxplot(file, dataset, output_file, title, algorithms, labels):
     plt.close()
 
 def get_index_dataset(dataset, algorithm, execution_dir):
-    dir = 'results/' + dataset.replace('.txt', '') + '/' + algorithm + '/'
+    dir = 'results/' + dataset.replace('.txt', '').replace('.vrp', '') + '/' + algorithm + '/'
     dirs = os.listdir(dir)
     dirs = [d for d in dirs if d.startswith('2023') or d.startswith('2024')]
     dirs = [(d, datetime.strptime(d, '%Y-%m-%d-%H-%M-%S')) for d in dirs]
     dirs.sort(key=lambda x: x[1])
     dirs = [d[0] for d in dirs]
-    #dirs = dirs[:20]
     if len(dirs) != 20:
         print(f'{len(dirs)} - {dataset} - {algorithm}')
         raise()
@@ -672,7 +700,7 @@ def get_index_dataset(dataset, algorithm, execution_dir):
 
 
 def get_i_dir(dataset, algorithm, i):
-    dir = 'results/' + dataset.replace('.txt', '') + '/' + algorithm + '/'
+    dir = 'results/' + dataset.replace('.txt', '').replace('.vrp', '') + '/' + algorithm + '/'
     dirs = os.listdir(dir)
     dirs = [d for d in dirs if d.startswith('2023') or d.startswith('2024')]
     dirs = [(d, datetime.strptime(d, '%Y-%m-%d-%H-%M-%S')) for d in dirs]
@@ -715,13 +743,18 @@ def get_medians_files(problems, algorithms):
     return problems_medians
 
 
-def get_table_time(problems, file_output):
-    algorithms = ['cmibaco', 'ibaco-eps', 'ibaco-hv', 'ibaco-r2', 'ibaco-ws', 'cmibaco-lns']
+def get_table_time(problems, file_output, main_algorithm, other_algorithms, labels):
+    algorithms = [main_algorithm] + other_algorithms
+    algorithms_columns = {}
+    for i, a in enumerate(algorithms):
+        algorithms_columns[i] = labels[a]
     data_times = pd.DataFrame(columns=algorithms)
+    data_total = pd.DataFrame()
     for (problem, _) in problems:
         row_times = {}
+        data_sub = pd.DataFrame()
         for algorithm in algorithms:
-            dir = 'results/' + problem.replace('.txt', '') + '/' + algorithm + '/'
+            dir = 'results/' + problem.replace('.txt', '').replace('.vrp', '') + '/' + algorithm + '/'
             dirs = os.listdir(dir)
             dirs = [d for d in dirs if d.startswith('2023') or d.startswith('2024')]
             if len(dirs) != 20:
@@ -732,11 +765,12 @@ def get_table_time(problems, file_output):
                 data = json.load(f)
                 time.append(data['duration_segs'])
             time = np.array(time)
-            if algorithm == 'cmibaco':
+            data_sub = pd.concat([data_sub, pd.DataFrame(time)], axis=1, ignore_index=True)
+            if algorithm == main_algorithm:
                 coop = time.copy()
             mean_time = time.mean()
             std_time = time.std()
-            if algorithm == 'cmibaco':
+            if algorithm == main_algorithm:
                 row_times[algorithm] = str(f'{mean_time:.3e} ({std_time:.3e})')
             else:
                 w = wilcoxon(coop, time)
@@ -749,11 +783,13 @@ def get_table_time(problems, file_output):
                         row_times[algorithm] = str(f'{mean_time:.3e} ({std_time:.3e})') + ' $\\uparrow$'
 
         data_times = data_times._append(row_times, ignore_index=True)
-    problems_column = [[p[0].replace('_', '$\_$').replace('.txt', ''), 'mean time(secs)'] for p in problems]
+        data_total = pd.concat([data_total, data_sub], ignore_index=True)
+    problems_column = [[p[0].replace('_', '$\_$').replace('.txt', '').replace('.vrp', ''), 'time(secs)'] for p in problems]
     problems_column = pd.DataFrame(problems_column, columns=['dataset', 'mean time(secs)'])
     data_times = pd.concat([problems_column, data_times], axis=1)
     data_times.to_latex(file_output, column_format='ccrrrrr', index=False)
-    print(data_times)
+    data_total.rename(columns=algorithms_columns, inplace=True)
+    data_total.to_csv('total-evaluations-time.csv', index=False)
 
 # Compare the median of current algorithm against the other algorithms in the same parameters
 def plot_median_algorithm_compare(problem_medians, main_algorithm, other_algorithms, labels):
@@ -786,7 +822,7 @@ def plot_median_algorithm_compare(problem_medians, main_algorithm, other_algorit
                 plt.plot(x_log_iterations, y_hv, label=label)
             plt.legend()
             output_file = 'medians-comparation/' + problem[13:] + '-' + indicator + '.pdf'
-            plt.suptitle(problem.replace('.txt', ' ') + ' - ' + label_indicator, fontsize=14)
+            plt.suptitle(problem.replace('.txt', ' ').replace('.vrp', '') + ' - ' + label_indicator, fontsize=14)
             plt.savefig(output_file)
             plt.close()
 
@@ -856,7 +892,8 @@ def plot_fronts(problem_medians, labels):
         for indicator in indicators:
             for algorithm in problem_medians[problem][indicator]:
                 dir = problem_medians[problem][indicator][algorithm]
-                archive = np.load('results/' + problem.replace('.txt', '') + '/' + algorithm + '/' + dir + '/archive.npy')
+                archive_dir = 'results/' + problem.replace('.txt', '').replace('.vrp', '') + '/' + algorithm + '/' + dir + '/archive.npy'
+                archive = np.load(archive_dir)
                 # 10, 7
                 fig = plt.figure(figsize=(2.5, 1.725))
                 ax = fig.add_subplot(projection='3d')
@@ -879,6 +916,8 @@ def count_ranks(data_mean, ranks):
 
 def get_table_mean(problems, file, output_file, indicator, algorithms_to_compare, main_algorithm):
     algorithms = [main_algorithm] + algorithms_to_compare
+    fig = plt.figure(figsize=(10, 10))
+    wilcoxon_map = np.zeros((len(problems), len(algorithms)-1))
     algorithms_columns = {0: main_algorithm}
     for i, a in enumerate(algorithms_to_compare):
         algorithms_columns[i+1] = a
@@ -887,7 +926,7 @@ def get_table_mean(problems, file, output_file, indicator, algorithms_to_compare
     ranks = {}
     for algorithm in algorithms:
         ranks[algorithm] = [0] * len(algorithms)
-    for problem in problems:
+    for i, problem in enumerate(problems):
         dataset = problem[0]
         data = pd.DataFrame()
         for algorithm in algorithms:
@@ -899,7 +938,7 @@ def get_table_mean(problems, file, output_file, indicator, algorithms_to_compare
         count_ranks(data_mean, ranks)
         data_std = data[algorithms].std(numeric_only=True)
         row_stats = {}
-        for algorithm in algorithms:
+        for j, algorithm in enumerate(algorithms):
             mean_alg = data_mean.loc[algorithm]
             std_alg = data_std.loc[algorithm]
             arrow = ''
@@ -922,6 +961,7 @@ def get_table_mean(problems, file, output_file, indicator, algorithms_to_compare
                             arrow = " $\\uparrow$"
                         else:
                             arrow = " $\\downarrow$"
+                wilcoxon_map[i][j] = p_value
             stats = str(f'{mean_alg:.3e}') + ' (' + str(f'{std_alg:.3e}') + ')' + arrow
             row_stats[algorithm] = stats
         data_total = data_total._append(row_stats, ignore_index=True)
@@ -929,6 +969,9 @@ def get_table_mean(problems, file, output_file, indicator, algorithms_to_compare
     problems_column = pd.DataFrame(problems_column, columns=['Problem', 'Indicator'])
     data_total = pd.concat([problems_column, data_total], axis=1)
     data_total.to_latex(output_file, column_format='cc' + len(algorithms)*'r', index=False)
+    sns.heatmap(wilcoxon_map, annot=True, cmap="coolwarm", vmax=0.05)
+    plt.savefig('heatmap-' + indicator + '.png')
+    plt.close()
     return ranks
 
 
@@ -936,6 +979,10 @@ def plot_general_table(problems, file, output_file, algorithms, labels):
     algorithms_columns = {}
     for i, a in enumerate(algorithms):
         algorithms_columns[i] = labels[a]
+    title = 'Critic difference diagram '
+    for algorithm in algorithms:
+        algorithms_columns[algorithm] = labels[algorithm]
+        #title += '- ' + labels[algorithm] + ' '
     df = pd.read_csv(file)
     data = pd.DataFrame()
     for problem in problems:
@@ -948,13 +995,16 @@ def plot_general_table(problems, file, output_file, algorithms, labels):
         data = pd.concat([data, data_sub], ignore_index=True)
     data.rename(columns=algorithms_columns, inplace=True)
     data.to_csv(output_file.replace('.pdf', '.csv'), index=False)
+    if 'hv' not in file:
+        data *= -1
     result = autorank(data, alpha=0.05, verbose=False, force_mode='nonparametric')
     fig, ax = plt.subplots(figsize=(15,25))
     ax = plot_stats(result, allow_insignificant=True)
     #ax.set_title(dataset + ' ' + indicator)
     fig.axes.append(ax)
     #fig.suptitle(dataset + ' ' + indicator)
-    plt.savefig(output_file)
+    plt.title(title)
+    plt.savefig(output_file, bbox_inches="tight", pad_inches=0.15)
     plt.close()
 
 def plot_general_diagram(algorithms, labels):
@@ -966,12 +1016,15 @@ def plot_general_diagram(algorithms, labels):
     file_es = 'total-evaluations-es.csv'
     file_hv = 'total-evaluations-hv.csv'
     file_r2 = 'total-evaluations-r2.csv'
+    file_times = 'total-evaluations-time.csv'
     df_es = pd.read_csv(file_es)
     df_hv = pd.read_csv(file_hv)
     df_r2 = pd.read_csv(file_r2)
+    df_times = pd.read_csv(file_times)
     df_r2 *= -1
     df_es *= -1
-    total_df = pd.concat([df_es, df_hv, df_r2], axis=0)
+    df_times *= -1
+    total_df = pd.concat([df_es, df_hv, df_r2, df_times], axis=0)
     total_df.rename(columns=algorithms_columns, inplace=True)
     result = autorank(total_df, alpha=0.05, verbose=False, force_mode='nonparametric')
     fig, ax = plt.subplots(figsize=(15, 25))
@@ -1012,10 +1065,10 @@ def delete_by_evaluation(files, execution):
         print(f'after drop  {df.shape} {file}')
         df.to_csv(file, index=False)
 
-def delete_alg_dt(file, dataset, algorithm):
+def delete_alg_dt(file, dataset, algorithm, execution):
     df = pd.read_csv(file)
     print(f'before drop {df.shape} {file}')
-    index_r = df.query(f"Algoritmo == '{algorithm}' and Problema == '{dataset}'").index
+    index_r = df.query(f"Algoritmo == '{algorithm}' and Problema == '{dataset}' and Ejecución == {execution}").index
     df.drop(index_r, inplace=True)
     print(f'after drop  {df.shape} {file}')
     df.to_csv(file, index=False)
