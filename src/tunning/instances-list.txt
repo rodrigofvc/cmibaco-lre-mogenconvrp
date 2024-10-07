@@ -1,0 +1,21 @@
+## This is an example of specifying a list of instances.
+
+# Each line is an instance relative to trainInstancesDir/testInstancesdir
+# unless set to "" (see scenario.txt.tmpl) and an optional sequence of
+# instance-specific parameters that will be passed to target-runner when
+# invoked on that instance.
+
+# Empty lines and comments are ignored.
+
+Christofides_1_5_0.5.txt
+Christofides_2_5_0.5.txt
+Christofides_3_5_0.5.txt
+Christofides_4_5_0.5.txt
+Christofides_5_5_0.5.txt
+Christofides_6_5_0.5.txt
+Christofides_7_5_0.5.txt
+Christofides_8_5_0.5.txt
+Christofides_9_5_0.5.txt
+Christofides_10_5_0.5.txt
+Christofides_11_5_0.5.txt
+Christofides_12_5_0.5.txt

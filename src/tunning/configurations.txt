@@ -1,0 +1,21 @@
+## Template for specifying initial parameter configurations, for
+## example, the default configuration, in irace.
+##
+## This filename must be specified via the --candidates-file command-line option
+## (or candidatesFile in scenario.txt).
+##
+## The format is one parameter configuration per line, and one parameter per
+## column. The first line gives the parameter name corresponding to
+## each column (names must match those given in the parameters
+## file). Each configuration must satisfy the
+## parameter conditions (NA should be used for those parameters that
+## are not enabled for a given configuration) and, if given, the
+## constraints that describe forbidden configurations.
+##param1 param2 mode   real mutation
+##5        NA    "x2"   2.0   "low"
+rho    alpha   beta   gamma  delta  Q      q0     p_mut   p_cross cmibaco_nmig lns_removes lns_eta lns_delta lns_ub_1  lns_ub_2
+0.4439 1.3123  4.6125 0.0495 3.2124 0.4765 0.5695 0.0338  0.8733  17           18          104873  0.0471    1397      843
+0.2105 1.8234  4.731  0.2975 3.5543 0.6575 0.4129 0.0832  0.8263  18           15          105014  0.0971    884       883
+0.18   1.7587  3.9396 0.0133 3.4022 0.5586 0.5705 0.0719  0.8589  12           19          104567  0.0551    1310      727
+0.7197 2.3094  4.9604 0.1574 2.0098 0.3917 0.4579 0.0536  0.8904  15           15          106985  0.0465    1271      676
+0.6518 1.2199  4.8217 0.0524 3.3834 0.2388 0.3279 0.1035  0.7495  15           18          100984  0.0928    1071      495
