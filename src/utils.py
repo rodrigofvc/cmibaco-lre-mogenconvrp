@@ -476,12 +476,15 @@ def plot_worst_escenarios(worst_escenarios, scenarios_id, dataset, execution_dir
     plt.close()
 
 def plot_line_solutions(i, solution_scenario_tuple, color_vehicles):
-    solutions = [s for s in solution_scenario_tuple if not isinstance(s, np.int64)]
+    lre_solutions = [s for s in solution_scenario_tuple if not isinstance(s, np.int64)]
     line_styles = ['-', ':', '--', '-.']
     line_colours = color_vehicles
-    solutions = [s for s in solutions if
-                 not s in [q for q in solutions if q != s and q.f_1 <= s.f_1 and q.f_3 <= s.f_3]]
-
+    # CASE 1: exists dominated solutions in two objectives (plot worst cases)
+    solutions = [s for s in lre_solutions if len([q for q in lre_solutions if q != s and q.f_1 <= s.f_1 and q.f_3 <= s.f_3]) != 0]
+    if len(solutions) == 0:
+        # CASE 2: all lre solutions are non-dominated
+        solutions = [s for s in lre_solutions if
+                     len([q for q in lre_solutions if q != s and q.f_1 <= s.f_1 and q.f_3 <= s.f_3]) == 0]
     line_style = i % len(line_styles)
     line_style = line_styles[line_style]
     line_colour = i % len(line_colours)

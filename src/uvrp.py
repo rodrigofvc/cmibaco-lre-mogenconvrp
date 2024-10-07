@@ -444,7 +444,7 @@ def eval_robust_solutions(problem, algorithm, dir):
     r2_lre_solutions = r2(lre_solutions, w_r2, z_r2)
     rs_lre_solutions = indicator_s_energy(lre_solutions, s=2)
 
-    return hyp_lre_solutions, r2_lre_solutions, rs_lre_solutions
+    return lre_solutions, hyp_lre_solutions, r2_lre_solutions, rs_lre_solutions
 
 def plot_difference_diagram_indicator_uvrp(problems, algorithms, file, indicator, output_file, labels):
     algorithms_columns = {}
@@ -713,7 +713,7 @@ def get_comparation_lre_algorithms(problems, algorithms):
             es_algorithm = []
             for j, d in enumerate(dirs):
                 print(f'>>>>>> evaluating lre solutions {problem}/{algorithm}/{d}')
-                hyp_lre_solutions, r2_lre_solutions, rs_lre_solutions = eval_robust_solutions(problem, algorithm, d)
+                _, hyp_lre_solutions, r2_lre_solutions, rs_lre_solutions = eval_robust_solutions(problem, algorithm, d)
                 hypervolume_algorithm.append(hyp_lre_solutions)
                 r2_algorithm.append(r2_lre_solutions)
                 es_algorithm.append(rs_lre_solutions)
