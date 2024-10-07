@@ -63,7 +63,7 @@ def target_cmibaco(args):
     params['costumers'] = costumers
     params['days'] = days
     params['timetables'] = ['AM', 'PM']
-    _, log_hypervolume, _, _, _, _, _, _ = cooperative_ibaco(params, -1, apply_lns=True, tunning=True)
+    _, log_hypervolume, _, _, _, _, _, _ = cooperative_ibaco(params, -1, apply_lns=True, tuning=True)
     return -1 * log_hypervolume[-1]
 
 if __name__ == '__main__':
