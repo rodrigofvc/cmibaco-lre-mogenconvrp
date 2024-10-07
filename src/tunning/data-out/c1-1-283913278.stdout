@@ -1,0 +1,1603 @@
+Tunning cMIBACO
+after built  10
+after cross  20
+after mut  30
+it 0 - fitness 90 0.00430607795715332 | execution -1
+eps | it: 0 hypervolume: 22330499.264325183
+after built  100
+after cross  110
+after mut  120
+it 0 - fitness 180 0.09147095680236816 | execution -1
+hv | it: 0 hypervolume: 22185773.29415186
+after built  190
+after cross  200
+after mut  210
+it 0 - fitness 270 0.038809776306152344 | execution -1
+r2 | it: 0 hypervolume: 20868595.99748173
+CMIBACO iteration 0 | evals 270 hyp: 22420364.14224725
+after built  280
+after cross  290
+after mut  300
+it 0 - fitness 360 0.004132986068725586 | execution -1
+eps | it: 0 hypervolume: 22530759.582518134
+after built  370
+after cross  380
+after mut  390
+it 0 - fitness 450 0.07300901412963867 | execution -1
+hv | it: 0 hypervolume: 21230053.553651035
+after built  460
+after cross  470
+after mut  480
+it 0 - fitness 540 0.039006948471069336 | execution -1
+r2 | it: 0 hypervolume: 20535800.908699192
+CMIBACO iteration 1 | evals 540 hyp: 22420364.14224725
+after built  550
+after cross  560
+after mut  570
+it 0 - fitness 630 0.004165172576904297 | execution -1
+eps | it: 0 hypervolume: 22530759.582518134
+after built  640
+after cross  650
+after mut  660
+it 0 - fitness 720 0.09504199028015137 | execution -1
+hv | it: 0 hypervolume: 21530572.613155216
+after built  730
+after cross  740
+after mut  750
+it 0 - fitness 810 0.03857421875 | execution -1
+r2 | it: 0 hypervolume: 21039491.004750922
+CMIBACO iteration 2 | evals 810 hyp: 22420364.14224725
+after built  820
+after cross  830
+after mut  840
+it 0 - fitness 900 0.004116058349609375 | execution -1
+eps | it: 0 hypervolume: 22530759.582518134
+after built  910
+after cross  920
+after mut  930
+it 0 - fitness 990 0.07355690002441406 | execution -1
+hv | it: 0 hypervolume: 22512308.943314377
+after built  1000
+after cross  1010
+after mut  1020
+it 0 - fitness 1080 0.03876781463623047 | execution -1
+r2 | it: 0 hypervolume: 20871053.45952011
+CMIBACO iteration 3 | evals 1080 hyp: 22420364.14224725
+after built  1090
+after cross  1100
+after mut  1110
+it 0 - fitness 1170 0.004126071929931641 | execution -1
+eps | it: 0 hypervolume: 22530759.582518134
+after built  1180
+after cross  1190
+after mut  1200
+it 0 - fitness 1260 0.0723261833190918 | execution -1
+hv | it: 0 hypervolume: 21199982.989127625
+after built  1270
+after cross  1280
+after mut  1290
+it 0 - fitness 1350 0.03865694999694824 | execution -1
+r2 | it: 0 hypervolume: 22119330.64789129
+CMIBACO iteration 4 | evals 1350 hyp: 22420364.14224725
+after built  1360
+after cross  1370
+after mut  1380
+it 0 - fitness 1440 0.0041239261627197266 | execution -1
+eps | it: 0 hypervolume: 22530759.582518134
+after built  1450
+after cross  1460
+after mut  1470
+it 0 - fitness 1530 0.07161879539489746 | execution -1
+hv | it: 0 hypervolume: 23366820.55644218
+after built  1540
+after cross  1550
+after mut  1560
+it 0 - fitness 1620 0.03862619400024414 | execution -1
+r2 | it: 0 hypervolume: 21514582.962944835
+CMIBACO iteration 5 | evals 1620 hyp: 23448779.864957478
+after built  1630
+after cross  1640
+after mut  1650
+it 0 - fitness 1710 0.004136800765991211 | execution -1
+eps | it: 0 hypervolume: 22274312.028888512
+after built  1720
+after cross  1730
+after mut  1740
+it 0 - fitness 1800 0.09758687019348145 | execution -1
+hv | it: 0 hypervolume: 22044256.703715965
+after built  1810
+after cross  1820
+after mut  1830
+it 0 - fitness 1890 0.038458824157714844 | execution -1
+r2 | it: 0 hypervolume: 21607349.925608113
+CMIBACO iteration 6 | evals 1890 hyp: 23448779.864957478
+after built  1900
+after cross  1910
+after mut  1920
+it 0 - fitness 1980 0.004025936126708984 | execution -1
+eps | it: 0 hypervolume: 20944312.857561503
+after built  1990
+after cross  2000
+after mut  2010
+it 0 - fitness 2070 0.07141780853271484 | execution -1
+hv | it: 0 hypervolume: 22521306.387749694
+after built  2080
+after cross  2090
+after mut  2100
+it 0 - fitness 2160 0.03836393356323242 | execution -1
+r2 | it: 0 hypervolume: 20636448.921484966
+CMIBACO iteration 7 | evals 2160 hyp: 23448779.864957478
+after built  2170
+after cross  2180
+after mut  2190
+it 0 - fitness 2250 0.004037141799926758 | execution -1
+eps | it: 0 hypervolume: 20759180.587402023
+after built  2260
+after cross  2270
+after mut  2280
+it 0 - fitness 2340 0.07290983200073242 | execution -1
+hv | it: 0 hypervolume: 21875141.366319466
+after built  2350
+after cross  2360
+after mut  2370
+it 0 - fitness 2430 0.03853797912597656 | execution -1
+r2 | it: 0 hypervolume: 21970447.183188677
+CMIBACO iteration 8 | evals 2430 hyp: 23448779.864957478
+after built  2440
+after cross  2450
+after mut  2460
+it 0 - fitness 2520 0.004113912582397461 | execution -1
+eps | it: 0 hypervolume: 21507276.148609076
+after built  2530
+after cross  2540
+after mut  2550
+it 0 - fitness 2610 0.0738229751586914 | execution -1
+hv | it: 0 hypervolume: 22594417.106574565
+after built  2620
+after cross  2630
+after mut  2640
+it 0 - fitness 2700 0.03879380226135254 | execution -1
+r2 | it: 0 hypervolume: 21161254.18350454
+CMIBACO iteration 9 | evals 2700 hyp: 23448779.864957478
+after built  2710
+after cross  2720
+after mut  2730
+it 0 - fitness 2790 0.007057905197143555 | execution -1
+eps | it: 0 hypervolume: 22588663.237311732
+after built  2800
+after cross  2810
+after mut  2820
+it 0 - fitness 2880 0.14514684677124023 | execution -1
+hv | it: 0 hypervolume: 21435494.83037607
+after built  2890
+after cross  2900
+after mut  2910
+it 0 - fitness 2970 0.038804054260253906 | execution -1
+r2 | it: 0 hypervolume: 20458977.337283425
+CMIBACO iteration 10 | evals 2970 hyp: 23448779.864957478
+after built  2980
+after cross  2990
+after mut  3000
+it 0 - fitness 3060 0.004209995269775391 | execution -1
+eps | it: 0 hypervolume: 20671456.925886855
+after built  3070
+after cross  3080
+after mut  3090
+it 0 - fitness 3150 0.07303404808044434 | execution -1
+hv | it: 0 hypervolume: 21795235.72815079
+after built  3160
+after cross  3170
+after mut  3180
+it 0 - fitness 3240 0.039037227630615234 | execution -1
+r2 | it: 0 hypervolume: 20922510.92357986
+CMIBACO iteration 11 | evals 3240 hyp: 23448779.864957478
+after built  3250
+after cross  3260
+after mut  3270
+it 0 - fitness 3330 0.004006862640380859 | execution -1
+eps | it: 0 hypervolume: 20478326.55545787
+after built  3340
+after cross  3350
+after mut  3360
+it 0 - fitness 3420 0.07288908958435059 | execution -1
+hv | it: 0 hypervolume: 21861126.449796844
+after built  3430
+after cross  3440
+after mut  3450
+it 0 - fitness 3510 0.03871631622314453 | execution -1
+r2 | it: 0 hypervolume: 21736255.94400774
+CMIBACO iteration 12 | evals 3510 hyp: 23448779.864957478
+after built  3520
+after cross  3530
+after mut  3540
+it 0 - fitness 3600 0.004281759262084961 | execution -1
+eps | it: 0 hypervolume: 21239626.296690587
+after built  3610
+after cross  3620
+after mut  3630
+it 0 - fitness 3690 0.07297396659851074 | execution -1
+hv | it: 0 hypervolume: 21409719.619925838
+after built  3700
+after cross  3710
+after mut  3720
+it 0 - fitness 3780 0.038619041442871094 | execution -1
+r2 | it: 0 hypervolume: 21185889.91663184
+CMIBACO iteration 13 | evals 3780 hyp: 23448779.864957478
+after built  3790
+after cross  3800
+after mut  3810
+it 0 - fitness 3870 0.004047870635986328 | execution -1
+eps | it: 0 hypervolume: 20591601.836077124
+after built  3880
+after cross  3890
+after mut  3900
+it 0 - fitness 3960 0.09727287292480469 | execution -1
+hv | it: 0 hypervolume: 20943182.323558528
+after built  3970
+after cross  3980
+after mut  3990
+it 0 - fitness 4050 0.03880023956298828 | execution -1
+r2 | it: 0 hypervolume: 21666841.26885426
+CMIBACO iteration 14 | evals 4050 hyp: 23448779.864957478
+after built  4060
+after cross  4070
+after mut  4080
+it 0 - fitness 4140 0.004080057144165039 | execution -1
+eps | it: 0 hypervolume: 20520769.321728263
+after built  4150
+after cross  4160
+after mut  4170
+it 0 - fitness 4230 0.07319808006286621 | execution -1
+hv | it: 0 hypervolume: 21546731.46250777
+after built  4240
+after cross  4250
+after mut  4260
+it 0 - fitness 4320 0.038774967193603516 | execution -1
+r2 | it: 0 hypervolume: 21224407.161270306
+CMIBACO iteration 15 | evals 4320 hyp: 23448779.864957478
+after built  4330
+after cross  4340
+after mut  4350
+it 0 - fitness 4410 0.004179954528808594 | execution -1
+eps | it: 0 hypervolume: 22151530.971764404
+after built  4420
+after cross  4430
+after mut  4440
+it 0 - fitness 4500 0.0726172924041748 | execution -1
+hv | it: 0 hypervolume: 22232464.46295463
+after built  4510
+after cross  4520
+after mut  4530
+it 0 - fitness 4590 0.03858685493469238 | execution -1
+r2 | it: 0 hypervolume: 22456437.05881111
+CMIBACO iteration 16 | evals 4590 hyp: 23448779.864957478
+after built  4600
+after cross  4610
+after mut  4620
+it 0 - fitness 4680 0.003972768783569336 | execution -1
+eps | it: 0 hypervolume: 21158361.505008195
+after built  4690
+after cross  4700
+after mut  4710
+it 0 - fitness 4770 0.07166790962219238 | execution -1
+hv | it: 0 hypervolume: 21601682.228034385
+after built  4780
+after cross  4790
+after mut  4800
+it 0 - fitness 4860 0.03863215446472168 | execution -1
+r2 | it: 0 hypervolume: 21970802.45990544
+CMIBACO iteration 17 | evals 4860 hyp: 23448779.864957478
+after built  4870
+after cross  4880
+after mut  4890
+it 0 - fitness 4950 0.004145145416259766 | execution -1
+eps | it: 0 hypervolume: 22276974.268483926
+after built  4960
+after cross  4970
+after mut  4980
+it 0 - fitness 5040 0.07230210304260254 | execution -1
+hv | it: 0 hypervolume: 20963927.938885767
+after built  5050
+after cross  5060
+after mut  5070
+it 0 - fitness 5130 0.03873491287231445 | execution -1
+r2 | it: 0 hypervolume: 21859203.768596523
+CMIBACO iteration 18 | evals 5130 hyp: 23448779.864957478
+after built  5140
+after cross  5150
+after mut  5160
+it 0 - fitness 5220 0.0041048526763916016 | execution -1
+eps | it: 0 hypervolume: 21534093.03890296
+after built  5230
+after cross  5240
+after mut  5250
+it 0 - fitness 5310 0.09663605690002441 | execution -1
+hv | it: 0 hypervolume: 22251708.362488464
+after built  5320
+after cross  5330
+after mut  5340
+it 0 - fitness 5400 0.038748979568481445 | execution -1
+r2 | it: 0 hypervolume: 20886601.42254916
+CMIBACO iteration 19 | evals 5400 hyp: 23448779.864957478
+after built  5410
+after cross  5420
+after mut  5430
+it 0 - fitness 5490 0.0042018890380859375 | execution -1
+eps | it: 0 hypervolume: 21599083.88917524
+after built  5500
+after cross  5510
+after mut  5520
+it 0 - fitness 5580 0.07391214370727539 | execution -1
+hv | it: 0 hypervolume: 21493937.98893297
+after built  5590
+after cross  5600
+after mut  5610
+it 0 - fitness 5670 0.03852224349975586 | execution -1
+r2 | it: 0 hypervolume: 22022249.45129296
+CMIBACO iteration 20 | evals 5670 hyp: 23448779.864957478
+after built  5680
+after cross  5690
+after mut  5700
+it 0 - fitness 5760 0.004160165786743164 | execution -1
+eps | it: 0 hypervolume: 21190098.783063017
+after built  5770
+after cross  5780
+after mut  5790
+it 0 - fitness 5850 0.07320690155029297 | execution -1
+hv | it: 0 hypervolume: 21719498.336975075
+after built  5860
+after cross  5870
+after mut  5880
+it 0 - fitness 5940 0.03902792930603027 | execution -1
+r2 | it: 0 hypervolume: 22468342.85952459
+CMIBACO iteration 21 | evals 5940 hyp: 23448779.864957478
+after built  5950
+after cross  5960
+after mut  5970
+it 0 - fitness 6030 0.004268169403076172 | execution -1
+eps | it: 0 hypervolume: 21832828.020622138
+after built  6040
+after cross  6050
+after mut  6060
+it 0 - fitness 6120 0.07283401489257812 | execution -1
+hv | it: 0 hypervolume: 20508206.822718956
+after built  6130
+after cross  6140
+after mut  6150
+it 0 - fitness 6210 0.03877973556518555 | execution -1
+r2 | it: 0 hypervolume: 22200136.00640191
+CMIBACO iteration 22 | evals 6210 hyp: 23448779.864957478
+after built  6220
+after cross  6230
+after mut  6240
+it 0 - fitness 6300 0.0042819976806640625 | execution -1
+eps | it: 0 hypervolume: 21176230.150969382
+after built  6310
+after cross  6320
+after mut  6330
+it 0 - fitness 6390 0.07348990440368652 | execution -1
+hv | it: 0 hypervolume: 21652466.368648212
+after built  6400
+after cross  6410
+after mut  6420
+it 0 - fitness 6480 0.038728952407836914 | execution -1
+r2 | it: 0 hypervolume: 21063217.490396656
+CMIBACO iteration 23 | evals 6480 hyp: 23448779.864957478
+after built  6490
+after cross  6500
+after mut  6510
+it 0 - fitness 6570 0.00407862663269043 | execution -1
+eps | it: 0 hypervolume: 22212192.407498915
+after built  6580
+after cross  6590
+after mut  6600
+it 0 - fitness 6660 0.09675288200378418 | execution -1
+hv | it: 0 hypervolume: 21018884.841264248
+after built  6670
+after cross  6680
+after mut  6690
+it 0 - fitness 6750 0.03896808624267578 | execution -1
+r2 | it: 0 hypervolume: 20944872.90123638
+CMIBACO iteration 24 | evals 6750 hyp: 23448779.864957478
+after built  6760
+after cross  6770
+after mut  6780
+it 0 - fitness 6840 0.0041539669036865234 | execution -1
+eps | it: 0 hypervolume: 21166889.84159264
+after built  6850
+after cross  6860
+after mut  6870
+it 0 - fitness 6930 0.07372713088989258 | execution -1
+hv | it: 0 hypervolume: 22238767.749489952
+after built  6940
+after cross  6950
+after mut  6960
+it 0 - fitness 7020 0.0384829044342041 | execution -1
+r2 | it: 0 hypervolume: 22875442.253790587
+CMIBACO iteration 25 | evals 7020 hyp: 23448779.864957478
+after built  7030
+after cross  7040
+after mut  7050
+it 0 - fitness 7110 0.0041582584381103516 | execution -1
+eps | it: 0 hypervolume: 20836312.896407768
+after built  7120
+after cross  7130
+after mut  7140
+it 0 - fitness 7200 0.0727238655090332 | execution -1
+hv | it: 0 hypervolume: 21414584.245020784
+after built  7210
+after cross  7220
+after mut  7230
+it 0 - fitness 7290 0.039044857025146484 | execution -1
+r2 | it: 0 hypervolume: 21121836.13515444
+CMIBACO iteration 26 | evals 7290 hyp: 23448779.864957478
+after built  7300
+after cross  7310
+after mut  7320
+it 0 - fitness 7380 0.004168033599853516 | execution -1
+eps | it: 0 hypervolume: 21568852.51090941
+after built  7390
+after cross  7400
+after mut  7410
+it 0 - fitness 7470 0.07151103019714355 | execution -1
+hv | it: 0 hypervolume: 20207431.653415173
+after built  7480
+after cross  7490
+after mut  7500
+it 0 - fitness 7560 0.038931846618652344 | execution -1
+r2 | it: 0 hypervolume: 22351508.44615708
+CMIBACO iteration 27 | evals 7560 hyp: 23448779.864957478
+after built  7570
+after cross  7580
+after mut  7590
+it 0 - fitness 7650 0.0042269229888916016 | execution -1
+eps | it: 0 hypervolume: 22029896.69660434
+after built  7660
+after cross  7670
+after mut  7680
+it 0 - fitness 7740 0.07270312309265137 | execution -1
+hv | it: 0 hypervolume: 20714911.26342556
+after built  7750
+after cross  7760
+after mut  7770
+it 0 - fitness 7830 0.03899812698364258 | execution -1
+r2 | it: 0 hypervolume: 21593530.712983605
+CMIBACO iteration 28 | evals 7830 hyp: 23448779.864957478
+after built  7840
+after cross  7850
+after mut  7860
+it 0 - fitness 7920 0.004108905792236328 | execution -1
+eps | it: 0 hypervolume: 21976676.985706247
+after built  7930
+after cross  7940
+after mut  7950
+it 0 - fitness 8010 0.0736551284790039 | execution -1
+hv | it: 0 hypervolume: 20587681.25672217
+after built  8020
+after cross  8030
+after mut  8040
+it 0 - fitness 8100 0.038774967193603516 | execution -1
+r2 | it: 0 hypervolume: 21294431.78042519
+CMIBACO iteration 29 | evals 8100 hyp: 23448779.864957478
+after built  8110
+after cross  8120
+after mut  8130
+it 0 - fitness 8190 0.004316806793212891 | execution -1
+eps | it: 0 hypervolume: 21633708.81090291
+after built  8200
+after cross  8210
+after mut  8220
+it 0 - fitness 8280 0.0973520278930664 | execution -1
+hv | it: 0 hypervolume: 22350713.715186726
+after built  8290
+after cross  8300
+after mut  8310
+it 0 - fitness 8370 0.03881692886352539 | execution -1
+r2 | it: 0 hypervolume: 22536404.95347557
+CMIBACO iteration 30 | evals 8370 hyp: 23499577.320322853
+after built  8380
+after cross  8390
+after mut  8400
+it 0 - fitness 8460 0.0041768550872802734 | execution -1
+eps | it: 0 hypervolume: 20695291.03447472
+after built  8470
+after cross  8480
+after mut  8490
+it 0 - fitness 8550 0.07383871078491211 | execution -1
+hv | it: 0 hypervolume: 22284242.861868378
+after built  8560
+after cross  8570
+after mut  8580
+it 0 - fitness 8640 0.03866004943847656 | execution -1
+r2 | it: 0 hypervolume: 22290333.436136477
+CMIBACO iteration 31 | evals 8640 hyp: 23499577.320322853
+after built  8650
+after cross  8660
+after mut  8670
+it 0 - fitness 8730 0.0041773319244384766 | execution -1
+eps | it: 0 hypervolume: 20712936.87188352
+after built  8740
+after cross  8750
+after mut  8760
+it 0 - fitness 8820 0.07313108444213867 | execution -1
+hv | it: 0 hypervolume: 21258178.061547767
+after built  8830
+after cross  8840
+after mut  8850
+it 0 - fitness 8910 0.03894305229187012 | execution -1
+r2 | it: 0 hypervolume: 21063307.96476443
+CMIBACO iteration 32 | evals 8910 hyp: 23499577.320322853
+after built  8920
+after cross  8930
+after mut  8940
+it 0 - fitness 9000 0.004073143005371094 | execution -1
+eps | it: 0 hypervolume: 21741860.24604823
+after built  9010
+after cross  9020
+after mut  9030
+it 0 - fitness 9090 0.07262086868286133 | execution -1
+hv | it: 0 hypervolume: 23042944.37567438
+after built  9100
+after cross  9110
+after mut  9120
+it 0 - fitness 9180 0.03879714012145996 | execution -1
+r2 | it: 0 hypervolume: 21907169.559013017
+CMIBACO iteration 33 | evals 9180 hyp: 23499577.320322853
+after built  9190
+after cross  9200
+after mut  9210
+it 0 - fitness 9270 0.004210948944091797 | execution -1
+eps | it: 0 hypervolume: 20498247.19170253
+after built  9280
+after cross  9290
+after mut  9300
+it 0 - fitness 9360 0.07072997093200684 | execution -1
+hv | it: 0 hypervolume: 20273755.86858062
+after built  9370
+after cross  9380
+after mut  9390
+it 0 - fitness 9450 0.03839397430419922 | execution -1
+r2 | it: 0 hypervolume: 21903128.021985088
+CMIBACO iteration 34 | evals 9450 hyp: 23499577.320322853
+after built  9460
+after cross  9470
+after mut  9480
+it 0 - fitness 9540 0.004186153411865234 | execution -1
+eps | it: 0 hypervolume: 22561530.95083979
+after built  9550
+after cross  9560
+after mut  9570
+it 0 - fitness 9630 0.07303905487060547 | execution -1
+hv | it: 0 hypervolume: 21419116.894081194
+after built  9640
+after cross  9650
+after mut  9660
+it 0 - fitness 9720 0.03911995887756348 | execution -1
+r2 | it: 0 hypervolume: 20406332.183100667
+CMIBACO iteration 35 | evals 9720 hyp: 23499577.320322853
+after built  9730
+after cross  9740
+after mut  9750
+it 0 - fitness 9810 0.00415492057800293 | execution -1
+eps | it: 0 hypervolume: 22003699.81899091
+after built  9820
+after cross  9830
+after mut  9840
+it 0 - fitness 9900 0.0730588436126709 | execution -1
+hv | it: 0 hypervolume: 22147338.623851318
+after built  9910
+after cross  9920
+after mut  9930
+it 0 - fitness 9990 0.03851604461669922 | execution -1
+r2 | it: 0 hypervolume: 22018741.17685239
+CMIBACO iteration 36 | evals 9990 hyp: 23499577.320322853
+after built  10000
+after cross  10010
+after mut  10020
+it 0 - fitness 10080 0.0041921138763427734 | execution -1
+eps | it: 0 hypervolume: 21709162.666662768
+after built  10090
+after cross  10100
+after mut  10110
+it 0 - fitness 10170 0.09656882286071777 | execution -1
+hv | it: 0 hypervolume: 21191473.876144417
+after built  10180
+after cross  10190
+after mut  10200
+it 0 - fitness 10260 0.038516998291015625 | execution -1
+r2 | it: 0 hypervolume: 22071340.262900084
+CMIBACO iteration 37 | evals 10260 hyp: 23499577.320322853
+after built  10270
+after cross  10280
+after mut  10290
+it 0 - fitness 10350 0.00401616096496582 | execution -1
+eps | it: 0 hypervolume: 22673509.161022797
+after built  10360
+after cross  10370
+after mut  10380
+it 0 - fitness 10440 0.08818507194519043 | execution -1
+hv | it: 0 hypervolume: 21944022.99191215
+after built  10450
+after cross  10460
+after mut  10470
+it 0 - fitness 10530 0.038970947265625 | execution -1
+r2 | it: 0 hypervolume: 22420002.506890617
+CMIBACO iteration 38 | evals 10530 hyp: 23499577.320322853
+after built  10540
+after cross  10550
+after mut  10560
+it 0 - fitness 10620 0.004207134246826172 | execution -1
+eps | it: 0 hypervolume: 22060646.719134696
+after built  10630
+after cross  10640
+after mut  10650
+it 0 - fitness 10710 0.07316732406616211 | execution -1
+hv | it: 0 hypervolume: 22218689.80095286
+after built  10720
+after cross  10730
+after mut  10740
+it 0 - fitness 10800 0.038924217224121094 | execution -1
+r2 | it: 0 hypervolume: 21894363.79431486
+CMIBACO iteration 39 | evals 10800 hyp: 23499577.320322853
+after built  10810
+after cross  10820
+after mut  10830
+it 0 - fitness 10890 0.004286050796508789 | execution -1
+eps | it: 0 hypervolume: 21363948.40379521
+after built  10900
+after cross  10910
+after mut  10920
+it 0 - fitness 10980 0.07361388206481934 | execution -1
+hv | it: 0 hypervolume: 21466282.586456295
+after built  10990
+after cross  11000
+after mut  11010
+it 0 - fitness 11070 0.03928518295288086 | execution -1
+r2 | it: 0 hypervolume: 22144775.806302372
+CMIBACO iteration 40 | evals 11070 hyp: 23499577.320322853
+after built  11080
+after cross  11090
+after mut  11100
+it 0 - fitness 11160 0.0043179988861083984 | execution -1
+eps | it: 0 hypervolume: 21718834.72634892
+after built  11170
+after cross  11180
+after mut  11190
+it 0 - fitness 11250 0.07280611991882324 | execution -1
+hv | it: 0 hypervolume: 21515867.430785675
+after built  11260
+after cross  11270
+after mut  11280
+it 0 - fitness 11340 0.03930401802062988 | execution -1
+r2 | it: 0 hypervolume: 20900347.7050196
+CMIBACO iteration 41 | evals 11340 hyp: 23670724.1803883
+after built  11350
+after cross  11360
+after mut  11370
+it 0 - fitness 11430 0.0043468475341796875 | execution -1
+eps | it: 0 hypervolume: 21220537.93447913
+after built  11440
+after cross  11450
+after mut  11460
+it 0 - fitness 11520 0.09700202941894531 | execution -1
+hv | it: 0 hypervolume: 22373005.671120603
+after built  11530
+after cross  11540
+after mut  11550
+it 0 - fitness 11610 0.03892207145690918 | execution -1
+r2 | it: 0 hypervolume: 22736002.46799799
+CMIBACO iteration 42 | evals 11610 hyp: 23670724.1803883
+after built  11620
+after cross  11630
+after mut  11640
+it 0 - fitness 11700 0.004136800765991211 | execution -1
+eps | it: 0 hypervolume: 21411312.292972624
+after built  11710
+after cross  11720
+after mut  11730
+it 0 - fitness 11790 0.07178092002868652 | execution -1
+hv | it: 0 hypervolume: 21352950.81388035
+after built  11800
+after cross  11810
+after mut  11820
+it 0 - fitness 11880 0.03899502754211426 | execution -1
+r2 | it: 0 hypervolume: 21725956.9212123
+CMIBACO iteration 43 | evals 11880 hyp: 23670724.1803883
+after built  11890
+after cross  11900
+after mut  11910
+it 0 - fitness 11970 0.004330158233642578 | execution -1
+eps | it: 0 hypervolume: 21959983.219555534
+after built  11980
+after cross  11990
+after mut  12000
+it 0 - fitness 12060 0.07187414169311523 | execution -1
+hv | it: 0 hypervolume: 22094363.033672225
+after built  12070
+after cross  12080
+after mut  12090
+it 0 - fitness 12150 0.0386960506439209 | execution -1
+r2 | it: 0 hypervolume: 21483160.223538406
+CMIBACO iteration 44 | evals 12150 hyp: 23670724.1803883
+after built  12160
+after cross  12170
+after mut  12180
+it 0 - fitness 12240 0.004241228103637695 | execution -1
+eps | it: 0 hypervolume: 20446917.370553106
+after built  12250
+after cross  12260
+after mut  12270
+it 0 - fitness 12330 0.07308697700500488 | execution -1
+hv | it: 0 hypervolume: 20865446.700942118
+after built  12340
+after cross  12350
+after mut  12360
+it 0 - fitness 12420 0.038642168045043945 | execution -1
+r2 | it: 0 hypervolume: 21826414.498265605
+CMIBACO iteration 45 | evals 12420 hyp: 23670724.1803883
+after built  12430
+after cross  12440
+after mut  12450
+it 0 - fitness 12510 0.004275083541870117 | execution -1
+eps | it: 0 hypervolume: 23382287.053191006
+after built  12520
+after cross  12530
+after mut  12540
+it 0 - fitness 12600 0.0978248119354248 | execution -1
+hv | it: 0 hypervolume: 21924068.577191018
+after built  12610
+after cross  12620
+after mut  12630
+it 0 - fitness 12690 0.0388028621673584 | execution -1
+r2 | it: 0 hypervolume: 22034901.521817885
+CMIBACO iteration 46 | evals 12690 hyp: 23670724.1803883
+after built  12700
+after cross  12710
+after mut  12720
+it 0 - fitness 12780 0.004039764404296875 | execution -1
+eps | it: 0 hypervolume: 22378235.255246192
+after built  12790
+after cross  12800
+after mut  12810
+it 0 - fitness 12870 0.07410097122192383 | execution -1
+hv | it: 0 hypervolume: 20501890.093308344
+after built  12880
+after cross  12890
+after mut  12900
+it 0 - fitness 12960 0.038720130920410156 | execution -1
+r2 | it: 0 hypervolume: 21797140.849404432
+CMIBACO iteration 47 | evals 12960 hyp: 23670724.1803883
+after built  12970
+after cross  12980
+after mut  12990
+it 0 - fitness 13050 0.004185199737548828 | execution -1
+eps | it: 0 hypervolume: 21383223.051245794
+after built  13060
+after cross  13070
+after mut  13080
+it 0 - fitness 13140 0.07379770278930664 | execution -1
+hv | it: 0 hypervolume: 21162889.761076625
+after built  13150
+after cross  13160
+after mut  13170
+it 0 - fitness 13230 0.03873801231384277 | execution -1
+r2 | it: 0 hypervolume: 22659360.02541744
+CMIBACO iteration 48 | evals 13230 hyp: 23670724.1803883
+after built  13240
+after cross  13250
+after mut  13260
+it 0 - fitness 13320 0.004263877868652344 | execution -1
+eps | it: 0 hypervolume: 21246745.93860703
+after built  13330
+after cross  13340
+after mut  13350
+it 0 - fitness 13410 0.07418704032897949 | execution -1
+hv | it: 0 hypervolume: 22616451.02485674
+after built  13420
+after cross  13430
+after mut  13440
+it 0 - fitness 13500 0.03825807571411133 | execution -1
+r2 | it: 0 hypervolume: 21867631.942596078
+CMIBACO iteration 49 | evals 13500 hyp: 23670724.1803883
+after built  13510
+after cross  13520
+after mut  13530
+it 0 - fitness 13590 0.004200935363769531 | execution -1
+eps | it: 0 hypervolume: 21547386.663059477
+after built  13600
+after cross  13610
+after mut  13620
+it 0 - fitness 13680 0.07329297065734863 | execution -1
+hv | it: 0 hypervolume: 21673728.169713203
+after built  13690
+after cross  13700
+after mut  13710
+it 0 - fitness 13770 0.03887510299682617 | execution -1
+r2 | it: 0 hypervolume: 21942411.37763273
+CMIBACO iteration 50 | evals 13770 hyp: 23670724.1803883
+after built  13780
+after cross  13790
+after mut  13800
+it 0 - fitness 13860 0.004226207733154297 | execution -1
+eps | it: 0 hypervolume: 21174787.1060977
+after built  13870
+after cross  13880
+after mut  13890
+it 0 - fitness 13950 0.07286310195922852 | execution -1
+hv | it: 0 hypervolume: 22220201.38905382
+after built  13960
+after cross  13970
+after mut  13980
+it 0 - fitness 14040 0.038799285888671875 | execution -1
+r2 | it: 0 hypervolume: 21915279.916337304
+CMIBACO iteration 51 | evals 14040 hyp: 23670724.1803883
+after built  14050
+after cross  14060
+after mut  14070
+it 0 - fitness 14130 0.003942966461181641 | execution -1
+eps | it: 0 hypervolume: 21657490.992265027
+after built  14140
+after cross  14150
+after mut  14160
+it 0 - fitness 14220 0.09832501411437988 | execution -1
+hv | it: 0 hypervolume: 20828461.253699657
+after built  14230
+after cross  14240
+after mut  14250
+it 0 - fitness 14310 0.038512229919433594 | execution -1
+r2 | it: 0 hypervolume: 22279342.506077155
+CMIBACO iteration 52 | evals 14310 hyp: 23670724.1803883
+after built  14320
+after cross  14330
+after mut  14340
+it 0 - fitness 14400 0.004079103469848633 | execution -1
+eps | it: 0 hypervolume: 20858230.256835554
+after built  14410
+after cross  14420
+after mut  14430
+it 0 - fitness 14490 0.07299995422363281 | execution -1
+hv | it: 0 hypervolume: 22547053.717790216
+after built  14500
+after cross  14510
+after mut  14520
+it 0 - fitness 14580 0.04049491882324219 | execution -1
+r2 | it: 0 hypervolume: 22183480.915259108
+CMIBACO iteration 53 | evals 14580 hyp: 23670724.1803883
+after built  14590
+after cross  14600
+after mut  14610
+it 0 - fitness 14670 0.004230976104736328 | execution -1
+eps | it: 0 hypervolume: 21384346.208708838
+after built  14680
+after cross  14690
+after mut  14700
+it 0 - fitness 14760 0.07286620140075684 | execution -1
+hv | it: 0 hypervolume: 21929514.489599146
+after built  14770
+after cross  14780
+after mut  14790
+it 0 - fitness 14850 0.038581132888793945 | execution -1
+r2 | it: 0 hypervolume: 21674706.934919074
+CMIBACO iteration 54 | evals 14850 hyp: 23670724.1803883
+after built  14860
+after cross  14870
+after mut  14880
+it 0 - fitness 14940 0.004039764404296875 | execution -1
+eps | it: 0 hypervolume: 21320637.00489039
+after built  14950
+after cross  14960
+after mut  14970
+it 0 - fitness 15030 0.10422205924987793 | execution -1
+hv | it: 0 hypervolume: 21516576.23633947
+after built  15040
+after cross  15050
+after mut  15060
+it 0 - fitness 15120 0.038475751876831055 | execution -1
+r2 | it: 0 hypervolume: 22121642.180071898
+CMIBACO iteration 55 | evals 15120 hyp: 23670724.1803883
+after built  15130
+after cross  15140
+after mut  15150
+it 0 - fitness 15210 0.004181861877441406 | execution -1
+eps | it: 0 hypervolume: 21820380.91737436
+after built  15220
+after cross  15230
+after mut  15240
+it 0 - fitness 15300 0.07383394241333008 | execution -1
+hv | it: 0 hypervolume: 21546346.97683549
+after built  15310
+after cross  15320
+after mut  15330
+it 0 - fitness 15390 0.03856015205383301 | execution -1
+r2 | it: 0 hypervolume: 21534104.23312839
+CMIBACO iteration 56 | evals 15390 hyp: 23670724.1803883
+after built  15400
+after cross  15410
+after mut  15420
+it 0 - fitness 15480 0.0040738582611083984 | execution -1
+eps | it: 0 hypervolume: 21922409.093481448
+after built  15490
+after cross  15500
+after mut  15510
+it 0 - fitness 15570 0.09697818756103516 | execution -1
+hv | it: 0 hypervolume: 21529931.373981528
+after built  15580
+after cross  15590
+after mut  15600
+it 0 - fitness 15660 0.03837990760803223 | execution -1
+r2 | it: 0 hypervolume: 21778749.64639136
+CMIBACO iteration 57 | evals 15660 hyp: 23670724.1803883
+after built  15670
+after cross  15680
+after mut  15690
+it 0 - fitness 15750 0.004207134246826172 | execution -1
+eps | it: 0 hypervolume: 21717484.767566185
+after built  15760
+after cross  15770
+after mut  15780
+it 0 - fitness 15840 0.07171797752380371 | execution -1
+hv | it: 0 hypervolume: 21714339.002915476
+after built  15850
+after cross  15860
+after mut  15870
+it 0 - fitness 15930 0.03828597068786621 | execution -1
+r2 | it: 0 hypervolume: 21049317.747783966
+CMIBACO iteration 58 | evals 15930 hyp: 23670724.1803883
+after built  15940
+after cross  15950
+after mut  15960
+it 0 - fitness 16020 0.003997087478637695 | execution -1
+eps | it: 0 hypervolume: 20792049.63258456
+after built  16030
+after cross  16040
+after mut  16050
+it 0 - fitness 16110 0.07312893867492676 | execution -1
+hv | it: 0 hypervolume: 22880585.680205256
+after built  16120
+after cross  16130
+after mut  16140
+it 0 - fitness 16200 0.038359880447387695 | execution -1
+r2 | it: 0 hypervolume: 23085154.68720424
+CMIBACO iteration 59 | evals 16200 hyp: 23670724.1803883
+after built  16210
+after cross  16220
+after mut  16230
+it 0 - fitness 16290 0.004096031188964844 | execution -1
+eps | it: 0 hypervolume: 22294486.887811735
+after built  16300
+after cross  16310
+after mut  16320
+it 0 - fitness 16380 0.07411909103393555 | execution -1
+hv | it: 0 hypervolume: 21191794.78202369
+after built  16390
+after cross  16400
+after mut  16410
+it 0 - fitness 16470 0.03825187683105469 | execution -1
+r2 | it: 0 hypervolume: 19840999.60145093
+CMIBACO iteration 60 | evals 16470 hyp: 23670724.1803883
+after built  16480
+after cross  16490
+after mut  16500
+it 0 - fitness 16560 0.0041959285736083984 | execution -1
+eps | it: 0 hypervolume: 22094590.510682095
+after built  16570
+after cross  16580
+after mut  16590
+it 0 - fitness 16650 0.07359004020690918 | execution -1
+hv | it: 0 hypervolume: 21293634.895633396
+after built  16660
+after cross  16670
+after mut  16680
+it 0 - fitness 16740 0.03850293159484863 | execution -1
+r2 | it: 0 hypervolume: 22124782.093882374
+CMIBACO iteration 61 | evals 16740 hyp: 23670724.1803883
+after built  16750
+after cross  16760
+after mut  16770
+it 0 - fitness 16830 0.004137277603149414 | execution -1
+eps | it: 0 hypervolume: 21334889.617778398
+after built  16840
+after cross  16850
+after mut  16860
+it 0 - fitness 16920 0.07351875305175781 | execution -1
+hv | it: 0 hypervolume: 21499273.60675741
+after built  16930
+after cross  16940
+after mut  16950
+it 0 - fitness 17010 0.03878211975097656 | execution -1
+r2 | it: 0 hypervolume: 22237445.82437452
+CMIBACO iteration 62 | evals 17010 hyp: 23670724.1803883
+after built  17020
+after cross  17030
+after mut  17040
+it 0 - fitness 17100 0.004113912582397461 | execution -1
+eps | it: 0 hypervolume: 21668481.33009942
+after built  17110
+after cross  17120
+after mut  17130
+it 0 - fitness 17190 0.0975348949432373 | execution -1
+hv | it: 0 hypervolume: 21171627.714301206
+after built  17200
+after cross  17210
+after mut  17220
+it 0 - fitness 17280 0.03903007507324219 | execution -1
+r2 | it: 0 hypervolume: 22414705.84687189
+CMIBACO iteration 63 | evals 17280 hyp: 23670724.1803883
+after built  17290
+after cross  17300
+after mut  17310
+it 0 - fitness 17370 0.0038399696350097656 | execution -1
+eps | it: 0 hypervolume: 21453438.701618366
+after built  17380
+after cross  17390
+after mut  17400
+it 0 - fitness 17460 0.07124972343444824 | execution -1
+hv | it: 0 hypervolume: 22993718.88794498
+after built  17470
+after cross  17480
+after mut  17490
+it 0 - fitness 17550 0.03890395164489746 | execution -1
+r2 | it: 0 hypervolume: 20945479.338181403
+CMIBACO iteration 64 | evals 17550 hyp: 23670724.1803883
+after built  17560
+after cross  17570
+after mut  17580
+it 0 - fitness 17640 0.004169940948486328 | execution -1
+eps | it: 0 hypervolume: 21560306.448237322
+after built  17650
+after cross  17660
+after mut  17670
+it 0 - fitness 17730 0.0724480152130127 | execution -1
+hv | it: 0 hypervolume: 21320589.98681633
+after built  17740
+after cross  17750
+after mut  17760
+it 0 - fitness 17820 0.03850102424621582 | execution -1
+r2 | it: 0 hypervolume: 21778282.540800307
+CMIBACO iteration 65 | evals 17820 hyp: 23670724.1803883
+after built  17830
+after cross  17840
+after mut  17850
+it 0 - fitness 17910 0.004319906234741211 | execution -1
+eps | it: 0 hypervolume: 21651173.37442807
+after built  17920
+after cross  17930
+after mut  17940
+it 0 - fitness 18000 0.0731039047241211 | execution -1
+hv | it: 0 hypervolume: 21806297.997448526
+after built  18010
+after cross  18020
+after mut  18030
+it 0 - fitness 18090 0.03843092918395996 | execution -1
+r2 | it: 0 hypervolume: 21706362.593017127
+CMIBACO iteration 66 | evals 18090 hyp: 23670724.1803883
+after built  18100
+after cross  18110
+after mut  18120
+it 0 - fitness 18180 0.004046201705932617 | execution -1
+eps | it: 0 hypervolume: 21264558.71191368
+after built  18190
+after cross  18200
+after mut  18210
+it 0 - fitness 18270 0.07249999046325684 | execution -1
+hv | it: 0 hypervolume: 21372658.41510267
+after built  18280
+after cross  18290
+after mut  18300
+it 0 - fitness 18360 0.038819074630737305 | execution -1
+r2 | it: 0 hypervolume: 22700582.223968234
+CMIBACO iteration 67 | evals 18360 hyp: 23670724.1803883
+after built  18370
+after cross  18380
+after mut  18390
+it 0 - fitness 18450 0.004268169403076172 | execution -1
+eps | it: 0 hypervolume: 21558193.684339102
+after built  18460
+after cross  18470
+after mut  18480
+it 0 - fitness 18540 0.07303714752197266 | execution -1
+hv | it: 0 hypervolume: 21433224.36898857
+after built  18550
+after cross  18560
+after mut  18570
+it 0 - fitness 18630 0.03909611701965332 | execution -1
+r2 | it: 0 hypervolume: 22132051.07691943
+CMIBACO iteration 68 | evals 18630 hyp: 23670724.1803883
+after built  18640
+after cross  18650
+after mut  18660
+it 0 - fitness 18720 0.004148006439208984 | execution -1
+eps | it: 0 hypervolume: 22293960.52757808
+after built  18730
+after cross  18740
+after mut  18750
+it 0 - fitness 18810 0.10027432441711426 | execution -1
+hv | it: 0 hypervolume: 20629438.475928713
+after built  18820
+after cross  18830
+after mut  18840
+it 0 - fitness 18900 0.03861284255981445 | execution -1
+r2 | it: 0 hypervolume: 21742785.26487531
+CMIBACO iteration 69 | evals 18900 hyp: 23670724.1803883
+after built  18910
+after cross  18920
+after mut  18930
+it 0 - fitness 18990 0.004001140594482422 | execution -1
+eps | it: 0 hypervolume: 20627120.494746465
+after built  19000
+after cross  19010
+after mut  19020
+it 0 - fitness 19080 0.1461498737335205 | execution -1
+hv | it: 0 hypervolume: 21263990.934076495
+after built  19090
+after cross  19100
+after mut  19110
+it 0 - fitness 19170 0.03891897201538086 | execution -1
+r2 | it: 0 hypervolume: 20872649.36751699
+CMIBACO iteration 70 | evals 19170 hyp: 23670724.1803883
+after built  19180
+after cross  19190
+after mut  19200
+it 0 - fitness 19260 0.0040760040283203125 | execution -1
+eps | it: 0 hypervolume: 22530895.23916533
+after built  19270
+after cross  19280
+after mut  19290
+it 0 - fitness 19350 0.07235097885131836 | execution -1
+hv | it: 0 hypervolume: 21643040.953211132
+after built  19360
+after cross  19370
+after mut  19380
+it 0 - fitness 19440 0.03849077224731445 | execution -1
+r2 | it: 0 hypervolume: 22245893.596164532
+CMIBACO iteration 71 | evals 19440 hyp: 23670724.1803883
+after built  19450
+after cross  19460
+after mut  19470
+it 0 - fitness 19530 0.00425410270690918 | execution -1
+eps | it: 0 hypervolume: 22343070.916236192
+after built  19540
+after cross  19550
+after mut  19560
+it 0 - fitness 19620 0.07259774208068848 | execution -1
+hv | it: 0 hypervolume: 21543312.076975618
+after built  19630
+after cross  19640
+after mut  19650
+it 0 - fitness 19710 0.038970232009887695 | execution -1
+r2 | it: 0 hypervolume: 21227410.494446274
+CMIBACO iteration 72 | evals 19710 hyp: 23670724.1803883
+after built  19720
+after cross  19730
+after mut  19740
+it 0 - fitness 19800 0.0039598941802978516 | execution -1
+eps | it: 0 hypervolume: 22770090.463673845
+after built  19810
+after cross  19820
+after mut  19830
+it 0 - fitness 19890 0.07302117347717285 | execution -1
+hv | it: 0 hypervolume: 21809004.603635393
+after built  19900
+after cross  19910
+after mut  19920
+it 0 - fitness 19980 0.03891801834106445 | execution -1
+r2 | it: 0 hypervolume: 22233617.574044876
+CMIBACO iteration 73 | evals 19980 hyp: 23670724.1803883
+after built  19990
+after cross  20000
+after mut  20010
+it 0 - fitness 20070 0.004163026809692383 | execution -1
+eps | it: 0 hypervolume: 21330497.596584022
+after built  20080
+after cross  20090
+after mut  20100
+it 0 - fitness 20160 0.07301092147827148 | execution -1
+hv | it: 0 hypervolume: 21809004.603635393
+after built  20170
+after cross  20180
+after mut  20190
+it 0 - fitness 20250 0.038559913635253906 | execution -1
+r2 | it: 0 hypervolume: 20977492.364829905
+CMIBACO iteration 74 | evals 20250 hyp: 23670724.1803883
+after built  20260
+after cross  20270
+after mut  20280
+it 0 - fitness 20340 0.004130840301513672 | execution -1
+eps | it: 0 hypervolume: 22303439.43448572
+after built  20350
+after cross  20360
+after mut  20370
+it 0 - fitness 20430 0.09701395034790039 | execution -1
+hv | it: 0 hypervolume: 21402589.018417183
+after built  20440
+after cross  20450
+after mut  20460
+it 0 - fitness 20520 0.03852081298828125 | execution -1
+r2 | it: 0 hypervolume: 21052371.36729668
+CMIBACO iteration 75 | evals 20520 hyp: 23670724.1803883
+after built  20530
+after cross  20540
+after mut  20550
+it 0 - fitness 20610 0.0039768218994140625 | execution -1
+eps | it: 0 hypervolume: 22060622.25112158
+after built  20620
+after cross  20630
+after mut  20640
+it 0 - fitness 20700 0.07384586334228516 | execution -1
+hv | it: 0 hypervolume: 21656619.62606078
+after built  20710
+after cross  20720
+after mut  20730
+it 0 - fitness 20790 0.03916621208190918 | execution -1
+r2 | it: 0 hypervolume: 21025202.935501263
+CMIBACO iteration 76 | evals 20790 hyp: 23670724.1803883
+after built  20800
+after cross  20810
+after mut  20820
+it 0 - fitness 20880 0.004177093505859375 | execution -1
+eps | it: 0 hypervolume: 21866075.36383363
+after built  20890
+after cross  20900
+after mut  20910
+it 0 - fitness 20970 0.07297921180725098 | execution -1
+hv | it: 0 hypervolume: 20963531.55975128
+after built  20980
+after cross  20990
+after mut  21000
+it 0 - fitness 21060 0.039010047912597656 | execution -1
+r2 | it: 0 hypervolume: 21325351.374423992
+CMIBACO iteration 77 | evals 21060 hyp: 23670724.1803883
+after built  21070
+after cross  21080
+after mut  21090
+it 0 - fitness 21150 0.004260063171386719 | execution -1
+eps | it: 0 hypervolume: 21141146.479307253
+after built  21160
+after cross  21170
+after mut  21180
+it 0 - fitness 21240 0.07369494438171387 | execution -1
+hv | it: 0 hypervolume: 21889930.83157391
+after built  21250
+after cross  21260
+after mut  21270
+it 0 - fitness 21330 0.038726806640625 | execution -1
+r2 | it: 0 hypervolume: 22379152.93760115
+CMIBACO iteration 78 | evals 21330 hyp: 23670724.1803883
+after built  21340
+after cross  21350
+after mut  21360
+it 0 - fitness 21420 0.004094839096069336 | execution -1
+eps | it: 0 hypervolume: 22595880.105363004
+after built  21430
+after cross  21440
+after mut  21450
+it 0 - fitness 21510 0.07404613494873047 | execution -1
+hv | it: 0 hypervolume: 21542919.296206277
+after built  21520
+after cross  21530
+after mut  21540
+it 0 - fitness 21600 0.03927898406982422 | execution -1
+r2 | it: 0 hypervolume: 19926841.54394668
+CMIBACO iteration 79 | evals 21600 hyp: 23670724.1803883
+after built  21610
+after cross  21620
+after mut  21630
+it 0 - fitness 21690 0.004038810729980469 | execution -1
+eps | it: 0 hypervolume: 22015877.06974781
+after built  21700
+after cross  21710
+after mut  21720
+it 0 - fitness 21780 0.09791398048400879 | execution -1
+hv | it: 0 hypervolume: 22573429.231393605
+after built  21790
+after cross  21800
+after mut  21810
+it 0 - fitness 21870 0.03903508186340332 | execution -1
+r2 | it: 0 hypervolume: 22457015.582242213
+CMIBACO iteration 80 | evals 21870 hyp: 23670724.1803883
+after built  21880
+after cross  21890
+after mut  21900
+it 0 - fitness 21960 0.003965854644775391 | execution -1
+eps | it: 0 hypervolume: 20716089.321742512
+after built  21970
+after cross  21980
+after mut  21990
+it 0 - fitness 22050 0.07242107391357422 | execution -1
+hv | it: 0 hypervolume: 21972563.175877765
+after built  22060
+after cross  22070
+after mut  22080
+it 0 - fitness 22140 0.03884291648864746 | execution -1
+r2 | it: 0 hypervolume: 22251597.332011506
+CMIBACO iteration 81 | evals 22140 hyp: 23670724.1803883
+after built  22150
+after cross  22160
+after mut  22170
+it 0 - fitness 22230 0.004112958908081055 | execution -1
+eps | it: 0 hypervolume: 20886304.31412583
+after built  22240
+after cross  22250
+after mut  22260
+it 0 - fitness 22320 0.07300686836242676 | execution -1
+hv | it: 0 hypervolume: 21956508.74664467
+after built  22330
+after cross  22340
+after mut  22350
+it 0 - fitness 22410 0.03878521919250488 | execution -1
+r2 | it: 0 hypervolume: 22567834.223926395
+CMIBACO iteration 82 | evals 22410 hyp: 23670724.1803883
+after built  22420
+after cross  22430
+after mut  22440
+it 0 - fitness 22500 0.0041599273681640625 | execution -1
+eps | it: 0 hypervolume: 20281257.28532623
+after built  22510
+after cross  22520
+after mut  22530
+it 0 - fitness 22590 0.07340383529663086 | execution -1
+hv | it: 0 hypervolume: 21855346.391074114
+after built  22600
+after cross  22610
+after mut  22620
+it 0 - fitness 22680 0.03895711898803711 | execution -1
+r2 | it: 0 hypervolume: 20365293.724522058
+CMIBACO iteration 83 | evals 22680 hyp: 23670724.1803883
+after built  22690
+after cross  22700
+after mut  22710
+it 0 - fitness 22770 0.0042607784271240234 | execution -1
+eps | it: 0 hypervolume: 21374590.59122105
+after built  22780
+after cross  22790
+after mut  22800
+it 0 - fitness 22860 0.07297110557556152 | execution -1
+hv | it: 0 hypervolume: 21410367.854697186
+after built  22870
+after cross  22880
+after mut  22890
+it 0 - fitness 22950 0.038436174392700195 | execution -1
+r2 | it: 0 hypervolume: 19767049.197117005
+CMIBACO iteration 84 | evals 22950 hyp: 23670724.1803883
+after built  22960
+after cross  22970
+after mut  22980
+it 0 - fitness 23040 0.003937721252441406 | execution -1
+eps | it: 0 hypervolume: 22364578.110106263
+after built  23050
+after cross  23060
+after mut  23070
+it 0 - fitness 23130 0.09790301322937012 | execution -1
+hv | it: 0 hypervolume: 22084113.314053867
+after built  23140
+after cross  23150
+after mut  23160
+it 0 - fitness 23220 0.0386960506439209 | execution -1
+r2 | it: 0 hypervolume: 21755802.50981708
+CMIBACO iteration 85 | evals 23220 hyp: 23670724.1803883
+after built  23230
+after cross  23240
+after mut  23250
+it 0 - fitness 23310 0.003968000411987305 | execution -1
+eps | it: 0 hypervolume: 22557946.018884435
+after built  23320
+after cross  23330
+after mut  23340
+it 0 - fitness 23400 0.07438993453979492 | execution -1
+hv | it: 0 hypervolume: 21500202.65102239
+after built  23410
+after cross  23420
+after mut  23430
+it 0 - fitness 23490 0.03879976272583008 | execution -1
+r2 | it: 0 hypervolume: 22864646.129752498
+CMIBACO iteration 86 | evals 23490 hyp: 23670724.1803883
+after built  23500
+after cross  23510
+after mut  23520
+it 0 - fitness 23580 0.004221200942993164 | execution -1
+eps | it: 0 hypervolume: 21673125.772027656
+after built  23590
+after cross  23600
+after mut  23610
+it 0 - fitness 23670 0.07294702529907227 | execution -1
+hv | it: 0 hypervolume: 21791391.805343423
+after built  23680
+after cross  23690
+after mut  23700
+it 0 - fitness 23760 0.03870105743408203 | execution -1
+r2 | it: 0 hypervolume: 20504823.699605398
+CMIBACO iteration 87 | evals 23760 hyp: 23670724.1803883
+after built  23770
+after cross  23780
+after mut  23790
+it 0 - fitness 23850 0.0040552616119384766 | execution -1
+eps | it: 0 hypervolume: 20805762.200327326
+after built  23860
+after cross  23870
+after mut  23880
+it 0 - fitness 23940 0.07317709922790527 | execution -1
+hv | it: 0 hypervolume: 21526085.06922204
+after built  23950
+after cross  23960
+after mut  23970
+it 0 - fitness 24030 0.03895711898803711 | execution -1
+r2 | it: 0 hypervolume: 22034124.960980747
+CMIBACO iteration 88 | evals 24030 hyp: 23670724.1803883
+after built  24040
+after cross  24050
+after mut  24060
+it 0 - fitness 24120 0.004152059555053711 | execution -1
+eps | it: 0 hypervolume: 21632341.989463504
+after built  24130
+after cross  24140
+after mut  24150
+it 0 - fitness 24210 0.13238191604614258 | execution -1
+hv | it: 0 hypervolume: 22312596.72045623
+after built  24220
+after cross  24230
+after mut  24240
+it 0 - fitness 24300 0.03875613212585449 | execution -1
+r2 | it: 0 hypervolume: 21453083.57580441
+CMIBACO iteration 89 | evals 24300 hyp: 23670724.1803883
+after built  24310
+after cross  24320
+after mut  24330
+it 0 - fitness 24390 0.004137992858886719 | execution -1
+eps | it: 0 hypervolume: 20924063.104222942
+after built  24400
+after cross  24410
+after mut  24420
+it 0 - fitness 24480 0.07260799407958984 | execution -1
+hv | it: 0 hypervolume: 21898751.100697916
+after built  24490
+after cross  24500
+after mut  24510
+it 0 - fitness 24570 0.03849506378173828 | execution -1
+r2 | it: 0 hypervolume: 21118374.9218058
+CMIBACO iteration 90 | evals 24570 hyp: 23670724.1803883
+after built  24580
+after cross  24590
+after mut  24600
+it 0 - fitness 24660 0.004239082336425781 | execution -1
+eps | it: 0 hypervolume: 22207494.13575431
+after built  24670
+after cross  24680
+after mut  24690
+it 0 - fitness 24750 0.07287788391113281 | execution -1
+hv | it: 0 hypervolume: 21872936.375147168
+after built  24760
+after cross  24770
+after mut  24780
+it 0 - fitness 24840 0.03876090049743652 | execution -1
+r2 | it: 0 hypervolume: 21283146.382030353
+CMIBACO iteration 91 | evals 24840 hyp: 23670724.1803883
+after built  24850
+after cross  24860
+after mut  24870
+it 0 - fitness 24930 0.004340171813964844 | execution -1
+eps | it: 0 hypervolume: 22438972.756624542
+after built  24940
+after cross  24950
+after mut  24960
+it 0 - fitness 25020 0.09720206260681152 | execution -1
+hv | it: 0 hypervolume: 22258257.705748625
+after built  25030
+after cross  25040
+after mut  25050
+it 0 - fitness 25110 0.03883004188537598 | execution -1
+r2 | it: 0 hypervolume: 22073651.424473852
+CMIBACO iteration 92 | evals 25110 hyp: 23670724.1803883
+after built  25120
+after cross  25130
+after mut  25140
+it 0 - fitness 25200 0.004115104675292969 | execution -1
+eps | it: 0 hypervolume: 22271466.109492477
+after built  25210
+after cross  25220
+after mut  25230
+it 0 - fitness 25290 0.07430911064147949 | execution -1
+hv | it: 0 hypervolume: 21254996.0324159
+after built  25300
+after cross  25310
+after mut  25320
+it 0 - fitness 25380 0.03850507736206055 | execution -1
+r2 | it: 0 hypervolume: 21747562.186864667
+CMIBACO iteration 93 | evals 25380 hyp: 23670724.1803883
+after built  25390
+after cross  25400
+after mut  25410
+it 0 - fitness 25470 0.004138946533203125 | execution -1
+eps | it: 0 hypervolume: 21075799.64897811
+after built  25480
+after cross  25490
+after mut  25500
+it 0 - fitness 25560 0.07397794723510742 | execution -1
+hv | it: 0 hypervolume: 20663460.98385635
+after built  25570
+after cross  25580
+after mut  25590
+it 0 - fitness 25650 0.03848004341125488 | execution -1
+r2 | it: 0 hypervolume: 21007914.223657895
+CMIBACO iteration 94 | evals 25650 hyp: 23670724.1803883
+after built  25660
+after cross  25670
+after mut  25680
+it 0 - fitness 25740 0.004144906997680664 | execution -1
+eps | it: 0 hypervolume: 21395136.149498634
+after built  25750
+after cross  25760
+after mut  25770
+it 0 - fitness 25830 0.07434296607971191 | execution -1
+hv | it: 0 hypervolume: 21512617.330886178
+after built  25840
+after cross  25850
+after mut  25860
+it 0 - fitness 25920 0.03874826431274414 | execution -1
+r2 | it: 0 hypervolume: 20578408.23783947
+CMIBACO iteration 95 | evals 25920 hyp: 23670724.1803883
+after built  25930
+after cross  25940
+after mut  25950
+it 0 - fitness 26010 0.00414586067199707 | execution -1
+eps | it: 0 hypervolume: 20975513.088132154
+after built  26020
+after cross  26030
+after mut  26040
+it 0 - fitness 26100 0.07313799858093262 | execution -1
+hv | it: 0 hypervolume: 20992469.656906087
+after built  26110
+after cross  26120
+after mut  26130
+it 0 - fitness 26190 0.038763999938964844 | execution -1
+r2 | it: 0 hypervolume: 21583012.543303803
+CMIBACO iteration 96 | evals 26190 hyp: 23670724.1803883
+after built  26200
+after cross  26210
+after mut  26220
+it 0 - fitness 26280 0.004160165786743164 | execution -1
+eps | it: 0 hypervolume: 20855620.13460686
+after built  26290
+after cross  26300
+after mut  26310
+it 0 - fitness 26370 0.07250595092773438 | execution -1
+hv | it: 0 hypervolume: 22453262.202986598
+after built  26380
+after cross  26390
+after mut  26400
+it 0 - fitness 26460 0.03855109214782715 | execution -1
+r2 | it: 0 hypervolume: 20970667.11241389
+CMIBACO iteration 97 | evals 26460 hyp: 23670724.1803883
+after built  26470
+after cross  26480
+after mut  26490
+it 0 - fitness 26550 0.004256010055541992 | execution -1
+eps | it: 0 hypervolume: 21217411.7039802
+after built  26560
+after cross  26570
+after mut  26580
+it 0 - fitness 26640 0.0974128246307373 | execution -1
+hv | it: 0 hypervolume: 21465721.113958333
+after built  26650
+after cross  26660
+after mut  26670
+it 0 - fitness 26730 0.03889298439025879 | execution -1
+r2 | it: 0 hypervolume: 21231764.309925325
+CMIBACO iteration 98 | evals 26730 hyp: 23670724.1803883
+after built  26740
+after cross  26750
+after mut  26760
+it 0 - fitness 26820 0.0040891170501708984 | execution -1
+eps | it: 0 hypervolume: 21681920.776816785
+after built  26830
+after cross  26840
+after mut  26850
+it 0 - fitness 26910 0.0739598274230957 | execution -1
+hv | it: 0 hypervolume: 20102882.3487089
+after built  26920
+after cross  26930
+after mut  26940
+it 0 - fitness 27000 0.038710832595825195 | execution -1
+r2 | it: 0 hypervolume: 21344019.185594868
+CMIBACO iteration 99 | evals 27000 hyp: 23670724.1803883
+>>>> min time_tour 2412.4551120674887, min arrival 2, min vehicle 74.45624704629972 - max time_tour 2996.638238573216, max arrival 4, max vehicle 337.28557175875915
+-23670724.1803883
