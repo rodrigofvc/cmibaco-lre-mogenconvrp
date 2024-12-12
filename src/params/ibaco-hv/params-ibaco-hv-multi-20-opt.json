@@ -1,0 +1,43 @@
+{
+  "n_ants": 30,
+  "rho": 0.8996,
+  "alpha": 2.7025,
+  "beta": 4.4091,
+  "gamma": 0.5077,
+  "delta": 2.9445,
+  "Q": 0.0779,
+  "q0": 0.2926,
+  "max_iterations": 50,
+  "p_mut": 0.1066,
+  "p_cross": 0.5264,
+  "min_pheromone" : 10e-3,
+  "max_pheromone" : 10e5,
+  "epsilon" : [9000, 5, 550],
+  "dy" : [100, 0, 50],
+  "cibaco": {
+    "max_iterations" : 100,
+    "k_fitness": [10e2, 10e6, 10e2],
+    "indicators": ["eps", "hv", "r2"],
+    "nmig": 17
+  },
+  "ibaco-eps": {
+    "max_iterations": 100,
+    "k_fitness": 10e2
+  },
+  "ibaco-hv": {
+    "max_iterations": 100,
+    "k_fitness": 10e6
+  },
+  "ibaco-r2": {
+    "max_iterations": 100,
+    "k_fitness": 10e2
+  },
+  "lns": {
+    "max_iterations": 1,
+    "n_removes": 16,
+    "eta": 102276,
+    "delta": 0.0468,
+    "ub_1": 939,
+    "ub_2": 549
+  }
+}
