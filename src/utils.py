@@ -103,7 +103,7 @@ def plot_solution_vrp(dataset, solution, title, fig_name, execution_dir):
     vehicles_used = list(set(vehicles_used))
     colors_patch = [mpatches.Patch(color=v[1], label='Vehicle ' + str(v[0])) for v in [vehicle_colors[i] for i in vehicles_used]]
     fig.legend(handles=colors_patch, fontsize=16, loc='center right', bbox_to_anchor=(1, 0.5))
-    fig.suptitle(title, fontsize=20)
+    fig.suptitle(title, fontsize=24)
     save_result(dataset, fig_name, execution_dir)
     plt.close()
 
@@ -131,6 +131,8 @@ def plot_best_objective(A, dataset, objective, execution_dir):
     plot_solution_vrp(dataset, best, title, fig_name, execution_dir)
 
 def plot_sub_vrp(solution, timetable, day, axs, vehicle_colors):
+    axs.tick_params( labelsize=18)
+    axs.tick_params( labelsize=18)
     tours = solution.get_vector_representation_dt(timetable, day)
     tour = []
     subtours = []
@@ -153,9 +155,9 @@ def plot_sub_vrp(solution, timetable, day, axs, vehicle_colors):
         x_tour = np.array(x_tour)
         y_tour = np.array(y_tour)
         vehicle_color = [v for v in vehicle_colors if v[0] == vehicle_id]
-        axs.plot(x_tour, y_tour, c=vehicle_color[0][1], linewidth=2)
-        axs.plot(x_tour[1:-1], y_tour[1:-1], 'o', linewidth=2)
-        axs.plot([0],[0], '^', c='red')
+        axs.plot(x_tour, y_tour, c=vehicle_color[0][1], linewidth=3)
+        axs.plot(x_tour[1:-1], y_tour[1:-1], 'o', linewidth=3, markersize=10)
+        axs.plot([0],[0], '^', c='red', markersize=10)
     axs.set_title(timetable + ' - day ' + str(day), fontsize=20)
     return vehicles_used
 
@@ -919,8 +921,6 @@ def count_ranks(data_mean, ranks):
 
 def get_table_mean(problems, file, output_file, indicator, algorithms_to_compare, main_algorithm):
     algorithms = [main_algorithm] + algorithms_to_compare
-    fig = plt.figure(figsize=(10, 10))
-    wilcoxon_map = np.zeros((len(problems), len(algorithms)-1))
     algorithms_columns = {0: main_algorithm}
     for i, a in enumerate(algorithms_to_compare):
         algorithms_columns[i+1] = a
@@ -964,7 +964,6 @@ def get_table_mean(problems, file, output_file, indicator, algorithms_to_compare
                             arrow = " $\\uparrow$"
                         else:
                             arrow = " $\\downarrow$"
-                wilcoxon_map[i][j] = p_value
             stats = str(f'{mean_alg:.3e}') + ' (' + str(f'{std_alg:.3e}') + ')' + arrow
             row_stats[algorithm] = stats
         data_total = data_total._append(row_stats, ignore_index=True)
@@ -972,9 +971,6 @@ def get_table_mean(problems, file, output_file, indicator, algorithms_to_compare
     problems_column = pd.DataFrame(problems_column, columns=['Problem', 'Indicator'])
     data_total = pd.concat([problems_column, data_total], axis=1)
     data_total.to_latex(output_file, column_format='cc' + len(algorithms)*'r', index=False)
-    sns.heatmap(wilcoxon_map, annot=True, cmap="coolwarm", vmax=0.05)
-    plt.savefig('heatmap-' + indicator + '.png')
-    plt.close()
     return ranks
 
 
@@ -1012,10 +1008,9 @@ def plot_general_table(problems, file, output_file, algorithms, labels):
 
 def plot_general_diagram(algorithms, labels):
     algorithms_columns = {}
-    title = 'Critic difference diagram '
+    title = 'Critic difference diagram'
     for algorithm in algorithms:
         algorithms_columns[algorithm] = labels[algorithm]
-        title += '- ' + labels[algorithm] + ' '
     file_es = 'total-evaluations-es.csv'
     file_hv = 'total-evaluations-hv.csv'
     file_r2 = 'total-evaluations-r2.csv'
@@ -1032,11 +1027,8 @@ def plot_general_diagram(algorithms, labels):
     result = autorank(total_df, alpha=0.05, verbose=False, force_mode='nonparametric')
     fig, ax = plt.subplots(figsize=(15, 25))
     ax = plot_stats(result, allow_insignificant=True)
-    # ax.set_title(dataset + ' ' + indicator)
     fig.axes.append(ax)
-    #fig.suptitle('Critic difference diagram')
-    #plt.suptitle('Critic difference diagram')
-    plt.title(title)
+    #plt.title(title)
     output_file = 'ranking-total.pdf'
     plt.savefig(output_file,  bbox_inches="tight", pad_inches=0.15)
     #plt.savefig(output_file,  bbox_inches="tight")

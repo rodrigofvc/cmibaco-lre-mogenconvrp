@@ -306,7 +306,7 @@ def ibaco_indicator(params, pheromone_matrix, indicator, cooperative_mode, execu
             current_population.remove(minimum[1])
             #if len(current_population) % 50 == 0:
             #    print (f'{indicator} | iteration {i}/{max_iterations} - {len(current_population)} / {n}')
-        print (f'it {i} - fitness {Solution.evals} {time.time() - start1} | execution {execution_n}')
+        print (f"it {i} - fitness {Solution.evals} {time.time() - start1} | execution {execution_n} | {params['file']}")
 
         update_pheromone_indicator(pheromone_matrix, current_population, rho, Q, timetables, days)
         #log_pheromone.append((np.copy(pheromone_matrix['AM'][0]), [(s.fitness, s.f_i) for s in current_population]))
@@ -404,7 +404,7 @@ def cooperative_ibaco_components(params, n_execution=0, apply_lns=False, apply_c
         elif apply_mutation:
             alg = 'cmibaco-mut'
         elif classic:
-            alg = 'cmibaco-classic'
+            alg = 'cmibaco-base'
         utils.save_evaluations(alg, params['file'], n_execution, log_evaluations)
         print (f'CMIBACO iteration {i} | evals {current_evaluations} hyp: {hyp}')
     all_solutions = all_solutions[1:,:]
@@ -420,12 +420,10 @@ def cooperative_ibaco_components(params, n_execution=0, apply_lns=False, apply_c
 def migration(A, nmig, k, k_indicator, indicators):
     ES = []
     for j in range(k):
-        external_solutions = []
         random_nmig = [a for a in A if a.solution.algorithm != indicators[j]]
-        max_nmig = min(len(random_nmig), nmig)
-        if max_nmig >= 1:
-            external_solutions = sample(random_nmig, max_nmig)
-            w_r2 = get_reference_directions("energy", 3, max_nmig, seed=1)
-            fitness_asigment(external_solutions, k_indicator[j], indicators[j], w_r2)
+        n_external = min(nmig, len(random_nmig))
+        external_solutions = sample(random_nmig, n_external)
+        w_r2 = get_reference_directions("energy", 3, n_external, seed=1)
+        fitness_asigment(external_solutions, k_indicator[j], indicators[j], w_r2)
         ES.append(external_solutions)
     return ES

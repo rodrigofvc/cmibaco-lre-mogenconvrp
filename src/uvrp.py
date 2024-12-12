@@ -776,7 +776,7 @@ def get_boxplots(problems, file, indicator, algorithms, labels):
             data = pd.concat([data, populations['value']], axis=1, ignore_index=True)
         data.rename(columns=algorithms_columns, inplace=True)
         fig = plt.figure()
-        plt.title(f"-Light robustness - {problem.replace('.txt', '')} - {indicator}")
+        plt.title(f"Light robustness - {problem.replace('.txt', '')} - HV")
         bplot = data.boxplot(column=list(data.columns))
         fig.axes.append(bplot)
         output_file = 'boxplot-uvrp/' + problem[13:].replace('0.5.txt', '0_5-boxplot.pdf').replace('0.9.txt',
